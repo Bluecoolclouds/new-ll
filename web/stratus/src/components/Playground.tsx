@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'wouter';
 import { AlertCircle, ArrowUp, Bot, Check, CircleDot, Image as ImageIcon, LoaderCircle, MessageSquareText, RotateCcw, Trash2, UserRound } from 'lucide-react';
 import { AccountHeader } from './AccountHeader';
 import { PlaygroundImages } from './PlaygroundImages';
@@ -30,7 +31,7 @@ function responseText(response: ChatResponse): string {
   return '';
 }
 
-function PlaygroundContent() {
+function PlaygroundContent({ mode }: { mode: 'chat' | 'images' }) {
   const { language, copy: c, setLanguage } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
   const models = useQuery({
@@ -44,7 +45,6 @@ function PlaygroundContent() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [sending, setSending] = useState(false);
   const [requestError, setRequestError] = useState(false);
-  const [mode, setMode] = useState<'chat' | 'images'>('chat');
   const sequence = useRef(0);
   const availableModels = models.data ?? [];
   const selectedModel = availableModels.includes(model) ? model : (availableModels[0] ?? '');
@@ -110,8 +110,8 @@ function PlaygroundContent() {
       <header className="playground-heading">
         <div>
           <div className="playground-eyebrow"><span/><span>STRATUS / {c.playgroundEyebrow}</span><i/></div>
-          <h1>{c.playgroundTitle}</h1>
-          <p>{c.playgroundIntro}</p>
+          <h1>{mode === 'chat' ? c.playgroundTextMode : c.playgroundImageTitle}</h1>
+          <p>{mode === 'chat' ? c.playgroundIntro : c.playgroundImageIntro}</p>
         </div>
         {mode === 'chat' && turns.length > 0 && <button className="playground-clear" type="button" onClick={() => { if (!sending) { setTurns([]); setRequestError(false); } }} disabled={sending} data-testid="button-clear-conversation">
           <Trash2 size={15}/>{c.playgroundClear}
@@ -120,14 +120,14 @@ function PlaygroundContent() {
 
       <main className="playground-main">
         <section className="playground-console" aria-label={c.playgroundTitle}>
-          <div className="playground-mode-tabs" role="group" aria-label={c.playgroundTitle}>
-            <button id="playground-chat-tab" type="button" aria-pressed={mode === 'chat'} aria-controls="playground-chat-panel" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')} data-testid="tab-playground-chat">
+          <nav className="playground-mode-tabs" aria-label={c.playgroundTitle}>
+            <Link id="playground-chat-tab" href="/playground/chat" aria-current={mode === 'chat' ? 'page' : undefined} className={mode === 'chat' ? 'is-active' : ''} data-testid="tab-playground-chat">
               <MessageSquareText size={15}/>{c.playgroundTextMode}
-            </button>
-            <button id="playground-images-tab" type="button" aria-pressed={mode === 'images'} aria-controls="playground-image-panel" className={mode === 'images' ? 'is-active' : ''} onClick={() => setMode('images')} data-testid="tab-playground-images">
+            </Link>
+            <Link id="playground-images-tab" href="/playground/images" aria-current={mode === 'images' ? 'page' : undefined} className={mode === 'images' ? 'is-active' : ''} data-testid="tab-playground-images">
               <ImageIcon size={15}/>{c.playgroundImagesMode}
-            </button>
-          </div>
+            </Link>
+          </nav>
           <div id="playground-chat-panel" className="playground-mode-panel" role="region" aria-labelledby="playground-chat-tab" hidden={mode !== 'chat'}>
           <div className="playground-toolbar">
             <label className="playground-model-field" htmlFor="playground-model">
@@ -195,6 +195,6 @@ function PlaygroundContent() {
   </div>;
 }
 
-export function Playground() {
-  return <WorkspaceLocaleProvider><PlaygroundContent/></WorkspaceLocaleProvider>;
+export function Playground({ mode = 'chat' }: { mode?: 'chat' | 'images' }) {
+  return <WorkspaceLocaleProvider><PlaygroundContent mode={mode}/></WorkspaceLocaleProvider>;
 }

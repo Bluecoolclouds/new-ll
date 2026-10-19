@@ -29,6 +29,14 @@ function ProviderCallback() {
   return <OAuthCallbackPage provider={params.provider}/>;
 }
 
+function PlaygroundRoute() {
+  const params = useParams<{ mode: string }>();
+  if (params.mode !== 'chat' && params.mode !== 'images') {
+    return <FullPageRedirect to={`${basePath}/playground/chat`}/>;
+  }
+  return <Guard><Playground mode={params.mode}/></Guard>;
+}
+
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 20_000, retry: 1, refetchOnWindowFocus: true, refetchInterval: 30_000 } } });
 function PublicLanding() {
   const [setup, setSetup] = useState<boolean | null>(null);
@@ -102,7 +110,8 @@ function App() {
             <Route path="/refund"><LegalPage page="refund"/></Route>
             <Route path="/contacts"><LegalPage page="contacts"/></Route>
             <Route path="/dashboard"><Guard><Workspace/></Guard></Route>
-            <Route path="/playground"><Guard><Playground/></Guard></Route>
+            <Route path="/playground"><Guard><Playground mode="chat"/></Guard></Route>
+            <Route path="/playground/:mode"><PlaygroundRoute/></Route>
             <Route path="/wallet"><Guard><Wallet/></Guard></Route>
             <Route path="/console/topup"><Guard><Wallet/></Guard></Route>
             <Route path="/console/log"><Guard><PaymentReturn/></Guard></Route>

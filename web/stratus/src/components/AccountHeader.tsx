@@ -23,7 +23,7 @@ export function AccountHeader({ active, language, onLanguageChange }: {
   const username = user.data?.display_name || user.data?.username || copy.account;
   const links = [
     { href: `${basePath}/dashboard`, label: copy.cabinet, id: 'cabinet' },
-    { href: `${basePath}/playground/chat`, label: copy.playgroundNav, id: 'playground' },
+    { href: `${basePath}/playground`, label: copy.playgroundNav, id: 'playground' },
     { href: `${basePath}/settings`, label: copy.settings, id: 'settings' },
     { href: `${basePath}/docs`, label: copy.docs, id: 'docs' },
   ];

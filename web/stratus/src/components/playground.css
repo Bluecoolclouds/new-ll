@@ -132,13 +132,13 @@
   border-bottom: 1px solid color-mix(in srgb, var(--pg-border) 75%, transparent);
   background: color-mix(in srgb, var(--stratus-ice-primary) 10%, var(--stratus-ice-canvas));
 }
-.playground-mode-tabs a {
+.playground-mode-tabs button {
   display: inline-flex; align-items: center; gap: 8px; min-height: 35px; padding: 0 12px;
   border: 1px solid transparent; border-radius: 9px; background: transparent; color: #78949c;
-  font: inherit; font-size: 11px; font-weight: 650; text-decoration: none; cursor: pointer; transition: background .18s, color .18s, border-color .18s;
+  font: inherit; font-size: 11px; font-weight: 650; cursor: pointer; transition: background .18s, color .18s, border-color .18s;
 }
-.playground-mode-tabs a:hover { color: #436d79; background: rgba(255,255,255,.52); }
-.playground-mode-tabs a.is-active { border-color: #d2e5e8; background: #f8fcfc; color: #3d6976; box-shadow: 0 2px 7px rgba(50,99,115,.06); }
+.playground-mode-tabs button:hover { color: #436d79; background: rgba(255,255,255,.52); }
+.playground-mode-tabs button.is-active { border-color: #d2e5e8; background: #f8fcfc; color: #3d6976; box-shadow: 0 2px 7px rgba(50,99,115,.06); }
 .playground-mode-panel { min-width: 0; }
 .playground-image-mode { min-width: 0; }
 .playground-image-toolbar {
@@ -179,7 +179,7 @@
 }
 @media (max-width: 700px) {
   .playground-mode-tabs { padding: 8px 10px; }
-  .playground-mode-tabs a { flex: 1; justify-content: center; padding: 0 8px; }
+  .playground-mode-tabs button { flex: 1; justify-content: center; padding: 0 8px; }
   .playground-image-toolbar { gap: 12px; padding: 15px; }
   .playground-image-options { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
   .playground-image-options .playground-model-field select { width: 100%; min-width: 0; }

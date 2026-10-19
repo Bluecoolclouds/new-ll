@@ -14,3 +14,9 @@ The sandbox's model list, chat, and image generation must use the user's active 
 **Why:** The user explicitly requires the sandbox to behave like their API-key client. Session-only playground relays bypass token identity and key-specific limits.
 
 **How to apply:** Send actual model and generation requests with the bearer key to `/v1`; use session auth only to ensure/retrieve the account-owned default key, while preserving standard wallet settlement.
+
+The chat should accept photos plus TXT, MD, CSV, JSON, and PDF attachments. Extract document text in the browser; scanned PDFs without selectable text have no OCR fallback. Explicit image-generation prompts route directly to an available image model from the same composer, without a separate classifier request. Keep selected files and conversation history in page memory only.
+
+**Why:** The user asked for automatic image generation inside chat and chose these attachment formats; routing without an extra model call avoids an additional paid request.
+
+**How to apply:** Use `/v1/chat/completions` for text/vision and `/v1/images/generations` or `/v1/images/edits` for image prompts, always with the account's default key. Surface unsupported reference/edit capabilities as server errors instead of silently dropping the photo.

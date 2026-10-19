@@ -29,4 +29,4 @@
 - [Referral token rewards](referral-rewards.md) — 5% of direct invitees’ credited top-up tokens, automatically spendable; no second transferable payout or historical recalculation.
 - [Safer patching for large JSX](patch-context-jsx.md) — use small isolated hunks when a component edit must match exact source context.
 - [Stratus API documentation scope](stratus-api-docs-scope.md) — document only routes registered in this Stratus build, in Russian and English; state model/channel availability limits.
-- [Stratus playground routing](stratus-playground-routing.md) — one Stratus page with local Chat/Images; use the user's default key through `/v1` and never persist it.
+- [Stratus playground routing](stratus-playground-routing.md) — use the default key through `/v1`; image requests route in-chat, and supported attachments stay in page memory.

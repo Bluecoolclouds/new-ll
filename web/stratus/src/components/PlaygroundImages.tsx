@@ -1,14 +1,10 @@
-import { useRef, useState, type FormEvent } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Check, CircleDot, Download, Image as ImageIcon, LoaderCircle, Sparkles } from 'lucide-react';
-import { requestWithApiKey } from '../lib/playground-api';
-import { requestPricing, type PricingModel } from '../lib/api';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { AlertCircle, Check, CircleDot, Download, Image as ImageIcon, LoaderCircle, Paperclip, Sparkles, X } from 'lucide-react';
+import { generatePlaygroundImage, isGptImageModel, type PlaygroundImageSettings } from '../lib/playground-api';
+import { isSupportedPlaygroundImage } from '../lib/playground-files';
 import { useWorkspaceLocale } from '../lib/workspace-locale';
 import { workspaceLocale } from '../lib/workspace-copy';
-
-type ImageGenerationResponse = {
-  data?: Array<{ b64_json?: string; url?: string; revised_prompt?: string }>;
-};
+import type { PlaygroundImageFormat, PlaygroundImageQuality, PlaygroundImageSize } from './playground-agent/PlaygroundAgentComposer';
 
 type GeneratedImage = {
   id: number;
@@ -17,17 +13,9 @@ type GeneratedImage = {
   prompt: string;
 };
 
-function isGptImageModel(model: string) {
-  return /(?:^|\/)gpt[-_]?image(?:[-_]|$)/i.test(model);
-}
-
-function supportsImageGeneration(model: PricingModel) {
-  return (model.supported_endpoint_types ?? []).some((endpoint) => endpoint.toLowerCase() === 'image-generation');
-}
-
-function getImageSource(item: NonNullable<ImageGenerationResponse['data']>[number]) {
+function getImageSource(item: NonNullable<import('../lib/playground-api').PlaygroundImageResponse['data']>[number], format: PlaygroundImageFormat) {
   const base64 = item.b64_json?.trim();
-  if (base64) return `data:image/png;base64,${base64}`;
+  if (base64) return `data:image/${format};base64,${base64}`;
 
   const value = item.url?.trim();
   if (!value) return null;
@@ -45,78 +33,98 @@ function getImageSource(item: NonNullable<ImageGenerationResponse['data']>[numbe
 type PlaygroundImagesProps = {
   hidden: boolean;
   apiKey?: string;
-  availableModels: string[];
+  imageModels: string[];
   modelsLoading: boolean;
   modelsError: boolean;
   modelsFetching: boolean;
   modelsErrorText: string;
   onRefreshModels: () => void;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
+  quality: PlaygroundImageQuality;
+  onQualityChange: (quality: PlaygroundImageQuality) => void;
+  size: PlaygroundImageSize;
+  onSizeChange: (size: PlaygroundImageSize) => void;
+  format: PlaygroundImageFormat;
+  onFormatChange: (format: PlaygroundImageFormat) => void;
 };
 
 export function PlaygroundImages({
   hidden,
   apiKey,
-  availableModels,
+  imageModels,
   modelsLoading,
   modelsError,
   modelsFetching,
   modelsErrorText,
   onRefreshModels,
+  selectedModel,
+  onModelChange,
+  quality,
+  onQualityChange,
+  size,
+  onSizeChange,
+  format,
+  onFormatChange,
 }: PlaygroundImagesProps) {
   const { language, copy: c } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
-  const pricing = useQuery({
-    queryKey: ['stratus', 'playground', 'pricing'],
-    queryFn: () => requestPricing('/api/pricing'),
-    staleTime: 5 * 60_000,
-    retry: false,
-  });
-  const [chosenModel, setChosenModel] = useState('');
   const [prompt, setPrompt] = useState('');
-  const [quality, setQuality] = useState('auto');
-  const [size, setSize] = useState('auto');
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [referenceError, setReferenceError] = useState('');
+  const [references, setReferences] = useState<File[]>([]);
+  const [referenceUrls, setReferenceUrls] = useState<string[]>([]);
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const sequence = useRef(0);
-
-  const userModels = new Set(availableModels);
-  const imageModels = [...new Set((pricing.data?.data ?? [])
-    .filter(supportsImageGeneration)
-    .map((model) => model.model_name)
-    .filter((model) => userModels.has(model)))]
-    .sort((left, right) => Number(!isGptImageModel(left)) - Number(!isGptImageModel(right)) || left.localeCompare(right));
-  const selectedModel = imageModels.includes(chosenModel)
-    ? chosenModel
-    : imageModels.find(isGptImageModel) ?? imageModels[0] ?? '';
-  const isLoading = modelsLoading || pricing.isLoading;
-  const hasError = modelsError || pricing.isError;
+  const imageFileInput = useRef<HTMLInputElement>(null);
+  const isLoading = modelsLoading;
+  const hasError = modelsError;
   const isBusy = generating || isLoading || hasError || !apiKey || !selectedModel;
+
+  useEffect(() => {
+    const urls = references.map((file) => URL.createObjectURL(file));
+    setReferenceUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [references]);
+
+  const handleReferenceFiles = (event: ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(event.currentTarget.files ?? []);
+    event.currentTarget.value = '';
+    if (!selected.length) return;
+    const accepted: File[] = [];
+    const issues: string[] = [];
+    for (const file of selected) {
+      if (!isSupportedPlaygroundImage(file)) issues.push(`${file.name}: ${c.playgroundFileUnsupported}`);
+      else if (file.size > 20 * 1024 * 1024) issues.push(`${file.name}: ${c.playgroundFileTooLarge}`);
+      else accepted.push(file);
+    }
+    setReferences((current) => [...current, ...accepted].slice(0, 8));
+    if (accepted.length + references.length > 8) issues.push(c.playgroundTooManyFiles);
+    setReferenceError(issues.join(' '));
+  };
 
   const generate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = prompt.trim();
-      if (!value || !selectedModel || !apiKey || generating) return;
+    if (!value || !selectedModel || !apiKey || generating) return;
 
     setGenerating(true);
     setError('');
     try {
-      const payload: Record<string, unknown> = { model: selectedModel, prompt: value, n: 1 };
-      if (isGptImageModel(selectedModel)) {
-        payload.quality = quality;
-        payload.size = size;
-      }
-      const response = await requestWithApiKey<ImageGenerationResponse>('/v1/images/generations', apiKey, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+      const settings: PlaygroundImageSettings = {
+        quality: isGptImageModel(selectedModel) ? quality : 'auto',
+        size: isGptImageModel(selectedModel) ? size : 'auto',
+        format: isGptImageModel(selectedModel) ? format : 'png',
+      };
+      const response = await generatePlaygroundImage(apiKey, selectedModel, value, settings, references);
       const result = (response.data ?? [])
-        .map((item) => ({ item, src: getImageSource(item) }))
-        .filter((entry): entry is { item: NonNullable<ImageGenerationResponse['data']>[number]; src: string } => Boolean(entry.src))
+        .map((item) => ({ item, src: getImageSource(item, settings.format) }))
+        .filter((entry): entry is { item: NonNullable<typeof response.data>[number]; src: string } => Boolean(entry.src))
         .map(({ item, src }) => ({
           id: ++sequence.current,
           src,
-          model: selectedModel,
+          model: response.model?.trim() || selectedModel,
           prompt: item.revised_prompt?.trim() || value,
         }));
       if (result.length === 0) throw new Error(c.playgroundImageNoOutput);
@@ -129,16 +137,13 @@ export function PlaygroundImages({
     }
   };
 
-  const refreshModels = () => {
-    onRefreshModels();
-    void pricing.refetch();
-  };
+  const refreshModels = () => onRefreshModels();
 
   return <div id="playground-image-panel" className="playground-image-mode" role="region" aria-label={c.playgroundImagesMode} hidden={hidden}>
     <div className="playground-image-toolbar">
       <label className="playground-model-field" htmlFor="playground-image-model">
         <span>{c.playgroundImageModel}</span>
-        <select id="playground-image-model" value={selectedModel} disabled={isLoading || imageModels.length === 0 || generating} onChange={(event) => setChosenModel(event.target.value)} data-testid="select-playground-image-model">
+        <select id="playground-image-model" value={selectedModel} disabled={isLoading || imageModels.length === 0 || generating} onChange={(event) => onModelChange(event.target.value)} data-testid="select-playground-image-model">
           {imageModels.length === 0 && <option value="">{c.playgroundChooseModel}</option>}
           {imageModels.map((model) => <option key={model} value={model}>{model}</option>)}
         </select>
@@ -146,7 +151,7 @@ export function PlaygroundImages({
       {isGptImageModel(selectedModel) && <div className="playground-image-options">
         <label className="playground-model-field" htmlFor="playground-image-quality">
           <span>{c.playgroundImageQuality}</span>
-          <select id="playground-image-quality" value={quality} disabled={generating} onChange={(event) => setQuality(event.target.value)}>
+          <select id="playground-image-quality" value={quality} disabled={generating} onChange={(event) => onQualityChange(event.target.value as PlaygroundImageQuality)}>
             <option value="auto">{c.playgroundImageAuto}</option>
             <option value="low">{c.playgroundImageLow}</option>
             <option value="medium">{c.playgroundImageMedium}</option>
@@ -155,11 +160,19 @@ export function PlaygroundImages({
         </label>
         <label className="playground-model-field" htmlFor="playground-image-size">
           <span>{c.playgroundImageSize}</span>
-          <select id="playground-image-size" value={size} disabled={generating} onChange={(event) => setSize(event.target.value)}>
+          <select id="playground-image-size" value={size} disabled={generating} onChange={(event) => onSizeChange(event.target.value as PlaygroundImageSize)}>
             <option value="auto">{c.playgroundImageAuto}</option>
             <option value="1024x1024">1024 × 1024</option>
             <option value="1536x1024">1536 × 1024</option>
             <option value="1024x1536">1024 × 1536</option>
+          </select>
+        </label>
+        <label className="playground-model-field" htmlFor="playground-image-format">
+          <span>{c.playgroundImageFormat}</span>
+          <select id="playground-image-format" value={format} disabled={generating} onChange={(event) => onFormatChange(event.target.value as PlaygroundImageFormat)}>
+            <option value="png">{c.playgroundImagePng}</option>
+            <option value="jpeg">{c.playgroundImageJpeg}</option>
+            <option value="webp">{c.playgroundImageWebp}</option>
           </select>
         </label>
       </div>}
@@ -173,8 +186,24 @@ export function PlaygroundImages({
       <p>{c.playgroundBillingNotice} {c.playgroundImageBilling}</p>
     </div>
 
-    {hasError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{modelsError ? modelsErrorText : c.playgroundImageModelsError}</span><button type="button" onClick={refreshModels} disabled={modelsFetching || pricing.isFetching}>{c.playgroundRefreshModels}</button></div>}
+    {hasError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{modelsErrorText}</span><button type="button" onClick={refreshModels} disabled={modelsFetching}>{c.playgroundRefreshModels}</button></div>}
     {!isLoading && !hasError && imageModels.length === 0 && <div className="playground-no-models" role="status"><ImageIcon size={22}/><strong>{c.playgroundImageNoModels}</strong></div>}
+
+    <div className="playground-image-references">
+      <div className="playground-image-reference-heading">
+        <div><strong>{c.playgroundImageReferences}</strong><span>{c.playgroundImageReferenceHelp}</span></div>
+        <input ref={imageFileInput} type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden onChange={handleReferenceFiles} data-testid="input-image-references"/>
+        <button type="button" onClick={() => imageFileInput.current?.click()} disabled={isBusy || generating} data-testid="button-add-image-reference"><Paperclip size={14}/>{c.playgroundAttachFiles}</button>
+      </div>
+      {referenceError && <p className="playground-image-reference-error" role="alert">{referenceError}</p>}
+      {references.length > 0 && <div className="playground-image-reference-list" data-testid="list-image-references">
+        {references.map((file, index) => <span className="playground-image-reference-chip" key={`${file.name}-${file.size}-${index}`}>
+          {referenceUrls[index] && <img src={referenceUrls[index]} alt={file.name}/>}
+          <span title={file.name}>{file.name}</span>
+          <button type="button" onClick={() => setReferences((current) => current.filter((_, currentIndex) => currentIndex !== index))} disabled={generating} aria-label={`${c.playgroundRemoveAttachment}: ${file.name}`} data-testid={`button-remove-image-reference-${index}`}><X size={13}/></button>
+        </span>)}
+      </div>}
+    </div>
 
     <div className="playground-image-results" aria-live="polite" aria-label={c.playgroundImageResult}>
       {images.length === 0 && !isLoading && imageModels.length > 0 && <div className="playground-image-empty"><ImageIcon size={24}/><strong>{c.playgroundImageTitle}</strong><span>{c.playgroundImageEmpty}</span></div>}
@@ -183,7 +212,7 @@ export function PlaygroundImages({
       {images.length > 0 && <div className="playground-image-grid">
         {images.map((image) => <figure className="playground-image-card" key={image.id}>
           <img src={image.src} alt={image.prompt} loading="lazy"/>
-          <figcaption><span>{image.model}</span><p>{image.prompt}</p>{image.src.startsWith('data:image/') && <a href={image.src} download={`stratus-image-${image.id}.png`}><Download size={13}/>{c.playgroundImageDownload}</a>}</figcaption>
+          <figcaption><span>{c.playgroundModel}: {image.model}</span><p>{image.prompt}</p>{image.src.startsWith('data:image/') && <a href={image.src} download={`stratus-image-${image.id}.${format}`}><Download size={13}/>{c.playgroundImageDownload}</a>}</figcaption>
         </figure>)}
       </div>}
     </div>

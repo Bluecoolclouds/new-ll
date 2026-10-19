@@ -1,0 +1,216 @@
+.stratus-agent {
+  --agent-ink: #355966;
+  --agent-muted: #7e99a1;
+  --agent-line: #d7e7e9;
+  --agent-surface: #f8fcfc;
+  overflow: hidden;
+  border: 1px solid var(--agent-line);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--stratus-ice-canvas, #f5fafb) 86%, #e8f4f6);
+  color: var(--agent-ink);
+  box-shadow: 0 8px 24px rgba(44, 98, 117, .055);
+}
+.stratus-agent * { box-sizing: border-box; }
+.stratus-agent__model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 19px;
+  padding: 15px 19px;
+  border-bottom: 1px solid color-mix(in srgb, var(--agent-line) 76%, transparent);
+}
+.stratus-agent__model-field {
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 9px;
+  min-width: 0;
+  color: #75919a;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .085em;
+  text-transform: uppercase;
+}
+.stratus-agent__field-icon {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d9e9ea;
+  border-radius: 8px;
+  background: #edf6f7;
+  color: #668e98;
+}
+.stratus-agent__chat-mark { width: 10px; height: 8px; border: 1.4px solid currentColor; border-radius: 3px; position: relative; }
+.stratus-agent__chat-mark::after { position: absolute; bottom: -3px; left: 1px; width: 4px; height: 4px; border-left: 1px solid currentColor; transform: skewY(-35deg); content: ""; }
+.stratus-agent__model-field select,
+.stratus-agent__setting select {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 0 28px 0 9px;
+  border: 1px solid var(--agent-line);
+  border-radius: 8px;
+  outline: 0;
+  background: var(--agent-surface);
+  color: #3d6571;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+}
+.stratus-agent__model-divider { width: 1px; background: #dce9eb; }
+.stratus-agent__settings {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.15fr) repeat(3, minmax(110px, 1fr));
+  align-items: end;
+  gap: 10px;
+  padding: 12px 19px;
+  border-bottom: 1px solid color-mix(in srgb, var(--agent-line) 76%, transparent);
+  background: color-mix(in srgb, #e9f4f5 44%, transparent);
+}
+.stratus-agent__settings-title {
+  align-self: center;
+  color: #78949c;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.stratus-agent__setting { display: grid; min-width: 0; gap: 5px; }
+.stratus-agent__setting > span { color: #849ca3; font-size: 9px; font-weight: 650; }
+.stratus-agent__setting select { height: 30px; padding-left: 8px; font-size: 10px; }
+.stratus-agent__form { padding: 14px 18px 11px; transition: background .16s; }
+.stratus-agent__form.is-drag-active { background: #e9f5f6; }
+.stratus-agent__prompt-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #71909a;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.stratus-agent__entry {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 8px;
+  border: 1px solid #c9dfe3;
+  border-radius: 12px;
+  background: #fbfdfd;
+  box-shadow: 0 3px 10px rgba(54, 104, 119, .035);
+  transition: border-color .18s, box-shadow .18s;
+}
+.stratus-agent__entry:focus-within { border-color: #91bbc3; box-shadow: 0 0 0 3px rgba(109, 165, 175, .13); }
+.stratus-agent__entry textarea {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 66px;
+  max-height: 200px;
+  resize: vertical;
+  padding: 7px 8px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #345866;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.stratus-agent__entry textarea::placeholder { color: #9aafb4; }
+.stratus-agent__actions { display: flex; align-items: center; gap: 7px; flex: none; }
+.stratus-agent__file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
+.stratus-agent__attach,
+.stratus-agent__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  transition: transform .16s, background .16s, opacity .16s;
+}
+.stratus-agent__attach { border: 1px solid #dce9ea; background: #f7fbfb; color: #6c8b94; }
+.stratus-agent__attach:hover { background: #edf6f7; }
+.stratus-agent__send { min-width: 38px; border: 1px solid #c5e0e4; background: #d9edf0; color: #3d6b78; }
+.stratus-agent__send:hover:not(:disabled), .stratus-agent__attach:hover { transform: translateY(-1px); }
+.stratus-agent__send:disabled { opacity: .46; cursor: not-allowed; }
+.stratus-agent__send.is-stop { border-color: #ead8d3; background: #fbf4f1; color: #956a61; }
+.stratus-agent__attachments { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.stratus-agent__file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: min(100%, 280px);
+  min-height: 30px;
+  padding: 3px 5px 3px 8px;
+  border: 1px solid #d8e8ea;
+  border-radius: 8px;
+  background: #f4f9fa;
+  color: #5e7e88;
+  font-size: 10px;
+}
+.stratus-agent__file-icon { display: grid; flex: none; place-items: center; color: #7a9ba3; }
+.stratus-agent__preview { width: 26px; height: 26px; flex: none; border-radius: 5px; object-fit: cover; }
+.stratus-agent__file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stratus-agent__file-chip button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #819ba2;
+  cursor: pointer;
+}
+.stratus-agent__file-chip button:hover { background: #e7f1f2; color: #486e79; }
+.stratus-agent__error { margin: 8px 2px 0; color: #956b62; font-size: 10px; line-height: 1.5; }
+.stratus-agent__footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; padding: 6px 2px 0; color: #93a8ae; font-size: 9px; }
+.stratus-agent__attachment-count { font-variant-numeric: tabular-nums; }
+.stratus-agent__loading { display: inline-flex; align-items: center; gap: 7px; color: #688d97; }
+.stratus-agent__loading i { width: 6px; height: 6px; border-radius: 50%; background: #76aab3; animation: stratus-agent-breathe .9s ease-in-out infinite alternate; }
+.stratus-agent select:focus-visible,
+.stratus-agent textarea:focus-visible,
+.stratus-agent button:focus-visible,
+.stratus-agent__file-input:focus-visible + .stratus-agent__attach { outline: 2px solid var(--stratus-ice-accent, #78aeb8); outline-offset: 3px; }
+.stratus-agent select:disabled, .stratus-agent textarea:disabled { opacity: .6; cursor: not-allowed; }
+@keyframes stratus-agent-breathe { to { opacity: .4; transform: scale(.8); } }
+@media (max-width: 680px) {
+  .stratus-agent { border-radius: 13px; }
+  .stratus-agent__model-row { gap: 11px; padding: 13px; }
+  .stratus-agent__model-field { grid-template-columns: 22px minmax(0,1fr); gap: 3px 6px; font-size: 8px; }
+  .stratus-agent__field-icon { width: 21px; height: 21px; }
+  .stratus-agent__model-field select { grid-column: 1 / -1; height: 35px; }
+  .stratus-agent__settings { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; padding: 11px 13px; }
+  .stratus-agent__settings-title { grid-column: 1 / -1; }
+  .stratus-agent__setting select { padding-right: 19px; }
+  .stratus-agent__form { padding: 13px; }
+  .stratus-agent__entry { align-items: stretch; flex-direction: column; }
+  .stratus-agent__entry textarea { min-height: 72px; }
+  .stratus-agent__actions { justify-content: flex-end; }
+  .stratus-agent__attach span, .stratus-agent__send span { display: inline; }
+}
+@media (max-width: 390px) {
+  .stratus-agent__model-row { grid-template-columns: minmax(0,1fr); }
+  .stratus-agent__model-divider { display: none; }
+  .stratus-agent__settings { grid-template-columns: minmax(0, 1fr); }
+  .stratus-agent__settings-title { grid-column: auto; }
+  .stratus-agent__setting { grid-template-columns: 72px minmax(0,1fr); align-items: center; }
+  .stratus-agent__setting select { height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stratus-agent *, .stratus-agent *::before, .stratus-agent *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

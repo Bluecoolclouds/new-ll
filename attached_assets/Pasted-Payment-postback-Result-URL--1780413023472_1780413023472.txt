@@ -1,0 +1,46 @@
+Payment postback
+Уведомление о выполнении платежа
+В результате выполнения платежа, на Result URL, указанный в настройках магазина, отправляется POST запрос с информацией о платеже. Запрос отправляется в формате 'application/x-www-form-urlencoded'. Если по какой-либо причине ваш сервер не ответил кодом 200, то уведомление будет отправлено еще раз. Стратегия переотправки postback экспоненциальная: 1 раз в 10 ^ номер попытки секунд (10 сек, 100 сек, 1000 сек...). Всего 5 попыток переотправки.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+InvId	Да	string		payment-19238465	Уникальный идентификатор заказа, переданный при формировании счета
+OutSum	Да	decimal		380.55	Сумма платежа
+Commission	Да	decimal		30.55	Комиссия с платежа
+TrsId	Да	string		LXZv3R7Q8B	Уникальный идентификатор счета
+Status	Да	enum	SUCCESS
+UNDERPAID
+OVERPAID
+FAIL	SUCCESS	Статус платежа
+CurrencyIn	Да	enum	USD
+RUB
+EUR	RUB	Валюта, в которой оплачивался счет
+custom	Нет	string		additional_information	Произвольное поле, переданное при формировании счета
+AccountType	Нет	enum	BANK_CARD
+SBP	BANK_CARD	Метод оплаты
+AccountNumber	Нет	string		220220******7046	Дополнительная информация о методе оплаты
+BalanceAmount	Нет	decimal		350.00	Сумма, которая зачислена на баланс
+BalanceCurrency	Нет	enum	USD
+RUB
+EUR	RUB	Валюта, в которой было зачисление денежных средств на баланс
+PayerPhone	Нет	string		79112223344	Телефон плательщика
+PayerEmail	Нет	string		payer@example.com	Почта плательщика
+PayerName	Нет	string		Ivan	Имя плательщика
+PayerComment	Нет	string		Payment comment	Комментарий плательщика
+ErrorCode	Нет	integer		666	Код ошибки
+ErrorMessage	Нет	string		General error	Описание ошибки
+SignatureValue	Да	string		DC32D403CE6BD2E54D4D213278DB286C	Подпись запроса. Формируется следующим образом:
+strtoupper(md5($OutSum . ":" . $InvId . ":" . $apiToken))
+Пример запроса
+curl -X POST 'https://pal24.pro/callback/payment/success' \
+-d 'InvId=123' \
+-d 'OutSum=12345' \
+-d 'CurrencyIn=RUB' \
+-d 'Commission=123' \
+-d 'TrsId=AbxvAM6vJk' \
+-d 'Status=SUCCESS' \
+-d 'custom=custom_information' \
+-d 'AccountType=BANK_CARD' \
+-d 'AccountNumber=220220******7046' \
+-d 'BalanceAmount=123' \
+-d 'BalanceCurrency=RUB' \
+-d 'SignatureValue=398320589F8E31ACE27CC681BCBD8BDA'

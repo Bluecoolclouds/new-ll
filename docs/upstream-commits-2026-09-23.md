@@ -1,0 +1,379 @@
+# Коммиты upstream после снимка APINET
+
+> Проверено 23 сентября 2026 г. Текущий указатель upstream: `996adffe5165bd5e311e33a03a86b8aede1fe376`.
+
+Это **все 365 коммитов** ветки QuantumNous/new-api main после `8739c05c0` (8 июля 2026 г.), в порядке появления от старых к новым. Базовая точка выбрана приблизительно по дате исходного снимка APINET: импортированная копия имеет другую Git-историю и могла уже включать отдельные изменения. В список также входит коммит с более ранней авторской датой, влитый позднее. Само присутствие здесь **не означает**, что изменение отсутствует в APINET или что его надо переносить. Оценка приоритетов: [обзор](./upstream-review-2026-09-23.md).
+
+## 2026-07 (107)
+
+- 2026-07-04 [`81808d2410`](https://github.com/QuantumNous/new-api/commit/81808d2410fbd97cbce0099506b8a7a5c1a508fb) — fix: remove sample special usable groups leaking into pricing page
+- 2026-07-09 [`df01273b94`](https://github.com/QuantumNous/new-api/commit/df01273b94d7df9c1ad83556c25c42c2dd3e23bf) — fix(web): let resized tables fill available width (#6031)
+- 2026-07-09 [`a79f96919e`](https://github.com/QuantumNous/new-api/commit/a79f96919ee45cf9249905629cc72e8c93d43e6e) — fix(affiliate): update referral message
+- 2026-07-09 [`4645ad9df5`](https://github.com/QuantumNous/new-api/commit/4645ad9df51dcf7da1e50d1de4482c503682588d) — fix(playground): keep model selector lists in sync
+- 2026-07-09 [`246d62aa5e`](https://github.com/QuantumNous/new-api/commit/246d62aa5ed3ba2a4728322c269c180a016dc9cd) — chore: remove dead files resurrected by v1.0 launch commit (#6041)
+- 2026-07-09 [`928b475075`](https://github.com/QuantumNous/new-api/commit/928b4750753d94c216dc560a10130d5ab0872eed) — feat(playground): add chat parameter settings panel
+- 2026-07-10 [`4e570389dd`](https://github.com/QuantumNous/new-api/commit/4e570389dd433a717373ce9c9b822b59f5ed3d5d) — fix: use GORM v2 row locking for subscription resets (#6057)
+- 2026-07-10 [`e8596cab7e`](https://github.com/QuantumNous/new-api/commit/e8596cab7e560140a72611aa8c77c83b477babc8) — fix: allow adding custom model names that differ only by case
+- 2026-07-10 [`4823417cf7`](https://github.com/QuantumNous/new-api/commit/4823417cf708f6324b8d58695eefcb630670548e) — feat(playground): add playground parameter settings panel (#6044)
+- 2026-07-10 [`d3b01b483d`](https://github.com/QuantumNous/new-api/commit/d3b01b483dcecbdd20fb099a63290ad7ad676570) — fix: allow adding model names that differ only by case in multi-select (#6061)
+- 2026-07-10 [`f2c7cd33c8`](https://github.com/QuantumNous/new-api/commit/f2c7cd33c853fbbd2dc8f1701123888c98ffe00e) — fix: remove sample special usable groups leaking into pricing page (#5906)
+- 2026-07-10 [`489c045842`](https://github.com/QuantumNous/new-api/commit/489c045842a3db561b89b1f491e751fc5140ea7c) — perf(model-pricing): optimize upstream price sync table
+- 2026-07-10 [`43783286e5`](https://github.com/QuantumNous/new-api/commit/43783286e5764aabea77e9954d752ce7628babd4) — fix(model-pricing): polish sync channel dialog layout
+- 2026-07-11 [`6869cd94b2`](https://github.com/QuantumNous/new-api/commit/6869cd94b2681df6be0b49672b638c56ceff9638) — perf(web): align table badge spacing
+- 2026-07-11 [`0cb741d8da`](https://github.com/QuantumNous/new-api/commit/0cb741d8da9ee14771a6dcc19bff02a7f48daaac) — perf(model-pricing): optimize upstream price sync tables (#6092)
+- 2026-07-11 [`262ab93123`](https://github.com/QuantumNous/new-api/commit/262ab931231e8bd64e2a498703b145a18e1e0446) — ✨ style(web): unify design system across default frontend
+- 2026-07-11 [`0918bdb49a`](https://github.com/QuantumNous/new-api/commit/0918bdb49a5193a7e8cf03a0d17871ad0cdf9d24) — ♻️ refactor(web): consolidate design-system primitives and responsive data views
+- 2026-07-11 [`9d1ca545e2`](https://github.com/QuantumNous/new-api/commit/9d1ca545e27f1773e7c1764e031d23999e0bcf32) — ♻️ refactor(web): refine data-table cards and pricing page layout
+- 2026-07-11 [`ca971413e9`](https://github.com/QuantumNous/new-api/commit/ca971413e9a6f64c43f2e016927e1323ea960f40) — fix(web): allow user-activated top navigation for custom home iframe (#5955)
+- 2026-07-11 [`00f1cbb6df`](https://github.com/QuantumNous/new-api/commit/00f1cbb6df2c5441f0b3684f60d2436682acb359) — chore(deps): bump golang.org/x/crypto from 0.51.0 to 0.52.0 (#6096)
+- 2026-07-11 [`dad57a6bb8`](https://github.com/QuantumNous/new-api/commit/dad57a6bb85becbb99cab26ade7a891508ed7c42) — fix: sync codex field (#6018)
+- 2026-07-11 [`b2a890e755`](https://github.com/QuantumNous/new-api/commit/b2a890e75549705dc4213bdc53f89fe12c855c46) — 🐛 fix: Fontsource asset resolution across workspace layouts
+- 2026-07-10 [`621927f710`](https://github.com/QuantumNous/new-api/commit/621927f710b46727223280fedbe32121bab59837) — fix(billing): reject saturated pre-consume quota
+- 2026-07-10 [`d9595831bf`](https://github.com/QuantumNous/new-api/commit/d9595831bf05b59198742dca7e779bbea3165141) — fix(billing): improve quota handling and error reporting for pre-consume operations
+- 2026-07-11 [`269e4ff390`](https://github.com/QuantumNous/new-api/commit/269e4ff390594ef532a6587c48c6966fa617ce8e) — feat(image): enhance image stream handling with client disconnect logic and billing adjustments
+- 2026-07-11 [`308e3e347a`](https://github.com/QuantumNous/new-api/commit/308e3e347a53835b921e6d19185a038cb53afdb5) — ✨ feat(web): polish themed data views and add task log details
+- 2026-07-11 [`ad900bbba7`](https://github.com/QuantumNous/new-api/commit/ad900bbba74b3e9b16b1ef9c549812ada2bb14a0) — Merge remote-tracking branch 'origin/main'
+- 2026-07-11 [`337169e0a4`](https://github.com/QuantumNous/new-api/commit/337169e0a456ac3943a9ded079fda14786008f83) — revert: undo t0ng7u UI design-system refactor
+- 2026-07-11 [`1b1b23d1d0`](https://github.com/QuantumNous/new-api/commit/1b1b23d1d0fdf051ec25241d65357ded60013f5d) — revert: restore StatusBadge horizontal padding
+- 2026-07-11 [`6bbddb1046`](https://github.com/QuantumNous/new-api/commit/6bbddb104637d0871dac807aad66d8f8e358ccd0) — feat(timing): add timing metrics display for stream logs and enhance localization
+- 2026-07-11 [`162f87925c`](https://github.com/QuantumNous/new-api/commit/162f87925cc73d05fd3dee021fd295f1d5ab1a39) — feat: update theme colors
+- 2026-07-11 [`e400619656`](https://github.com/QuantumNous/new-api/commit/e4006196569752ba259fa4f05a2650d0d0d52128) — feat: enhance stale instance handling and update theme colors
+- 2026-07-11 [`1250fb2eb5`](https://github.com/QuantumNous/new-api/commit/1250fb2eb51438a0204f7ffb865261a89ae48519) — fix: adjust margin for StatusBadge component in logs columns
+- 2026-07-11 [`c36418c863`](https://github.com/QuantumNous/new-api/commit/c36418c8632912377010a903bdcc9672dde1c22d) — feat: enhance text protocol conversion and advanced custom routing (#5825)
+- 2026-07-11 [`48068ce923`](https://github.com/QuantumNous/new-api/commit/48068ce9236e7bfcf923f8d20ca39fb8e611ef86) — feat: bill OpenAI cache_write_tokens at cache-creation price with zero clamp
+- 2026-07-11 [`92d3c9d18f`](https://github.com/QuantumNous/new-api/commit/92d3c9d18fc609cdfa916e7a8380876ebe471463) — fix: bound uncached remainder by prompt-max(cached,write) and forward compact prompt_cache_key
+- 2026-07-11 [`7a2b9d86e8`](https://github.com/QuantumNous/new-api/commit/7a2b9d86e8d923a6ed61a2e3ec1ec72ce74ea115) — feat: enhance model search functionality with status and sync filters
+- 2026-07-11 [`8283df169e`](https://github.com/QuantumNous/new-api/commit/8283df169ebfe84154e7acec6df748f770e03bf2) — feat: add unset price models tab to model pricing settings (#6124)
+- 2026-07-11 [`bde9b2f448`](https://github.com/QuantumNous/new-api/commit/bde9b2f44887d34ec54799ae191d50f97914359e) — fix: harden unset price models tab batch copy, feedback, and memo equality
+- 2026-07-11 [`93e936f701`](https://github.com/QuantumNous/new-api/commit/93e936f701e552803ce8a0123caf1798e7f0789c) — fix: list only channel models in unset price models tab
+- 2026-07-12 [`7c28993f6b`](https://github.com/QuantumNous/new-api/commit/7c28993f6bd9e92616f3f578212577f8b7c40b45) — fix: list only channel models in unset price models tab (#6126)
+- 2026-07-14 [`b6b97a66e3`](https://github.com/QuantumNous/new-api/commit/b6b97a66e39cfe45aab8cfb01ed96bba77cb279e) — fix: purge authentication data on hard user deletion (#6168)
+- 2026-07-14 [`9a2d660316`](https://github.com/QuantumNous/new-api/commit/9a2d66031677d3f5ab8e3f57006f0d7ff6c94b61) — fix(users): prevent large quota values from overflowing (#6134)
+- 2026-07-14 [`a63364d156`](https://github.com/QuantumNous/new-api/commit/a63364d156cf2a64f1c3d1ee4923d73d5f3222a1) — fix: infer MiniMax vendor for MiniMax models (#6164)
+- 2026-07-17 [`506e41c116`](https://github.com/QuantumNous/new-api/commit/506e41c116568d8288b2b80957b61756ee1953ec) — fix: add server-side sorting to user list, prevent client-side sort on paged data (#6194)
+- 2026-07-17 [`dc9aeab98b`](https://github.com/QuantumNous/new-api/commit/dc9aeab98bf8a11b99b5da1c76ccae153565e85e) — fix(data-table): update table body immediately when toggling columns (#6253)
+- 2026-07-17 [`923a17ca8a`](https://github.com/QuantumNous/new-api/commit/923a17ca8a3f08878d583ab4203190d2bee12c93) — fix: update high-risk status code retry confirmation texts
+- 2026-07-18 [`1086038f5f`](https://github.com/QuantumNous/new-api/commit/1086038f5f893a4558366f4d314cabc4ef5c8a23) — fix: prevent duplicate tool calls in Responses-to-Chat streaming (#6225)
+- 2026-07-18 [`57746fc972`](https://github.com/QuantumNous/new-api/commit/57746fc9726f190ee7948af7b2034e51e5551f45) — feat(channel): support Codex upstream model discovery (#6184)
+- 2026-07-18 [`a6cf42c0f1`](https://github.com/QuantumNous/new-api/commit/a6cf42c0f1602b9e4c7fe4e439352a3e83a967af) — feat: support upstream model fetch for advanced custom channels (#5971)
+- 2026-07-18 [`5a6c53d496`](https://github.com/QuantumNous/new-api/commit/5a6c53d4966b2e34690ab49f3dd19be01c88fdbe) — feat: standardize OpenAI Models label usage across components
+- 2026-07-20 [`31d70fca39`](https://github.com/QuantumNous/new-api/commit/31d70fca393ff2e09bbae012af2e3ccefdd389a1) — refactor(auth): replace dashboard sessions with stateless tokens and session control (#6329)
+- 2026-07-20 [`d0e23e1e0f`](https://github.com/QuantumNous/new-api/commit/d0e23e1e0f45b1e5619f763573507d0d327ba7a1) — chore: include frontend in language stats
+- 2026-07-20 [`16bfae1750`](https://github.com/QuantumNous/new-api/commit/16bfae1750f78b3d85b72510c084c724285d0403) — fix: drop realtime beta header for ga models and register new ones (#6032)
+- 2026-07-20 [`2ef4cfff9c`](https://github.com/QuantumNous/new-api/commit/2ef4cfff9cd925d7ef86d90b1b9fd5b4321347f1) — fix(playground): prevent model group option stretching (#6120)
+- 2026-07-20 [`270accc322`](https://github.com/QuantumNous/new-api/commit/270accc322cdb00bfc0ddaf19b92cb80a74879b2) — perf(data-table): optimize action column width allocation (#6135)
+- 2026-07-20 [`08677566f8`](https://github.com/QuantumNous/new-api/commit/08677566f828fcef14ea43793d54520de3eedf97) — fix(web): show used quota for unlimited API keys (#6224)
+- 2026-07-20 [`e13d4033e5`](https://github.com/QuantumNous/new-api/commit/e13d4033e52999da1516609950aec3ab7b8c4a63) — fix(channel): improve proxy client compatibility and cache lifecycle (#6157)
+- 2026-07-20 [`4aa08f917e`](https://github.com/QuantumNous/new-api/commit/4aa08f917eedecf77cef387f2337af88277fbbd0) — fix(playground): resolve auto group model listing (#6163)
+- 2026-07-20 [`e0d5156115`](https://github.com/QuantumNous/new-api/commit/e0d5156115881780328d31fe9bce7fe25aa9c6c7) — fix: prevent duplicate suno task refunds via cas status update (#6074)
+- 2026-07-21 [`1721144221`](https://github.com/QuantumNous/new-api/commit/1721144221ec5c94dd87891a7ae1bee228e7bb63) — fix(auth): keep login state on rate-limited or failing token refresh
+- 2026-07-24 [`cb96ab0208`](https://github.com/QuantumNous/new-api/commit/cb96ab0208bc13e7418bd883bca10a5b511bdebc) — chore(github): migrate issue templates to required forms (#6452)
+- 2026-07-24 [`cbd9b30aa4`](https://github.com/QuantumNous/new-api/commit/cbd9b30aa487d628fd369dd8f8f1f292a6f137af) — fix(github): restore issue form visibility (#6454)
+- 2026-07-24 [`84a79b6807`](https://github.com/QuantumNous/new-api/commit/84a79b6807ac1a679ca86f34c8c6f39175c294d8) — fix: log response body when parsed upstream error message is empty
+- 2026-07-25 [`27235a277a`](https://github.com/QuantumNous/new-api/commit/27235a277a0fb6cb6729e0aecdeb821c5814cf29) — fix: prevent model create from wiping existing pricing for same name (#6365)
+- 2026-07-25 [`bf8cfcc512`](https://github.com/QuantumNous/new-api/commit/bf8cfcc5126762393d03a0ca1b65da93f969d150) — fix(model-mutate-drawer): prevent form reset on modelSettings refetch
+- 2026-07-25 [`a0d0e5049e`](https://github.com/QuantumNous/new-api/commit/a0d0e5049e2d0db326ee36864906f43cfefb0c05) — fix(web/channel): stabilize inline priority updates (#6415)
+- 2026-07-25 [`18b0b7631a`](https://github.com/QuantumNous/new-api/commit/18b0b7631a9942bde4e4f40cb5c5c8347a24c6b0) — refactor: rename channel priority update to channel field update
+- 2026-07-25 [`eb4a1bd193`](https://github.com/QuantumNous/new-api/commit/eb4a1bd19332bc00e7f97f9b4bf212c6a60e280d) — perf(json-editor): unify admin JSON editing experience (#6421)
+- 2026-07-25 [`257223be26`](https://github.com/QuantumNous/new-api/commit/257223be2675f843871d1530694e0e5e3e37a9fe) — chore(README): update AtomGit badge and remove Product Hunt badge
+- 2026-07-25 [`5ede832d80`](https://github.com/QuantumNous/new-api/commit/5ede832d80d8b75409baf94b904abfe62f3e968b) — chore(README): update AtomGit badge and remove Product Hunt badge
+- 2026-07-25 [`ae17f2749d`](https://github.com/QuantumNous/new-api/commit/ae17f2749d16c56bac073fab0f7f1b2090152a50) — fix(json-code-editor): remove opaque line-number layer background hiding editor content
+- 2026-07-25 [`8b41defbe0`](https://github.com/QuantumNous/new-api/commit/8b41defbe0d9752bd7bf60aac82480e58ded51bc) — feat: add gemini-3-pro-image and gemini-3.1-flash-image GA models (#6371)
+- 2026-07-25 [`08f88d25e5`](https://github.com/QuantumNous/new-api/commit/08f88d25e588e90012ec9f0594f6ea8f8a1a2c3a) — feat: support Tencent TokenHub API key via OpenAI-compatible protocol (#6232)
+- 2026-07-26 [`ab65d2582f`](https://github.com/QuantumNous/new-api/commit/ab65d2582feb64b65bcc2b2b1158ed423359c740) — fix: allow topup amount input to be fully cleared (#6473)
+- 2026-07-26 [`3e1e728279`](https://github.com/QuantumNous/new-api/commit/3e1e728279884d83358811aec00980dd55f6ad4e) — perf(web): debounce users page search input (#6474)
+- 2026-07-26 [`2d23cdf291`](https://github.com/QuantumNous/new-api/commit/2d23cdf2915432632e37637198a72c752d642bcf) — feat: configurable tool pricing, Sub2API channel, and alpha search billing
+- 2026-07-26 [`bc14c18f60`](https://github.com/QuantumNous/new-api/commit/bc14c18f6024e79cba1c08d02cd007796e12d668) — refactor: update task refund logic and remove legacy handling
+- 2026-07-27 [`398cdafecf`](https://github.com/QuantumNous/new-api/commit/398cdafecf29f5211edd93cbb0525152299a6893) — feat: add New API channel support
+- 2026-07-27 [`f51dd4d808`](https://github.com/QuantumNous/new-api/commit/f51dd4d808d106f8e538b2863b0fbfc142307b83) — fix: allow Advanced Custom Responses Compact
+- 2026-07-27 [`86ac0f7745`](https://github.com/QuantumNous/new-api/commit/86ac0f7745cc9a0fe51e6689db121d070c9125d4) — refactor: extract protocol conversion layer into standalone relaykit module (#6369)
+- 2026-07-27 [`60a1acb703`](https://github.com/QuantumNous/new-api/commit/60a1acb703a64186bf6eeef441e2fac947b75f26) — refactor: update import paths to use relaykit module
+- 2026-07-27 [`b8bb3f40ac`](https://github.com/QuantumNous/new-api/commit/b8bb3f40ac9d38d309f30a69183cd4813b182678) — refactor: update import paths to use new types package
+- 2026-07-27 [`8aa5e754a8`](https://github.com/QuantumNous/new-api/commit/8aa5e754a86befee685c2fe36edbfc65d403dd43) — refactor: rename trusted_proxies package to middleware and update function calls
+- 2026-07-27 [`8a7a49072a`](https://github.com/QuantumNous/new-api/commit/8a7a49072ab07b61aa254b6602a889f5eb2f79eb) — feat: add workflow to sync GitHub releases to GitCode
+- 2026-07-27 [`2ec6171faa`](https://github.com/QuantumNous/new-api/commit/2ec6171faa74e7fccba834e1f7abffd9d07f5c8c) — fix: replace ASCII apostrophes in release notes to prevent script breakage
+- 2026-07-27 [`6d57d250f8`](https://github.com/QuantumNous/new-api/commit/6d57d250f88e12ab79f2f1d3fad5d01a35e39c31) — feat: enhance GitCode release workflow with bootstrap asset and asset matrix
+- 2026-07-27 [`f3ab2cff36`](https://github.com/QuantumNous/new-api/commit/f3ab2cff36b3962815be9114e300d26927cc42b3) — feat: enhance GitCode release workflow to handle bootstrap and matrix assets
+- 2026-07-27 [`a043eef559`](https://github.com/QuantumNous/new-api/commit/a043eef559a92944d24d4ff31adcd2de8b4956d7) — feat: implement Gemini to OpenAI chat stream conversion with state management and terminal handling
+- 2026-07-27 [`b27b2b1d6f`](https://github.com/QuantumNous/new-api/commit/b27b2b1d6f725ea34525322a4be2b519fb4c75a7) — fix(web): detect iPad login sessions correctly
+- 2026-07-27 [`e99a9bd86f`](https://github.com/QuantumNous/new-api/commit/e99a9bd86fb256afbf94dd7648ac7928de13f8c6) — feat: add per-channel HTTP transport controls
+- 2026-07-27 [`2cf3c8d71e`](https://github.com/QuantumNous/new-api/commit/2cf3c8d71e92624c6e547c0be71250206ede0beb) — docs: update AGENTS.md
+- 2026-07-27 [`f01c13b086`](https://github.com/QuantumNous/new-api/commit/f01c13b0863f0110089cb0f0caf74f1a0f325b2a) — feat: add CI workflow for backend and frontend build, typecheck, and test
+- 2026-07-27 [`c3db41407d`](https://github.com/QuantumNous/new-api/commit/c3db41407dd1a0662ef630c41de4ac0c48c83e3c) — fix: 慢查询/错误 SQL 日志参数化 (#6493)
+- 2026-07-28 [`8e2bfe278b`](https://github.com/QuantumNous/new-api/commit/8e2bfe278b8627d410e4b230f5d9a43ca3f10496) — refactor: remove mutex from CustomEvent and update TCP connection handling in tests
+- 2026-07-28 [`1db6ae1957`](https://github.com/QuantumNous/new-api/commit/1db6ae19576d7019fec38cc63a3b94ce609c92c9) — feat: enhance CI workflow to include vetting for Go modules
+- 2026-07-28 [`afe16c64cd`](https://github.com/QuantumNous/new-api/commit/afe16c64cd73853da1eda3bf236f15d69637b4bf) — feat: add README.md for RelayKit module with capabilities and usage examples
+- 2026-07-29 [`c27d1ef651`](https://github.com/QuantumNous/new-api/commit/c27d1ef651c608dd8b9e60848a7e0f13a8619d9b) — Update .gitattributes
+- 2026-07-29 [`cb4c8c02f8`](https://github.com/QuantumNous/new-api/commit/cb4c8c02f81d97eaba66ba6f3e9528b937be4d57) — feat(oidc): 支持自定义 OIDC 登录显示名称 (#6012)
+- 2026-07-29 [`66ee6b8f98`](https://github.com/QuantumNous/new-api/commit/66ee6b8f9889050ffef1f863a4314ce4a0516fb9) — fix: preserve Qwen thinking_budget passthrough (#5836)
+- 2026-07-31 [`0f9f668c60`](https://github.com/QuantumNous/new-api/commit/0f9f668c6076214680f87e89a88a426cb08228ad) — feat: support zstd request decompression (#6545)
+- 2026-07-31 [`84834eee85`](https://github.com/QuantumNous/new-api/commit/84834eee859fd69ed6b8ab3c848f86f1ff98b992) — feat(logs): expose stream status to log owners (#6558)
+- 2026-07-31 [`8461e5339d`](https://github.com/QuantumNous/new-api/commit/8461e5339d483f3c0699fb009567be9cec25846d) — fix(relay): preserve multipart image edits for New API channels (#6559)
+- 2026-07-31 [`e78e1db1e4`](https://github.com/QuantumNous/new-api/commit/e78e1db1e4ed7d65e37c2527826f290c0c63b041) — fix(oauth): stop treating a foreign window.opener as a bind flow (#6425)
+- 2026-07-31 [`aa7d0d39a4`](https://github.com/QuantumNous/new-api/commit/aa7d0d39a4a783fe1a9358fee4fed8d093cd1e02) — style: use text-sm for public header nav links to match other nav components (#6557)
+- 2026-07-31 [`9724ef1b24`](https://github.com/QuantumNous/new-api/commit/9724ef1b248a436ea47270bb5b394a0fdb013a6c) — feat: deepseek responses api (#6562)
+- 2026-07-31 [`df43f80153`](https://github.com/QuantumNous/new-api/commit/df43f801536b348b00bfa4da7639b42c2c036821) — fix(billing): settle tiered retries with final group (#6518)
+
+## 2026-08 (81)
+
+- 2026-08-01 [`cfaba1dd67`](https://github.com/QuantumNous/new-api/commit/cfaba1dd6754d4238e1360247c198a64a313e96c) — fix(billing): harden tiered retry group-switch billing (#6570)
+- 2026-08-01 [`bd585d78ef`](https://github.com/QuantumNous/new-api/commit/bd585d78efd418aaf7baa7e34fa48c5536581868) — fix(aws): cancel Bedrock requests on client disconnect (#6589)
+- 2026-08-01 [`0ab0202060`](https://github.com/QuantumNous/new-api/commit/0ab02020603d22e5613bc4cf46bfab06f8567769) — Feat/auto group (#6590)
+- 2026-08-06 [`d6b5ce99de`](https://github.com/QuantumNous/new-api/commit/d6b5ce99de4930f348cda8dd3bb14f739ac38e22) — fix(relay): set Request.GetBody so the HTTP/2 transport can transparently retry after an upstream stream reset (#6249)
+- 2026-08-06 [`ea4f021012`](https://github.com/QuantumNous/new-api/commit/ea4f021012cddc52126123ab4ed8ced3df260b85) — refactor(relay): move replay metadata onto request bodies
+- 2026-08-06 [`0cd9dc85e3`](https://github.com/QuantumNous/new-api/commit/0cd9dc85e334018d15c5a480e39753d0866e2035) — Merge commit from fork
+- 2026-08-07 [`c9bc038649`](https://github.com/QuantumNous/new-api/commit/c9bc038649d1d1f6f1fe9d6bca3b09f842cdcf6b) — feat(channels): refine fetched model categorization (#6632)
+- 2026-08-07 [`b941253aea`](https://github.com/QuantumNous/new-api/commit/b941253aea6b9bccf1bc8de503bf3477caafebfe) — fix: test Claude/Gemini endpoints with native request format (#6698)
+- 2026-08-06 [`1da23d6b33`](https://github.com/QuantumNous/new-api/commit/1da23d6b33421daf88a1a15a6821d6304940691a) — feat(rate-limit): add user critical rate limit middleware for access token and aff transfer routes
+- 2026-08-07 [`e926e5cace`](https://github.com/QuantumNous/new-api/commit/e926e5cacee22fc838d94e8b95b438e825508e11) — fix: 修复兑换码额度精度损失 (#6685)
+- 2026-08-07 [`5c3abffe85`](https://github.com/QuantumNous/new-api/commit/5c3abffe8572aa8a49f15c3916707d2019d66af4) — CI: enhance release synchronization workflow with optional file syncing
+- 2026-08-08 [`2399de97da`](https://github.com/QuantumNous/new-api/commit/2399de97daf6ac76e5378a7c7c244ff0628a8186) — fix(ali): stop injecting top_p into requests that omit it (#6674)
+- 2026-08-08 [`823e26304a`](https://github.com/QuantumNous/new-api/commit/823e26304a396854ace30b52b98ec497c2dd9c36) — fix(channels): classify Qwen TTS models correctly (#6711)
+- 2026-08-10 [`5d3423bec1`](https://github.com/QuantumNous/new-api/commit/5d3423bec13f6da2498bdc5b288c9ee2507fd3ef) — feat(channels): add auto-disable-only channel test mode (#6728)
+- 2026-08-10 [`7dd1000a19`](https://github.com/QuantumNous/new-api/commit/7dd1000a190d1c810fa0d5723770341106742a1b) — perf(web): debounce server and large-list searches (#6727)
+- 2026-08-10 [`eab18a8357`](https://github.com/QuantumNous/new-api/commit/eab18a83579187f880139894dd9e7f06d1a492ce) — fix: record reasoning effort consistently in usage logs (#6641)
+- 2026-08-10 [`85feb7a345`](https://github.com/QuantumNous/new-api/commit/85feb7a345d2d94d3ed4df89eb67ac504e0c1560) — feat(relay): expose user and group context to parameter overrides (#6534)
+- 2026-08-10 [`8ad159a3bb`](https://github.com/QuantumNous/new-api/commit/8ad159a3bbc2da9f7432848a58c99bc2dafee227) — fix(ollama): preserve reasoning and tool-call context (#6605)
+- 2026-08-10 [`d49160f0e5`](https://github.com/QuantumNous/new-api/commit/d49160f0e5433a2b87e1431c0b7bf01d8e429e75) — fix: backend length validation (#5548)
+- 2026-08-10 [`4cf9107f04`](https://github.com/QuantumNous/new-api/commit/4cf9107f043709b3364a48f7a7bacc5f8ca80928) — feat(billing): highlight matched conditional multipliers in logs (#6561)
+- 2026-08-10 [`9c97e78ace`](https://github.com/QuantumNous/new-api/commit/9c97e78aced572d540f227007a675d7d007666ac) — fix(web): require confirmation before rotating access token (#6749)
+- 2026-08-11 [`253a74dd1b`](https://github.com/QuantumNous/new-api/commit/253a74dd1b47e2bde6dd6027c6aa1b5e0ee67827) — fix(relay): preserve presence/frequency penalty in Responses conversion (#6654)
+- 2026-08-11 [`bb234ff418`](https://github.com/QuantumNous/new-api/commit/bb234ff4186140091db0defab250763861de2b45) — refactor(responses): remove compact model suffix handling (#6770)
+- 2026-08-11 [`4eaeefbdf5`](https://github.com/QuantumNous/new-api/commit/4eaeefbdf5b979fb777884df24090740bd2a3ef3) — fix: mobile sidebar (#6760)
+- 2026-08-11 [`ffeb1b24ef`](https://github.com/QuantumNous/new-api/commit/ffeb1b24ef85ee98c048649a554136f9fe9d43cf) — fix(web): refresh Turnstile token after login attempt (#6764)
+- 2026-08-11 [`3d5dc36f1d`](https://github.com/QuantumNous/new-api/commit/3d5dc36f1d85ccae8d5cb2864764011795b559b5) — fix: 修复 Gemini 风格 /v1/models 列表请求 (#6199)
+- 2026-08-10 [`d7992672a6`](https://github.com/QuantumNous/new-api/commit/d7992672a606c3e97257ed411d77adecf22559c0) — fix(oauth): avoid overwriting user state when binding
+- 2026-08-10 [`50e5377ea5`](https://github.com/QuantumNous/new-api/commit/50e5377ea5feec326c416450e4e8bcc0bdfe7749) — fix(topup): settle recharge orders atomically
+- 2026-08-10 [`ccd535ef8e`](https://github.com/QuantumNous/new-api/commit/ccd535ef8e50cf6e5846a59278c40b7ff59d1b7d) — fix: harden concurrent quota and status updates
+- 2026-08-13 [`58d4e9bd3b`](https://github.com/QuantumNous/new-api/commit/58d4e9bd3bb035df8ea235dd682ccc8a45d0332a) — fix(billing): 异步任务退款时同步减少 used_quota (#6795)
+- 2026-08-14 [`15cfdeddef`](https://github.com/QuantumNous/new-api/commit/15cfdeddef464d109a60992c802e17d9d1e4a3b4) — fix(web): keep fetched model selection in sync with form (#6841)
+- 2026-08-14 [`93d2df85f8`](https://github.com/QuantumNous/new-api/commit/93d2df85f824e4343a114e1f18dde4f795e2d55b) — fix(ali): 修复阿里图片模型映射后仍使用原始模型名判断协议的问题 (#6772)
+- 2026-08-14 [`6260580755`](https://github.com/QuantumNous/new-api/commit/626058075524f61bfaf38d7b478d3501144be14e) — chore(deps): bump builder-util-runtime and electron-builder in /electron (#6467)
+- 2026-08-14 [`f250f3b589`](https://github.com/QuantumNous/new-api/commit/f250f3b589c836764954f646448084e93873798b) — chore(deps): bump dompurify from 3.4.11 to 3.4.13 in /web (#6735)
+- 2026-08-14 [`53a8739eed`](https://github.com/QuantumNous/new-api/commit/53a8739eedbf69decd621c1a8313cc0b8b367dee) — chore(deps-dev): bump fast-uri from 3.1.4 to 3.1.5 in /electron (#6846)
+- 2026-08-14 [`e5efc73cdb`](https://github.com/QuantumNous/new-api/commit/e5efc73cdb49f60e513f760ded4d3268a4304645) — chore(deps-dev): bump tar from 7.5.16 to 7.5.22 in /electron (#6468)
+- 2026-08-14 [`2a0ce3475c`](https://github.com/QuantumNous/new-api/commit/2a0ce3475c2df51ef5fd725f1eb0249822eb1c35) — fix(topup): reject uncreditable orders before payment (#6845)
+- 2026-08-14 [`cf38105a99`](https://github.com/QuantumNous/new-api/commit/cf38105a9946f041890ed404a8b81f63bee2568f) — chore(deps-dev): bump js-yaml from 4.3.0 to 4.3.1 in /electron (#6704)
+- 2026-08-14 [`bbf67df049`](https://github.com/QuantumNous/new-api/commit/bbf67df0499c4881779c7fdd04761f5b09567fdb) — chore(deps-dev): bump electron from 39.8.5 to 39.8.10 in /electron (#6705)
+- 2026-08-14 [`47ba9d2c63`](https://github.com/QuantumNous/new-api/commit/47ba9d2c63d6dcbf3a183ee421b136ee1b1331ed) — fix(topup): guard wallet quota during recharge
+- 2026-08-15 [`7d09c6954e`](https://github.com/QuantumNous/new-api/commit/7d09c6954ef3e6d65a37840ed3a566eb9acedaaa) — fix: prompt_cache_key openai chat -> openai responses (#6861)
+- 2026-08-15 [`e90a7c48e5`](https://github.com/QuantumNous/new-api/commit/e90a7c48e5e47aab3b93ce663e5f1cda0964de11) — feat: add field passthrough controls for gateway channels (#6847)
+- 2026-08-15 [`4442bb3028`](https://github.com/QuantumNous/new-api/commit/4442bb302898fef9763c91dab8c638ae2b27fbe7) — fix(relay): stop injecting empty tools into Claude requests
+- 2026-08-15 [`116255f076`](https://github.com/QuantumNous/new-api/commit/116255f076a3e9d92b0c9a85303daae73997b55e) — fix(oauth): align custom binding response fields in frontend (#6818)
+- 2026-08-15 [`e2c7aa7b10`](https://github.com/QuantumNous/new-api/commit/e2c7aa7b102c2075eae2377df3508658d45e88dc) — test(web): standardize frontend tests on Vitest (#6569)
+- 2026-08-18 [`3dda1d50c6`](https://github.com/QuantumNous/new-api/commit/3dda1d50c6d4a35edf1c74200fcb02d46d0fd075) — fix(relaykit): preserve parameterless tools in Claude conversion (#6862)
+- 2026-08-18 [`2b0efd8484`](https://github.com/QuantumNous/new-api/commit/2b0efd8484cc1e20b6de64f8600586fe61dee867) — refactor: advanced custom channel route editor (#6865)
+- 2026-08-18 [`4add708ebe`](https://github.com/QuantumNous/new-api/commit/4add708ebe3b74e02dcf141887da2c81cb9b1526) — feat: channel test (#6917)
+- 2026-08-18 [`137d1171f2`](https://github.com/QuantumNous/new-api/commit/137d1171f2b4b24cd7fb14bcef212de303fa963e) — feat(web): fade in streamed response words and harden playground editor (#6895)
+- 2026-08-18 [`f116414284`](https://github.com/QuantumNous/new-api/commit/f116414284162ad15d8925f7bca494c109b83e93) — fix: settle Responses cached token usage (#6892)
+- 2026-08-21 [`2d8e50bf36`](https://github.com/QuantumNous/new-api/commit/2d8e50bf36e94200b809dfb39e73624ec48b1e23) — refactor(web): prevent credential autofill in usage log filters (#6966)
+- 2026-08-26 [`a073f74b38`](https://github.com/QuantumNous/new-api/commit/a073f74b38a33bb154821089c097658cbdcc0fbe) — refactor: deprecate int32 (#7025)
+- 2026-08-26 [`8c25eee71b`](https://github.com/QuantumNous/new-api/commit/8c25eee71ba03ea19851dcc4f12ee4ecfcfb0808) — chore(build): upgrade Bun to 1.4.0
+- 2026-08-26 [`8f6961c675`](https://github.com/QuantumNous/new-api/commit/8f6961c675932f406260ff0c218bc2aa0603e9b2) — feat: vllm thinking_token_budget (#7027)
+- 2026-08-27 [`cae3676ec6`](https://github.com/QuantumNous/new-api/commit/cae3676ec6f46ee5ef596443256f78c4e9b34ceb) — feat: glm chanel /v1/responses (#7050)
+- 2026-08-27 [`ba2e9287bb`](https://github.com/QuantumNous/new-api/commit/ba2e9287bb7a8002116c03daa4c457a330054871) — feat(ollama): passthrough Claude Messages and OpenAI Responses (#7051)
+- 2026-08-27 [`e468b73915`](https://github.com/QuantumNous/new-api/commit/e468b73915e5028e9849de62c5018a0faa203012) — docs: update PR template and remove PR Check workflow (#7053)
+- 2026-08-29 [`692e8d6ee6`](https://github.com/QuantumNous/new-api/commit/692e8d6ee6a9a1620c2d731cb51a1e3154a7042b) — fix(web): restore admin unbinding for built-in providers (#6987)
+- 2026-08-29 [`ac381acf4b`](https://github.com/QuantumNous/new-api/commit/ac381acf4bf41204b97bb26b4c58c83275877a2e) — fix(billing): 修复时间规则恒真表达式导致倍率全天生效 (#6934)
+- 2026-08-29 [`7037ac15bd`](https://github.com/QuantumNous/new-api/commit/7037ac15bd8a29f8ee3e2b74e784bcdb75d67d22) — fix(docker): add relaykit go.mod to dev build context (#7072)
+- 2026-08-29 [`eb48396d5f`](https://github.com/QuantumNous/new-api/commit/eb48396d5fe97d27772d0cd5e3ca8aa5caa4f3e9) — feat(task): replace built-in task adaptors with a sandboxed JS plugin system (#7076)
+- 2026-08-29 [`0f2a2075ab`](https://github.com/QuantumNous/new-api/commit/0f2a2075ab072ea7e20ffa5dd5d58dbf1b6b5b22) — fix(relay): 请求参数校验错误返回 HTTP 400 (#6774)
+- 2026-08-29 [`98d50d5383`](https://github.com/QuantumNous/new-api/commit/98d50d5383a33432ff6c30b129461b170e5cbffc) — fix(web): recheck setup status after page reload (#6968)
+- 2026-08-29 [`b80d633cf5`](https://github.com/QuantumNous/new-api/commit/b80d633cf586b001cfbb4200bae93e65abe57c2b) — feat(auth): encrypt password login transport
+- 2026-08-29 [`8454082f93`](https://github.com/QuantumNous/new-api/commit/8454082f930f44593e92791c2581ffc63eb30a59) — feat(chat): add AQBot preset (#7079)
+- 2026-08-29 [`918427d8ab`](https://github.com/QuantumNous/new-api/commit/918427d8ab41f6adaa4113d0496f1f8621855b70) — feat(auth): make password encryption opt-in #6743
+- 2026-08-30 [`6c22550ea3`](https://github.com/QuantumNous/new-api/commit/6c22550ea325d4fea0e0ece52412cb1e4449291c) — feat(task): resolve channel-mapped aliases and case variants for plugin models
+- 2026-08-30 [`66031a09d9`](https://github.com/QuantumNous/new-api/commit/66031a09d99f2ac4e0b94e2c41f04ed691a79304) — fix(model): disable PostgreSQL prepared statements for pooler compatibility
+- 2026-08-30 [`0bee5d4410`](https://github.com/QuantumNous/new-api/commit/0bee5d4410296e972bf0076414ade786c2c799c8) — fix(ali): honor image response format (#5513) (#7048)
+- 2026-08-30 [`dc4732cfed`](https://github.com/QuantumNous/new-api/commit/dc4732cfed712b004d3d3d94a414d3ff127a93cc) — feat(web): factory task plugins update only with the system
+- 2026-08-30 [`b5b94bc685`](https://github.com/QuantumNous/new-api/commit/b5b94bc685fd2251551df826dab3575ab262f6dc) — fix(subscription): 无有效订阅时前端如实显示「仅用订阅」偏好 (#6222) (#7086)
+- 2026-08-30 [`1751f43ee0`](https://github.com/QuantumNous/new-api/commit/1751f43ee07edc9eb0c56fd9b23586861b43df46) — fix(sqlite): enable WAL + working busy timeout + _txlock=immediate to stop concurrent write lockouts (#7030)
+- 2026-08-30 [`6eb6f35ed2`](https://github.com/QuantumNous/new-api/commit/6eb6f35ed211b7459cae3b9f13286b9c93fc1bd6) — fix(model): return string from JSON column Valuers for pg simple protocol
+- 2026-08-30 [`b518d0033b`](https://github.com/QuantumNous/new-api/commit/b518d0033b670f5518b8a2f1cf8ea0142a9d1b8d) — fix(relay): bound the wait for upstream response headers (fixes unbounded heap growth → OOM) (#6949)
+- 2026-08-30 [`74158715cd`](https://github.com/QuantumNous/new-api/commit/74158715cde6d7b767ead23d9a2af64b7b58a588) — fix initialize database
+- 2026-08-30 [`69a41eeadc`](https://github.com/QuantumNous/new-api/commit/69a41eeadc81adb08d04346512c76d62fd6203db) — fix(model): drop leftover prefill_groups unique constraints before AutoMigrate (#7100)
+- 2026-08-30 [`2bf0820f4b`](https://github.com/QuantumNous/new-api/commit/2bf0820f4b89530acf14d389ba3e8229211933fa) — Revert "fix(model): drop leftover prefill_groups unique constraints before Au…" (#7101)
+- 2026-08-30 [`2b6f1dfefb`](https://github.com/QuantumNous/new-api/commit/2b6f1dfefbe217fed31fc0726717cc7de6958e8e) — fix(model): drop leftover prefill_groups unique constraints before AutoMigrate
+- 2026-08-31 [`8c8c4153d4`](https://github.com/QuantumNous/new-api/commit/8c8c4153d4b80d54352d21593de41aa9a6178f7e) — fix(log): preserve quota in usage statistics (#7108)
+- 2026-08-31 [`27ff6a8767`](https://github.com/QuantumNous/new-api/commit/27ff6a8767e728f879d52770c273d4f73214a430) — fix(model): migrate legacy token key constraints
+- 2026-08-31 [`67a0585d0f`](https://github.com/QuantumNous/new-api/commit/67a0585d0f252dfca445c11b7600971b7eeb8eea) — fix(docs): correct Video API links across localized READMEs (#7116)
+
+## 2026-09 (177)
+
+- 2026-09-01 [`b7017c251b`](https://github.com/QuantumNous/new-api/commit/b7017c251badaacaab840646a959635d00665e2d) — fix(model): do not treat no-op system task state writes as lock loss (#7135)
+- 2026-09-01 [`0ed497f066`](https://github.com/QuantumNous/new-api/commit/0ed497f066a68613375124303ef54f220267b334) — feat(relay): hosted-tool conversion fidelity, reasoning normalization, and billing usage integrity (#7137)
+- 2026-09-03 [`bbd97446c2`](https://github.com/QuantumNous/new-api/commit/bbd97446c26092f2e7250af429096064b9e0f899) — fix(relay): follow-up billing integrity and conversion completions (#7170)
+- 2026-09-03 [`aece11d2f7`](https://github.com/QuantumNous/new-api/commit/aece11d2f7f095a33052696c5d28d3656609a99e) — feat(plugin): add MiniMax-H3 /v2 video generation to the hailuo task … (#7168)
+- 2026-09-03 [`d8ca0ed0bb`](https://github.com/QuantumNous/new-api/commit/d8ca0ed0bb596e910e1955461e7691e40d224d70) — chore: let owners use human PR templates
+- 2026-09-03 [`73afad588c`](https://github.com/QuantumNous/new-api/commit/73afad588ca7af07134fa423e8a33fdea6c855b2) — fix(plugin): account for MiniMax-H3 input media usage (#7171)
+- 2026-09-03 [`057f71c233`](https://github.com/QuantumNous/new-api/commit/057f71c2336c3981187b732a9d06f65490e9a946) — fix(logs): isolate privileged metadata
+- 2026-09-03 [`219c9e0634`](https://github.com/QuantumNous/new-api/commit/219c9e06341f1b100e2c572a5f97c45f151fd280) — 优化匿名冷启动与公开内容接口的重复回源请求 (#7166)
+- 2026-09-03 [`9f506dd7f9`](https://github.com/QuantumNous/new-api/commit/9f506dd7f905c288b4a119a8197cd64b77eb4a3f) — refactor(logs): simplify LogOther projection and dedupe sensitive keys
+- 2026-09-03 [`9df450fe54`](https://github.com/QuantumNous/new-api/commit/9df450fe54e1a874a5339b7c38a61014217f02c3) — feat(task): give polling hooks a real query context, host HTTP classification, and bounded poll failures
+- 2026-09-03 [`36dbbf0f77`](https://github.com/QuantumNous/new-api/commit/36dbbf0f77e710455e745048f4a32e8120ad3fd2) — fix: keep ETag valid across different JSON packages
+- 2026-09-03 [`8f5ab8e404`](https://github.com/QuantumNous/new-api/commit/8f5ab8e4048a90d88b20ae1e6d5228b04233d3b8) — fix(ci): resolve release version from trigger tag
+- 2026-09-03 [`32c261923a`](https://github.com/QuantumNous/new-api/commit/32c261923a9786c64d2af087327ef057e7bde7e3) — fix(task): explain 503 when a plugin-claimed model has no channel
+- 2026-09-04 [`3a9f41ee85`](https://github.com/QuantumNous/new-api/commit/3a9f41ee85cc369f5b8d7fe6e62ff4e7bf3a9ec8) — fix: temp disable /messages/count_tokens
+- 2026-09-04 [`7c044d7c5c`](https://github.com/QuantumNous/new-api/commit/7c044d7c5c2d2beadf16b21910950f8f593bc3ef) — feat(relay): explicit @ model modifiers and canonical billing identity
+- 2026-09-05 [`6b659fd61c`](https://github.com/QuantumNous/new-api/commit/6b659fd61c50e35d559c41520a0fff7b8aea56a4) — fix(relay): preserve reasoning effort without implicit remapping
+- 2026-09-05 [`d5803532bd`](https://github.com/QuantumNous/new-api/commit/d5803532bdccde3a2b1583291f51e92d3519b1c6) — docs: require expression pricing and consolidated tests
+- 2026-09-05 [`eb99ab1b40`](https://github.com/QuantumNous/new-api/commit/eb99ab1b40343c3317bb47981cccdbb2b159a5fa) — feat(billing): add built-in expression pricing for gpt-6-astra
+- 2026-09-06 [`2cf177ac48`](https://github.com/QuantumNous/new-api/commit/2cf177ac487e62c627c7d423b65735ba2481ef4f) — perf(common): 批量复制 RawMessage，优化请求深拷贝 (#7221)
+- 2026-09-06 [`49ec469668`](https://github.com/QuantumNous/new-api/commit/49ec4696682530781a036eab1ac195f0b04706c0) — fix(relay): apply model-specific OpenAI chat capabilities (#7211)
+- 2026-09-05 [`d8cb177440`](https://github.com/QuantumNous/new-api/commit/d8cb177440ceaae422d5bfd96c258d47af4e0f1d) — feat(security): add access token management and audit logs
+- 2026-09-05 [`9a8674425c`](https://github.com/QuantumNous/new-api/commit/9a8674425c5a43435a259b58bb928a55d26be990) — fix(db): avoid redundant schema migrations on restart
+- 2026-09-06 [`45c3fbe8ae`](https://github.com/QuantumNous/new-api/commit/45c3fbe8aeb049f03c13e14298a40b87aea5bd87) — fix(security): bind verification proofs to sessions and actions
+- 2026-09-06 [`3e84ec0ab8`](https://github.com/QuantumNous/new-api/commit/3e84ec0ab8239cf2277f8a10d45566630a9c10fa) — feat(auth): migrate Telegram to unified OAuth
+- 2026-09-06 [`a8729b5c37`](https://github.com/QuantumNous/new-api/commit/a8729b5c3709cc01d88fc3f2db5b91347fc9129e) — feat(security): require verification for access token management
+- 2026-09-06 [`0973dc2b8f`](https://github.com/QuantumNous/new-api/commit/0973dc2b8f550de71b75fdd3805576d3ce6ccf42) — feat(security): harden account binding and password changes
+- 2026-09-06 [`3f8a50cf88`](https://github.com/QuantumNous/new-api/commit/3f8a50cf8877683669cd812240a0beaf7b171c32) — feat(audit): complete token and quota operation records
+- 2026-09-06 [`521cebf585`](https://github.com/QuantumNous/new-api/commit/521cebf585efc2e782dd9fb93d0f66752c8d3c32) — fix(dashboard): simplify completed setup guide
+- 2026-09-06 [`6f23339906`](https://github.com/QuantumNous/new-api/commit/6f2333990613bf3e9dd36f541fc380148c7b5175) — feat(auth): unify login verification and secure account deletion
+- 2026-09-06 [`0c76e4dae7`](https://github.com/QuantumNous/new-api/commit/0c76e4dae77a279e015329b7478e6f02d6b62edd) — feat(models): rework model/vendor management and pricing
+- 2026-09-07 [`3b4652269a`](https://github.com/QuantumNous/new-api/commit/3b4652269a6a6d9e2c8650a84ee8c4e447e6473b) — feat(ali): support wan3.0 all-in-one video models
+- 2026-09-07 [`6e10f9bc92`](https://github.com/QuantumNous/new-api/commit/6e10f9bc927a4eae889864a6ef601359d53526b9) — fix(relay): preserve Kimi K3 dynamic tool loading messages
+- 2026-09-07 [`7bbe85bcb0`](https://github.com/QuantumNous/new-api/commit/7bbe85bcb09546e0b89572bf97198fc94889be3d) — refactor(json): route JSON helpers through a host-injectable codec
+- 2026-09-07 [`387a409148`](https://github.com/QuantumNous/new-api/commit/387a40914853310d69adc2f52474134ced5f4811) — fix(web): keep drawer popups interactive and shim storage in tests
+- 2026-09-07 [`5c7cca0155`](https://github.com/QuantumNous/new-api/commit/5c7cca015525212a7ac2741da7f3b51fa2e30db0) — fix(perf): return hourly success-rate series for model health bar
+- 2026-09-07 [`6298b0f323`](https://github.com/QuantumNous/new-api/commit/6298b0f3238461b9629dfc1c00866f8325123aa1) — fix(plugin): suppress factory layer when disabling an overridden task plugin
+- 2026-09-07 [`92bc7ff73c`](https://github.com/QuantumNous/new-api/commit/92bc7ff73c5ef215496d09d3e4b5769c9e35006b) — fix(plugins): make sunoapi alias-safe and lock alias echo across built-ins
+- 2026-09-07 [`210734bb73`](https://github.com/QuantumNous/new-api/commit/210734bb73bc3c6e37548af90360aa4226566fe2) — refactor(task): remove the custom-plugin layer switch
+- 2026-09-07 [`bee45b58a3`](https://github.com/QuantumNous/new-api/commit/bee45b58a3c0b77e8dc81e6b5aeb4474aa9058d1) — fix(web): switch the pricing card grid to three columns at xl
+- 2026-09-08 [`75e5332094`](https://github.com/QuantumNous/new-api/commit/75e533209490a8ef3a8b5e3d93e4dac03ba19bcf) — feat(pricing): support site currency in pricing editors
+- 2026-09-08 [`99974a814f`](https://github.com/QuantumNous/new-api/commit/99974a814f00a26dfa7431beb313e487529bbeed) — feat(plugins): extend plugin metadata and icon support
+- 2026-09-08 [`9843309200`](https://github.com/QuantumNous/new-api/commit/984330920061e014159c7581b8fcdb726de2c247) — feat(web): improve plugin management and marketplace
+- 2026-09-08 [`eb76b136b8`](https://github.com/QuantumNous/new-api/commit/eb76b136b85ecba9d6ad19c714c5781e51815530) — feat(channels): improve plugin channel setup and icons
+- 2026-09-08 [`0e0ba152bd`](https://github.com/QuantumNous/new-api/commit/0e0ba152bdcc6891f6053047ccf14d41b3cad60a) — feat(pricing): improve pricing editors and log display
+- 2026-09-08 [`71c1fd7caa`](https://github.com/QuantumNous/new-api/commit/71c1fd7caad738db4d13aabbf28eeadb293d0cfe) — feat(models): improve model listing, pricing and visibility filters
+- 2026-09-08 [`a5e41a8933`](https://github.com/QuantumNous/new-api/commit/a5e41a893379e49bd9e1d025e775c04df8961c95) — feat(usage-logs): refine mobile layout and keep quick actions visible
+- 2026-09-08 [`2bec370629`](https://github.com/QuantumNous/new-api/commit/2bec370629aa72d74d3f598b953a4d33b8bcbf7d) — feat(web): refine API key and user quota displays
+- 2026-09-08 [`8f72ecbbfd`](https://github.com/QuantumNous/new-api/commit/8f72ecbbfd86ded5ee15373921533eed3d334a9a) — feat(usage-logs): add searchable group filter
+- 2026-09-08 [`551bb63edf`](https://github.com/QuantumNous/new-api/commit/551bb63edf4007d7c4b0930504faf6db87012d73) — fix(keys): show desktop quota amounts side by side
+- 2026-09-08 [`bd22e45a74`](https://github.com/QuantumNous/new-api/commit/bd22e45a740a7c02c328704dc419d8795237cb74) — style(keys): widen the desktop quota column
+- 2026-09-08 [`950644c9d5`](https://github.com/QuantumNous/new-api/commit/950644c9d54445bdd8796643e4e2e18e13167a4c) — fix(keys): preserve spacing after desktop quota content
+- 2026-09-08 [`524455fac3`](https://github.com/QuantumNous/new-api/commit/524455fac3c438321df4ae9ed4ffd11bc635cc4f) — feat(redemptions): add batch deletion and optional file exports
+- 2026-09-08 [`fff0635bb1`](https://github.com/QuantumNous/new-api/commit/fff0635bb14b8ec5f10df9e582a83591df841902) — docs: update project architecture and Go conventions
+- 2026-09-08 [`ebe4c368f2`](https://github.com/QuantumNous/new-api/commit/ebe4c368f28787919ea478c0abf1ea7101978179) — refactor: modernize Go code conventions
+- 2026-09-08 [`ea7cb0ba4e`](https://github.com/QuantumNous/new-api/commit/ea7cb0ba4e0f82e2bfa5e55752eb68bdf902f71b) — refactor(web): unify table cells and quota details
+- 2026-09-08 [`9bf328d974`](https://github.com/QuantumNous/new-api/commit/9bf328d9749751757d5d6b74088d514813a618bd) — fix: preserve provider fields in Sora video queries
+- 2026-09-09 [`4fc9d1f1fa`](https://github.com/QuantumNous/new-api/commit/4fc9d1f1fa77c0cfdd9719cb59ff9ecc9885d66a) — fix(options): rebuild options table primary key and stop pricing writes resetting rows
+- 2026-09-09 [`c79b74b683`](https://github.com/QuantumNous/new-api/commit/c79b74b68358180c68440057596bdc34a99cc649) — fix(frontend): deduplicate /api/status requests (#7189)
+- 2026-09-09 [`876903a8eb`](https://github.com/QuantumNous/new-api/commit/876903a8eb22c44e395c03da38f6701c650651ae) — fix: 修正火山方舟渠道获取模型列表的端点路径 (#7203)
+- 2026-09-09 [`d52bdc0b40`](https://github.com/QuantumNous/new-api/commit/d52bdc0b4087d50d87eb06387e86b2be53e85cd4) — feat(billing): add time-based pricing editor and expression previews
+- 2026-09-09 [`12be9975c0`](https://github.com/QuantumNous/new-api/commit/12be9975c0bf01fa175a2bb3360607767c8ba5fb) — fix(web): unify server error notifications
+- 2026-09-09 [`a20574136b`](https://github.com/QuantumNous/new-api/commit/a20574136b2746e9afc4b268c99cf99b3f6cc68b) — fix(alibaba): correct Wan model protocols and usage accounting
+- 2026-09-09 [`7cf9b473f6`](https://github.com/QuantumNous/new-api/commit/7cf9b473f61eb7dc09f6f0782192f17595140a08) — fix(web): keep model pricing content in one scroll area
+- 2026-09-09 [`064ed943e1`](https://github.com/QuantumNous/new-api/commit/064ed943e1ac40e3eaca1b58ffb7fa5dacb3fde3) — feat(billing): support fixed per-request expression pricing
+- 2026-09-09 [`bdef117505`](https://github.com/QuantumNous/new-api/commit/bdef117505247769268b209665fb3ad7554c3da7) — fix: restore add split button in advanced custom routes (#7289)
+- 2026-09-09 [`b6566f33d9`](https://github.com/QuantumNous/new-api/commit/b6566f33d908fee574c8a6da2a23c4fd5df7353c) — feat: clarify passkey website configuration
+- 2026-09-09 [`3e1b8b1532`](https://github.com/QuantumNous/new-api/commit/3e1b8b15324941ff20c77616737d8dd984582d33) — feat(plugins): display localized changelogs with English fallback
+- 2026-09-09 [`3cea2bf799`](https://github.com/QuantumNous/new-api/commit/3cea2bf799a61e07ad53368538fdb7064b017d77) — feat(relaykit): preserve cached input token breakdowns
+- 2026-09-09 [`f362c7c51b`](https://github.com/QuantumNous/new-api/commit/f362c7c51b86a97e1fc72e4d48280cf53a5d2cb9) — feat(billingexpr): support image cache and quantity variables
+- 2026-09-09 [`f064bffa2b`](https://github.com/QuantumNous/new-api/commit/f064bffa2b65dd2c6348b375f8b91bab41aabc19) — fix(billing): validate image quantities before reserving quota
+- 2026-09-09 [`f256e40bcb`](https://github.com/QuantumNous/new-api/commit/f256e40bcb29292376edb5f0ba2e74ffa463aced) — feat(billing): add expression defaults for GPT image models
+- 2026-09-09 [`25ec832faa`](https://github.com/QuantumNous/new-api/commit/25ec832faa48031dd74f6fff0f58390e29a79f7c) — feat(pricing): convert legacy prices into expression drafts
+- 2026-09-09 [`39294418af`](https://github.com/QuantumNous/new-api/commit/39294418af4c920950be1b8c1fed0ed0d2bea52e) — feat(web): extend expression pricing editors and usage details
+- 2026-09-09 [`b3e279464c`](https://github.com/QuantumNous/new-api/commit/b3e279464c82d6b1bd9fca6ce27f67c4c9246fec) — feat(web): review legacy pricing conversion before applying drafts
+- 2026-09-11 [`505805a4c3`](https://github.com/QuantumNous/new-api/commit/505805a4c3ab55fbcf6227ec110226ff1c193e0b) — feat(web): unify channel setup and refine model and settings editors
+- 2026-09-11 [`d4c26bfb8d`](https://github.com/QuantumNous/new-api/commit/d4c26bfb8dcb7434a0bc1e0d6153e848d86c39b4) — fix(channels): allow editing multi-key selection strategy
+- 2026-09-11 [`ab489ab884`](https://github.com/QuantumNous/new-api/commit/ab489ab8842b26f3dbc2d7a384e7c0ab0f700e0e) — feat(channels): add plugin extensions to provider and model selection
+- 2026-09-11 [`251b76d863`](https://github.com/QuantumNous/new-api/commit/251b76d8633ec4eeb1064dcdb5eb806ecf1a8668) — feat(web): add administrator update reminders
+- 2026-09-11 [`74629e29f8`](https://github.com/QuantumNous/new-api/commit/74629e29f83f506bb523c5542aa851947bd423eb) — feat(plugins): enhance task streaming and model pricing
+- 2026-09-11 [`385d2dfd10`](https://github.com/QuantumNous/new-api/commit/385d2dfd10d821b25c8a6766bd16eea248cb1652) — feat(auth): add safe multi-RP ID passkey support
+- 2026-09-12 [`129f21b694`](https://github.com/QuantumNous/new-api/commit/129f21b6942ed433fd7eea1239b4a24d8b58b48b) — fix(plugins): normalize invalid UTF-8 in JSON state
+- 2026-09-12 [`c9a110190c`](https://github.com/QuantumNous/new-api/commit/c9a110190c5241c24d9d66de340431f5e9873db6) — fix(channels): show built-in base URLs as placeholders
+- 2026-09-12 [`be36cbb8fa`](https://github.com/QuantumNous/new-api/commit/be36cbb8facf99d523197f9e18d02b7605331048) — test(security): provide query client for passkey verification tests
+- 2026-09-12 [`007d69942d`](https://github.com/QuantumNous/new-api/commit/007d69942d24eeea9edd4665f812d07ed11b3b97) — fix(model): migrate renamed prefill group unique indexes
+- 2026-09-12 [`2ba6157614`](https://github.com/QuantumNous/new-api/commit/2ba61576146f0583f789ee6845f2280cb86819ce) — feat(web): share collapsible mobile table filters
+- 2026-09-12 [`043ff99a51`](https://github.com/QuantumNous/new-api/commit/043ff99a51ecad8229389ddd04f45f4b25a23ac6) — fix: handle legacy database constraints and scoped policies
+- 2026-09-13 [`33142f0aee`](https://github.com/QuantumNous/new-api/commit/33142f0aee7c87b2110f25dbddcb861dbdc2c44e) — fix: refine sign-in page behavior
+- 2026-09-13 [`7fd0638197`](https://github.com/QuantumNous/new-api/commit/7fd06381976cbea126d1f20973548bf60f20e37d) — fix(auth): restore saved compatible passkey domains
+- 2026-09-14 [`815217ba64`](https://github.com/QuantumNous/new-api/commit/815217ba648ff800c4f583fbfa36ba286cee6b2d) — test(web): stabilize flaky frontend suite timeouts and motion visibility races (#7367)
+- 2026-09-14 [`d926120384`](https://github.com/QuantumNous/new-api/commit/d926120384109a9e55b0cd54a06bb6e3ae860a2c) — fix: unify model provider detection and add Wan icon (#7373)
+- 2026-09-14 [`d1c79d7288`](https://github.com/QuantumNous/new-api/commit/d1c79d7288221768a5f7270649d691ac5a137def) — fix(dashboard): align weekly default range (#7355)
+- 2026-09-14 [`2509e25fa0`](https://github.com/QuantumNous/new-api/commit/2509e25fa0601d26f5b8fbb3194ec76689a91a77) — fix(web): prevent combobox dropdowns opening on dialog autofocus (#7365)
+- 2026-09-14 [`76f7dafd2b`](https://github.com/QuantumNous/new-api/commit/76f7dafd2b82fc305533ce6a3065b3de2d338bae) — fix(audio): normalize file extension case in GetAudioDuration (#7321)
+- 2026-09-14 [`04c64734cc`](https://github.com/QuantumNous/new-api/commit/04c64734cc7c2e58a9efd0b247182330f3f52cce) — fix(pricing): keep model status bar spacing uniform (#7284)
+- 2026-09-14 [`9fe0457ee1`](https://github.com/QuantumNous/new-api/commit/9fe0457ee1f4b9de407a254500d54f5a8f41ee29) — Add Responses WebSocket relay support (#5062)
+- 2026-09-15 [`8529f209c8`](https://github.com/QuantumNous/new-api/commit/8529f209c85913de9ec98c5af49dcfce4a41361a) — feat: vllm channel && sglang channel (#7332)
+- 2026-09-15 [`2bfb89c1b9`](https://github.com/QuantumNous/new-api/commit/2bfb89c1b99d5eb7a799ba5706813614bfb6189a) — fix(pricing): prevent sort menu layout shift (#7145)
+- 2026-09-15 [`8e5e09166c`](https://github.com/QuantumNous/new-api/commit/8e5e09166cf83731df1819fd1cb9c50ea2576ed6) — fix(ollama): preserve tool calls from final stream frame   保留流式末尾帧的 tool calls (#7376)
+- 2026-09-15 [`62f8db775b`](https://github.com/QuantumNous/new-api/commit/62f8db775bcdaa5da144d9c4a36f5ead82de3ac5) — feat(channel): 修复获取DeepSeek余额错误 (#6814)
+- 2026-09-15 [`d3874db61f`](https://github.com/QuantumNous/new-api/commit/d3874db61fce61b6c0f5c37523b21912a3f2658d) — feat(rate-limit): optimize in-memory limiter allocation and cleanup (#6807)
+- 2026-09-15 [`5caafd3d84`](https://github.com/QuantumNous/new-api/commit/5caafd3d84dc74c8b0d081524f57a534b3980cb0) — feat(ollama): add per-channel OpenAI-compatible chat switch (#7382)
+- 2026-09-15 [`fa90b2312c`](https://github.com/QuantumNous/new-api/commit/fa90b2312cfb686aaa6010f9280bffcf0bf6d391) — fix(gemini): accept case-insensitive thinkingLevel and log canonical effort (#7387)
+- 2026-09-15 [`81336fc69b`](https://github.com/QuantumNous/new-api/commit/81336fc69b8a932e70c24a8dbf439bec94c98328) — fix(gemini): reject :countTokens as an unknown route instead of relaying it as generateContent (#7388)
+- 2026-09-15 [`610334dbd7`](https://github.com/QuantumNous/new-api/commit/610334dbd760f1c5199a09ae5f860f11451f4c56) — fix(relay): request stream usage on every cross-protocol conversion to OpenAI chat (#7389)
+- 2026-09-15 [`69a5002981`](https://github.com/QuantumNous/new-api/commit/69a50029819a26c53e6babd276d49cfe2f8880ad) — feat(channel): per-route pass-through for advanced custom channels (#7386)
+- 2026-09-17 [`7209b6db95`](https://github.com/QuantumNous/new-api/commit/7209b6db95ef33bfb0f6344ebf61c1fec9af780c) — fix(middleware): 隐藏无可用渠道错误中的任务插件标识 (#7414)
+- 2026-09-18 [`57791e31c6`](https://github.com/QuantumNous/new-api/commit/57791e31c62bdf97df855f3b7dc912046b3bc990) — docs(github): tighten issue and PR templates for pass-through and unfiltered AI text (#7438)
+- 2026-09-14 [`ed0ad6e3ff`](https://github.com/QuantumNous/new-api/commit/ed0ad6e3ff9f8785a19d93cba73cf06ef2219668) — feat(channels): add compact quick options to channel editor
+- 2026-09-16 [`07578faf26`](https://github.com/QuantumNous/new-api/commit/07578faf26d1a21c70bf0fbf29f12730a212c583) — fix(billing): count upstream images by payload instead of data length
+- 2026-09-16 [`d82678a970`](https://github.com/QuantumNous/new-api/commit/d82678a9708b611d52386c01f04238ec01f07463) — docs: move billing rules to .agents/rules/billing.md behind a read gate
+- 2026-09-17 [`0cde9d94f6`](https://github.com/QuantumNous/new-api/commit/0cde9d94f6d3b77d5258ca6b36959f895d26f2a4) — feat(channels): add floating model redirect workbench to channel editor
+- 2026-09-17 [`8b2c7105f9`](https://github.com/QuantumNous/new-api/commit/8b2c7105f91f2316f90eb86f9b1c6b98774c7105) — feat(relay): classify the protocol outcome on StreamStatus
+- 2026-09-17 [`73a471f3a8`](https://github.com/QuantumNous/new-api/commit/73a471f3a8b1cdf5dfe371184dfc3579cdcbefcc) — feat(policy): add request policies settings and routing decision records
+- 2026-09-17 [`8a11b4305e`](https://github.com/QuantumNous/new-api/commit/8a11b4305ed139b55ee91f914c6a19d59c783d72) — refactor(relaykit): surface reasoning conversion diagnostics
+- 2026-09-17 [`a5b40663d3`](https://github.com/QuantumNous/new-api/commit/a5b40663d3307fc5011c85b83eb18bbaa33dbad2) — perf(metrics): record relay outcomes at the request boundary and classify stream results
+- 2026-09-17 [`6237d9d77e`](https://github.com/QuantumNous/new-api/commit/6237d9d77eb0544329b88ff96d71c1715af4268f) — fix(rate-limit): reserve model rate-limit slots and judge success by response outcome
+- 2026-09-17 [`75f3d246e2`](https://github.com/QuantumNous/new-api/commit/75f3d246e2b1d6a3ea56342d9bc82cb3e1d0b6e2) — fix(responses-ws): carry stream_id through events and correlate errors
+- 2026-09-17 [`90134d5b6b`](https://github.com/QuantumNous/new-api/commit/90134d5b6bff1a66affa35c5bd8e90e3d74a93f8) — feat(system-tasks): add filtered task history with cleanup
+- 2026-09-17 [`a8ed7f7c5f`](https://github.com/QuantumNous/new-api/commit/a8ed7f7c5f24e56c2f1612126d82e9fec625056c) — fix(plugins/hailuo): bill only the dimensions each model family supports
+- 2026-09-17 [`e2471403c7`](https://github.com/QuantumNous/new-api/commit/e2471403c77957818b939ad86bbeccd051d2d042) — fix(pricing): adjust billing expression condition display
+- 2026-09-17 [`42cbe6206a`](https://github.com/QuantumNous/new-api/commit/42cbe6206a62550896c8371d62a6f15bad5b3e05) — chore(web): add intl-locale lint plugin and update agent rules
+- 2026-09-17 [`d806943661`](https://github.com/QuantumNous/new-api/commit/d8069436612e08bd0d96169222b10031556d09a7) — fix(web): tidy channel health policy layout
+- 2026-09-17 [`ae249f4ecb`](https://github.com/QuantumNous/new-api/commit/ae249f4ecbaf3ae9b1fc62cf377ca5a764b9a002) — feat(responses-ws): extend channel support and share routing with HTTP
+- 2026-09-17 [`fa3cc1c6b9`](https://github.com/QuantumNous/new-api/commit/fa3cc1c6b9b13f7bf25c3e896d439185d326ac9c) — feat(web): offer the Responses WebSocket toggle for advanced custom, sub2api and new-api channels
+- 2026-09-17 [`32ef6d216f`](https://github.com/QuantumNous/new-api/commit/32ef6d216f9fa0a2aa182bd8aad9a02daf3767c8) — feat(web): add channel passthrough controls and usage guidance
+- 2026-09-18 [`9e905a83e1`](https://github.com/QuantumNous/new-api/commit/9e905a83e1d6c369b3aa43de4f04ab244cce3205) — refactor: show subscription deductions and improve cost display (#7272)
+- 2026-09-18 [`ed7c4e35d4`](https://github.com/QuantumNous/new-api/commit/ed7c4e35d4297962991ac5f00eea504ceac0fbd0) — feat(log): flag upstream response model mismatches (#7418)
+- 2026-09-18 [`e2bb05f70e`](https://github.com/QuantumNous/new-api/commit/e2bb05f70ed6b6725a83ff6f1c97dbd2c2f640d4) — fix(relay): map Images output_tokens_details into img_o billing (#7410)
+- 2026-09-18 [`55a6cd2a44`](https://github.com/QuantumNous/new-api/commit/55a6cd2a44eaf189bbd565dd2cdfa591d19b06d6) — fix(responses): estimate usage for streams cut before terminal usage (#7427)
+- 2026-09-18 [`3524fe0b15`](https://github.com/QuantumNous/new-api/commit/3524fe0b15794d8d19378827d36a7edc0b0e91ea) — fix issue template (#7441)
+- 2026-09-18 [`2906e4f779`](https://github.com/QuantumNous/new-api/commit/2906e4f779b715f282ae11203211dca77051d5af) — fix(oauth): require account evidence before migrating legacy GitHub bindings
+- 2026-09-18 [`3e8c358da0`](https://github.com/QuantumNous/new-api/commit/3e8c358da09b4598a946712db8219ff44f197475) — fix: forward reasoning_effort to zhipu upstream (#7124)
+- 2026-09-19 [`946c730ed0`](https://github.com/QuantumNous/new-api/commit/946c730ed00806650fef509c74a868dda2847f7c) — perf: avoid repeated Claude tool-name lookups (#7447)
+- 2026-09-19 [`ea336ed665`](https://github.com/QuantumNous/new-api/commit/ea336ed6654a97c0c27e004581578231e0d92824) — fix(log): hide funding source labels when subscriptions are not in play (#7450)
+- 2026-09-19 [`96b0da2273`](https://github.com/QuantumNous/new-api/commit/96b0da2273a187b3fd9621f77b10dcebd046e2f6) — refactor(log): 恢复费用气泡并用图标区分订阅来源 (#7451)
+- 2026-09-19 [`1ea24a050d`](https://github.com/QuantumNous/new-api/commit/1ea24a050d5e276584d744122810b8dc57b10f0e) — docs: refresh project README across languages
+- 2026-09-19 [`e04c05c2b9`](https://github.com/QuantumNous/new-api/commit/e04c05c2b929c0df6cc35227f860cf6e19d480c7) — fix(web): 修复小数输入限制和日志分组选项未遮挡的问题 (#7453)
+- 2026-09-19 [`b0bf2580e2`](https://github.com/QuantumNous/new-api/commit/b0bf2580e2491869ee9fe861c12b86153c3fe5f4) — docs: restore README badge and partner placement
+- 2026-09-19 [`972aed1972`](https://github.com/QuantumNous/new-api/commit/972aed1972820389ea0b603ca58f03f846fbf790) — fix(log): derive response model mismatch from names instead of a stored flag (#7464)
+- 2026-09-18 [`a89037d0b9`](https://github.com/QuantumNous/new-api/commit/a89037d0b9b065da8582959018321abbc48db549) — fix(web): start linked-account verification from the provider button
+- 2026-09-18 [`ef70d1b799`](https://github.com/QuantumNous/new-api/commit/ef70d1b79998db9bb32b6b79205afbc4b9f8716b) — chore: drop trailing blank line from .gitignore
+- 2026-09-18 [`b932e6d876`](https://github.com/QuantumNous/new-api/commit/b932e6d876cda4fa49528b5cdb873d9fc5e31b6f) — fix(web): robustly display conditional task billing prices
+- 2026-09-18 [`9c3d3aeb3c`](https://github.com/QuantumNous/new-api/commit/9c3d3aeb3c30ea09c7ad0f810c86205c4da558d7) — perf(web): lazy-load provider icons and reduce page rerenders
+- 2026-09-18 [`33320407f4`](https://github.com/QuantumNous/new-api/commit/33320407f4f5dcf5bc635ee6d73dcc31c8bcc031) — fix(web): isolate OIDC discovery when saving OAuth settings
+- 2026-09-18 [`4c34f25a49`](https://github.com/QuantumNous/new-api/commit/4c34f25a49f1cf491479e3842b2251e8a6908851) — feat(channel): bind multiple task plugins to New API channels
+- 2026-09-19 [`2d7aef7414`](https://github.com/QuantumNous/new-api/commit/2d7aef7414e8671b1ac7db336bc170eeb7cc5e2b) — fix(web): restore CC Switch model dropdown
+- 2026-09-19 [`6b638788c6`](https://github.com/QuantumNous/new-api/commit/6b638788c645a6c9164c5c6394827e3f5e3a1abd) — fix(channels): preview upstream model changes before applying
+- 2026-09-19 [`db536ec8bc`](https://github.com/QuantumNous/new-api/commit/db536ec8bcbbc63034d009a7257ecee0f3468abf) — fix(channels): simplify model redirects and clarify panel controls
+- 2026-09-19 [`58a9eff4c8`](https://github.com/QuantumNous/new-api/commit/58a9eff4c8421a6bbb04855e561310d3eeabd107) — style: refresh logo
+- 2026-09-19 [`3fdf9083dc`](https://github.com/QuantumNous/new-api/commit/3fdf9083dc6bfc47fc2ad0de3fac327d749d778d) — fix(settings): move documentation link to site settings
+- 2026-09-19 [`da2540dda1`](https://github.com/QuantumNous/new-api/commit/da2540dda1328040193f279a58c3e315083e416c) — fix(channels): align card metrics and remove badge spacing
+- 2026-09-19 [`d904b97000`](https://github.com/QuantumNous/new-api/commit/d904b9700015ad73285b0f0030c88eb6683fbeda) — feat(settings): improve group configuration UX and drag sorting
+- 2026-09-19 [`585c4610e5`](https://github.com/QuantumNous/new-api/commit/585c4610e5d7103480620ab61954db5a5feac35b) — feat(keys): show and copy configured API addresses
+- 2026-09-19 [`c49972441e`](https://github.com/QuantumNous/new-api/commit/c49972441e73f05207427567a2d9ad7c620db4bd) — fix(web): keep mobile dialog actions within visible viewport
+- 2026-09-20 [`03563a4a79`](https://github.com/QuantumNous/new-api/commit/03563a4a791629a811076f1cbcbecfbe2716eac2) — feat(plugins): serve OpenAI Images API through task plugins
+- 2026-09-20 [`a5bf940220`](https://github.com/QuantumNous/new-api/commit/a5bf940220604e5b9d150e2338bf6528dfbb8be4) — fix(web): correct dialog viewport fallbacks and editor gutter alignment
+- 2026-09-20 [`2fddb863f2`](https://github.com/QuantumNous/new-api/commit/2fddb863f2219d9eacea5b899ee39b46f11adf33) — feat(models): add bulk field selection to metadata sync
+- 2026-09-20 [`3abbb8198e`](https://github.com/QuantumNous/new-api/commit/3abbb8198e0468ac6e16eb0103c1d3642e2e7668) — feat: record perf metrics when async tasks reach terminal status (#7481)
+- 2026-09-20 [`65d3a2171f`](https://github.com/QuantumNous/new-api/commit/65d3a2171fd11c65ad2e2e1f1d65723926659c81) — fix(plugins): price only the resolutions each Seedance and Wan model offers
+- 2026-09-20 [`9978ee1e25`](https://github.com/QuantumNous/new-api/commit/9978ee1e25a647bfe004e96c8719a2cb62c24732) — feat(billing): configure trust threshold and input pre-consume multiplier
+- 2026-09-20 [`47713bcb17`](https://github.com/QuantumNous/new-api/commit/47713bcb1749f81c3a48127c0150e4c6d4da35f1) — feat: update plugins
+- 2026-09-20 [`9a0be8750a`](https://github.com/QuantumNous/new-api/commit/9a0be8750a6d736d9692535ed2cd68f8eec46529) — fix(web): keep task pricing editable after a plugin narrows its enum values
+- 2026-09-21 [`9c293e8c02`](https://github.com/QuantumNous/new-api/commit/9c293e8c02371bda844af79e3500ff2d516d1dda) — test(billing): fix websocket rejection refund test after pre-consume dropped output estimation (#7491)
+- 2026-09-21 [`474ed66fb1`](https://github.com/QuantumNous/new-api/commit/474ed66fb14b0de30f82a1729b4f7cf3dab19d63) — fix(plugins/alibaba): keep upstream metadata in openai_image render (#7507)
+- 2026-09-21 [`00e8a00cb4`](https://github.com/QuantumNous/new-api/commit/00e8a00cb4aebb4e029b5ff32b8fe1e98f0b0bc5) — fix(web): include provider icons in Windows builds
+- 2026-09-21 [`e537dc380b`](https://github.com/QuantumNous/new-api/commit/e537dc380bb253d4f902ac033ab39dd2ca462b5e) — fix(web): expose plugin activation after upload
+- 2026-09-21 [`c0cff23a3a`](https://github.com/QuantumNous/new-api/commit/c0cff23a3af8e68809647bd39ec204bedbea28af) — fix(plugins): store task plugin source as longtext on MySQL and raise the upload cap to 8 MiB
+- 2026-09-21 [`2c175190c4`](https://github.com/QuantumNous/new-api/commit/2c175190c44a95c6af4877e901dc5211ef706979) — perf(plugins): sync task plugins from hashes and load source only for changed rows
+- 2026-09-21 [`d61d6be759`](https://github.com/QuantumNous/new-api/commit/d61d6be7593f99eacf9462e99ee13f0c432657f5) — fix(task): accept any 2xx upstream status on task submission
+- 2026-09-21 [`54eee488be`](https://github.com/QuantumNous/new-api/commit/54eee488bed3ec6b9659b3a792194b18c2dfad27) — fix(web): isolate theme preferences in local storage
+- 2026-09-21 [`6e9de44a7d`](https://github.com/QuantumNous/new-api/commit/6e9de44a7dca08f44234ab9c623f6a93a174d0c4) — fix(relayconvert): hoist Responses tool-output media into a user message (#7510)
+- 2026-09-21 [`4eb3b91605`](https://github.com/QuantumNous/new-api/commit/4eb3b9160566dc4c1f4f0e9340de254f7febf056) — fix(relayconvert): hoist Claude tool_result images and segment Responses reasoning items (#7512)
+- 2026-09-21 [`b6809a52df`](https://github.com/QuantumNous/new-api/commit/b6809a52df88e8db5c8591b2d3788a05401271b7) — fix(web): resolve safe constants in plugin metadata previews
+- 2026-09-21 [`0aec08fee8`](https://github.com/QuantumNous/new-api/commit/0aec08fee811ec6136828fda790551b49e410301) — chore: credit #7444 author for the Claude tool_result fix landed in #7512
+- 2026-09-22 [`9310231b3c`](https://github.com/QuantumNous/new-api/commit/9310231b3c27fea933e939b46cf26e0ce67192e3) — fix(logs): keep model badge text readable and compact (#7504)
+- 2026-09-22 [`8cb88ebd17`](https://github.com/QuantumNous/new-api/commit/8cb88ebd17a072691f39705ae72c786f8bb5c4e0) — fix: move force operation into confirm slot so plugin-in-use dialog has one cancel button (#7528)
+- 2026-09-22 [`996adffe51`](https://github.com/QuantumNous/new-api/commit/996adffe5165bd5e311e33a03a86b8aede1fe376) — fix(web): keep text selection when opening a model pricing row for editing (#7403)

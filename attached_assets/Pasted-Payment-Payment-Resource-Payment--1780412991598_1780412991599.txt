@@ -1,0 +1,203 @@
+Payment
+
+Payment Resource
+Описание модели Payment
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Уникальный идентификатор платежа
+bill_id	string			do5G93m	Уникальный идентификатор счета, которому принадлежит платеж
+status	enum		NEW
+PROCESS
+UNDERPAID
+SUCCESS
+OVERPAID
+FAIL	NEW	Статус платежа
+amount	decimal			4039.65	Сумма платежа
+commission	decimal			39.65	Комиссия
+account_amount	decimal			4000.00	Сумма зачисления на баланс
+account_currency_code	string			RUB	Валюта зачисления на баланс
+refunded_amount	decimal			0	Сумма возвратов по платежу
+from_card	string			671254******7272	Номер карты, с которой произошла оплата (При оплате банковской картой)
+account_bank	string			SBERBANK	Банк счета пользователя, с которого произошла оплата
+currency_in	enum		USD
+RUB
+EUR	RUB	Валюта, в которой оплачивается счет
+created_at	datetime	Y-m-d H:i:s		2024-12-19 17:32:55	Дата и время создания платежа
+payer_phone	string			79112223344	Телефон плательщика
+payer_email	string			payer@example.com	Почта плательщика
+payer_name	string			Ivan	Имя плательщика
+payer_comment	string			Payment comment	Комментарий плательщика
+error_code	integer			400	Код ошибки
+error_message	string			Превышены лимиты	Описание ошибки
+description	string			Invoice #123123	Описание
+
+Chargeback Resource
+Описание модели Chargeback
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Чарджбэк ID
+payment_id	string			do5G93m	ID Платежа
+status	enum		NEW
+PROCESS
+SUCCESS
+FAIL	NEW	Статус
+created_at	datetime	Y-m-d H:i:s		2024-12-19 17:32:55	Дата/время создания
+
+GET /api/v1/payment/search
+Получить платежи
+С помощью этого метода вы можете получить все платежи по магазину или за произвольный период времени.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+start_date	Нет	datetime		2025-01-01	Начальная датавремя для получения платежей в UTC
+finish_date	Нет	datetime		2024-12-01 23:59:59	Конечная датавремя для получения платежей в UTC
+shop_id	Нет	string		LXZv3R7Q8B	Уникальный идентификатор магазина
+per_page	Нет	integer		50	Количество элементов на странице
+cursor	Нет	string		eyJpZCI6NzY1LC	Указатель на страницу
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+success	boolean		true
+false	true	Флаг успешности запроса
+data	array	Payment		Cм. описание Payment Resource	Информация о платежах
+links	array	Links		См. описание Pagination Links	Ссылки для пагинации
+meta	array	Meta		См. описание Pagination Meta	Мета данные пагинации
+Пример запроса
+curl -X GET 'https://pal24.pro/api/v1/payment/search ?start_date=2024-01-01&finish_date=2025-12-01 ' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Пример ответа
+{
+    "success": true,
+    "data": [
+        {
+            "id": "PQX2XD25a0",
+            "bill_id": "do5G93m",
+            "status": "SUCCESS",
+            "amount": 35400,
+            "commission": 400,
+            "account_amount": 35000,
+            "account_currency_code": "RUB",
+            "refunded_amount": 0,
+            "from_card": "676454******7272",
+            "account_bank": "SBERBANK",
+            "currency_in": "RUB",
+            "description": "Invoice #12312312",
+            "created_at": "2025-10-19 17:00:00"
+        },
+        {
+            "id": "zeAmwP2d5Q",
+            "bill_id": "do5G93m",
+            "status": "NEW",
+            "amount": 3200,
+            "commission": 50,
+            "account_amount": 3150,
+            "account_currency_code": "RUB",
+            "refunded_amount": 0,
+            "from_card": "553691******4442",
+            "account_bank": "TINKOFF",
+            "currency_in": "RUB",
+            "created_at": "2025-10-18 17:00:00"
+        },
+        {
+            "id": "NDa7lNmdzx",
+            "bill_id": "do5G93m",
+            "status": "FAIL",
+            "amount": 26100,
+            "commission": 100,
+            "account_amount": 26000,
+            "account_currency_code": "RUB",
+            "refunded_amount": 0,
+            "from_card": "676454******7272",
+            "account_bank": "SBERBANK",
+            "currency_in": "RUB",
+            "created_at": "2025-10-01 17:00:00",
+            "error_code": 168,
+            "error_message": "Failed by timeout"
+        }
+    ],
+    "links": {
+        "prev": "https://pally.info/api/v1/payment/search?cursor=eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ",
+        "next": "https://pally.info/api/v1/payment/search?cursor=eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+    },
+    "meta": {
+        "path": "https://pally.info/api/v1/payment/search",
+        "per_page": 1000,
+        "next_cursor": "eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9",
+        "prev_cursor": "eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ"
+    }
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.access_denied	Мерчант не имеет доступ до магазина
+403	api:error.ip_access_denied	IP не внесен в вайтлист
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.bill_not_found	Счет не найден
+403	api:error.shop_not_found	Магазин не найден. Возникает только в случае, если shop_id был передан
+422		Ошибка валидации входных данных
+
+GET /api/v1/payment/status
+Получить статус платежа
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+id	Да	string		LXZv3R7Q8B	Уникальный идентификатор платежа
+refunds	Нет	boolean		1	Включить в ответ информацию по рефандам
+chargeback	Нет	boolean		0	Включить в ответ информацию по чарджбэкам
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Уникальный идентификатор платежа
+bill_id	string			do5G93m	Уникальный идентификатор счета, которому принадлежит платеж
+status	enum		NEW
+PROCESS
+UNDERPAID
+SUCCESS
+OVERPAID
+FAIL	NEW	Статус платежа
+amount	decimal			4039.65	Сумма платежа
+commission	decimal			39.65	Комиссия
+account_amount	decimal			4000.00	Сумма зачисления на баланс
+account_currency_code	string			RUB	Валюта зачисления на баланс
+refunded_amount	decimal			0	Сумма возвратов по платежу
+from_card	string			671254******7272	Номер карты, с которой произошла оплата (При оплате банковской картой)
+account_bank	string			SBERBANK	Банк счета пользователя, с которого произошла оплата
+currency_in	enum		USD
+RUB
+EUR	RUB	Валюта, в которой оплачивается счет
+created_at	datetime	Y-m-d H:i:s		2024-12-19 17:32:55	Дата и время создания платежа
+payer_phone	string			79112223344	Телефон плательщика
+payer_email	string			payer@example.com	Почта плательщика
+payer_name	string			Ivan	Имя плательщика
+payer_comment	string			Payment comment	Комментарий плательщика
+error_code	integer			400	Код ошибки
+error_message	string			Превышены лимиты	Описание ошибки
+description	string			Invoice #123123	Описание
+success	boolean		true
+false	true	Флаг успешности запроса
+refunds	array	Refund		[Refund Resource]	Массив рефандов. Если был передан refunds=true
+chargeback	array	Chargeback		Chargeback Resource	Чарджбек. Если существует и если был передан chargeback=true
+Пример запроса
+curl -X GET 'https://pal24.pro/api/v1/payment/status ?id=lGPmp4mYeE ' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Пример ответа
+{
+    "id": "PQX2XD25a0",
+    "bill_id": "do5G93m",
+    "status": "SUCCESS",
+    "amount": 35400,
+    "commission": 400,
+    "account_amount": 35000,
+    "account_currency_code": "RUB",
+    "refunded_amount": 0,
+    "from_card": "676454******7272",
+    "account_bank": "SBERBANK",
+    "currency_in": "RUB",
+    "description": "Invoice #123123",
+    "created_at": "2025-10-19 17:00:00",
+    "success": true,
+    "refunds": [],
+    "chargeback": []
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.access_denied	Мерчант не имеет доступ до магазина
+403	api:error.ip_access_denied	IP не внесен в вайтлист
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.payment_not_found	Платеж не найден
+422		Ошибка валидации входных данных

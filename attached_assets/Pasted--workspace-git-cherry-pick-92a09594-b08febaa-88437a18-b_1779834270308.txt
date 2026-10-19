@@ -1,0 +1,46 @@
+~/workspace$ git cherry-pick 92a09594 b08febaa 88437a18 b302be30 583da452 51ca897c 349d5429 3d850d38 33608826 a64f26d1 ad224ecf bc8110ce 10119349 6b6c9904 a8b7c92e 9e283ab1 f223db93 c91ba0c4 5bc4c748 65f8afe9 f8add4ca dc245ae7 1d320373 74985fa8
+Auto-merging web/default/src/components/layout/components/authenticated-layout.tsx
+CONFLICT (content): Merge conflict in web/default/src/components/layout/components/authenticated-layout.tsx
+Auto-merging web/default/src/components/layout/components/footer.tsx
+Auto-merging web/default/src/features/auth/sign-up/components/sign-up-form.tsx
+Auto-merging web/default/src/features/channels/components/channels-columns.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/channels/components/channels-columns.tsx
+Auto-merging web/default/src/features/channels/components/dialogs/fetch-models-dialog.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/channels/components/dialogs/fetch-models-dialog.tsx
+Auto-merging web/default/src/features/channels/components/drawers/channel-mutate-drawer.tsx
+Auto-merging web/default/src/features/dashboard/components/overview/summary-cards.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/dashboard/components/overview/summary-cards.tsx
+Auto-merging web/default/src/features/dashboard/index.tsx
+Auto-merging web/default/src/features/keys/components/api-keys-mutate-drawer.tsx
+Auto-merging web/default/src/features/models/index.tsx
+Auto-merging web/default/src/features/subscriptions/components/subscriptions-mutate-drawer.tsx
+Auto-merging web/default/src/features/system-settings/integrations/waffo-pancake-settings-section.tsx
+Auto-merging web/default/src/features/usage-logs/components/columns/common-logs-columns.tsx
+Auto-merging web/default/src/features/usage-logs/components/common-logs-filter-bar.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/usage-logs/components/common-logs-filter-bar.tsx
+Auto-merging web/default/src/features/usage-logs/index.tsx
+Auto-merging web/default/src/features/wallet/lib/ui.tsx
+Auto-merging web/default/src/hooks/use-top-nav-links.ts
+Auto-merging web/default/src/i18n/locales/en.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/en.json
+Auto-merging web/default/src/i18n/locales/fr.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/fr.json
+Auto-merging web/default/src/i18n/locales/ja.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/ja.json
+Auto-merging web/default/src/i18n/locales/ru.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/ru.json
+Auto-merging web/default/src/i18n/locales/vi.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/vi.json
+Auto-merging web/default/src/i18n/locales/zh.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/zh.json
+Auto-merging web/default/src/i18n/static-keys.ts
+Auto-merging web/default/src/routes/__root.tsx
+error: could not apply 92a09594... ✨ refactor(web/default): adopt drill-in sidebar pattern for System Settings
+hint: After resolving the conflicts, mark them with
+hint: "git add/rm <pathspec>", then run
+hint: "git cherry-pick --continue".
+hint: You can instead skip this commit with "git cherry-pick --skip".
+hint: To abort and get back to the state before "git cherry-pick",
+hint: run "git cherry-pick --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+~/workspace$ 

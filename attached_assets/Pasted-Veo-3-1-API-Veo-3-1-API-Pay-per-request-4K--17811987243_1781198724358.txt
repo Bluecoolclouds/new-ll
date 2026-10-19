@@ -1,0 +1,422 @@
+Veo 3.1 官方 API 转发方案
+Veo 3.1 官方 API 转发接入文档：默认分组新令牌、Pay-per-request 计费、4K 统一价，支持文生视频、图生视频、多参考图和首尾帧生成。
+
+​
+方案说明
+Veo 3.1 官方 API 转发方案已接入 api.laozhang.ai。新接入请单独创建新令牌，令牌使用 默认分组，计费模式选择 Pay-per-request。本文说明接口、参数、价格和代码示例。
+​
+价格优势
+Veo 3.1 官转使用 Pay-per-request 计费，在支持的时长和分辨率组合内统一价格，不按时长或分辨率额外加价。按 Google Gemini API Pricing 公开价格测算，Google 官方 Veo 3.1 以秒计费；以下折扣按 8 秒视频计算。
+模型	我们价格	Google 官方 8 秒 1080p	便宜约	Google 官方 8 秒 4K	便宜约
+veo-3.1-fast-generate-preview	$0.3/次	$0.96	68.8%	$2.40	87.5%
+veo-3.1-generate-preview	$1.2/次	$3.20	62.5%	$4.80	75.0%
+该方案使用和 Sora2 官转一致的 OpenAI Videos API 风格：
+步骤	方法	路径	返回
+创建视频任务	POST	/v1/videos	JSON 任务对象
+查询任务状态	GET	/v1/videos/{id}	JSON 状态对象
+兼容查询任务状态	GET	/v1/video/generations/{id}	JSON 状态对象
+下载视频结果	GET	/v1/videos/{id}/content	video/mp4 字节流
+创建视频任务请使用 multipart/form-data，文生视频和图生视频都走同一个 /v1/videos 任务接口。
+不要使用旧 Veo-3.1 同步接口、旧 Chat Completions 示例或旧 veo-3.1 / veo-3.1-fast / veo-3.1-fl 模型名。官转方案只使用本文列出的模型名和 /v1/videos 任务接口。
+​
+令牌创建规则
+配置项	选择
+控制台入口	令牌管理 → 新增令牌
+分组	默认分组
+Billing mode	Pay-per-request
+建议	为 Veo 3.1 官转单独创建新令牌，便于后续核对消费
+Veo 3.1 官转使用 Pay-per-request 计费模式，在支持的时长和分辨率组合内统一价格，不按时长或分辨率额外加价。
+​
+支持模型
+模型	单次价格	说明	推荐用途
+veo-3.1-fast-generate-preview	$0.3	Veo 3.1 Fast 预览模型	快速测试、批量草稿、成本优先
+veo-3.1-generate-preview	$1.2	Veo 3.1 标准预览模型	质量优先、正式素材、复杂镜头
+​
+参数说明
+​
+基础参数
+参数	类型	必填	说明
+model	string	是	veo-3.1-fast-generate-preview 或 veo-3.1-generate-preview
+prompt	string	是	视频描述文本
+seconds	string	否	视频时长，推荐固定传 "8"
+duration	string	否	视频时长，建议与 seconds 保持一致，例如 "8"
+size	string	否	输出尺寸，例如 1280x720、720x1280、1920x1080、1080x1920、3840x2160
+resolution	string	否	720p、1080p 或 4k
+aspectRatio	string	否	16:9 或 9:16
+metadata	string	否	JSON 字符串。4K 请求必须包含 {"durationSeconds":8,"resolution":"4k","aspectRatio":"16:9"}
+negativePrompt	string	否	反向提示词，例如 blurry, watermark, distorted；多参考图和首尾帧请求不要传
+seed	string	否	随机种子，便于复现相近效果
+input_reference	file	否	单张初始图或首尾帧任务的首帧，使用 multipart/form-data 上传
+last_frame / lastFrame	file	否	首尾帧任务的尾帧，需和 input_reference 一起传
+referenceImages	file	否	多参考图字段，最多 3 张。生产接入推荐重复传 referenceImages
+reference_image / reference_images	file	否	多参考图兼容字段，最多 3 张
+referenceType / reference_type	string	否	多参考图类型，固定传 asset
+不要传 generateAudio 参数。Veo 3 / Veo 3.1 系列模型原生带音频，但接口不支持通过 generateAudio 开关音频；传入该字段可能返回 INVALID_ARGUMENT。如需控制音频内容，请在 prompt 中描述对白、环境音、音效或音乐风格。
+​
+时长和分辨率
+场景	建议参数
+8 秒横屏 720p	seconds="8"、size="1280x720"、resolution="720p"、aspectRatio="16:9"
+8 秒横屏 1080p	seconds="8"、size="1920x1080"、resolution="1080p"、aspectRatio="16:9"
+8 秒竖屏 1080p	seconds="8"、size="1080x1920"、resolution="1080p"、aspectRatio="9:16"
+8 秒横屏 4K	seconds="8"、duration="8"、size="3840x2160"、resolution="4k"、aspectRatio="16:9"、metadata='{"durationSeconds":8,"resolution":"4k","aspectRatio":"16:9"}'
+seconds 和 duration 建议传字符串，不要传数字。生产接入推荐固定传 8 秒；1080p 和 4k 只支持 8 秒。图生视频请上传本地图片文件，不建议直接传远程图片 URL。
+参数限制：1080p 和 4k 只能与 8 秒组合使用，不要与 4 秒或 6 秒组合。4K 请求请同时传 metadata.resolution="4k"，否则最终下载文件可能按 1080p 输出。
+4K 请求按统一价计费；如需验收原生 4K，请下载 MP4 并以媒体信息为准。不要仅凭任务创建参数判断最终文件分辨率。
+​
+文生视频
+​
+创建任务
+curl -X POST "https://api.laozhang.ai/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F model="veo-3.1-fast-generate-preview" \
+  -F prompt="A cinematic shot of a lighthouse at sunset, ocean waves hitting the rocks, stable slow camera push-in" \
+  -F seconds="8" \
+  -F duration="8" \
+  -F size="1280x720" \
+  -F resolution="720p" \
+  -F aspectRatio="16:9" \
+  -F 'metadata={"durationSeconds":8,"resolution":"720p","aspectRatio":"16:9"}' \
+  -F negativePrompt="blurry, watermark, distorted, low quality" \
+  -F seed="20260520"
+​
+创建响应
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "task_id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video",
+  "model": "veo-3.1-fast-generate-preview",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1779283975
+}
+​
+图生视频
+图生视频使用同一个创建接口，普通首帧图生视频上传 input_reference 文件。input_reference 只表示单张初始图；多参考图请使用 referenceImages。
+curl -X POST "https://api.laozhang.ai/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F model="veo-3.1-generate-preview" \
+  -F prompt="Animate the reference image with a gentle camera push-in, subtle background parallax, cinematic lighting" \
+  -F seconds="8" \
+  -F duration="8" \
+  -F size="1280x720" \
+  -F resolution="720p" \
+  -F aspectRatio="16:9" \
+  -F 'metadata={"durationSeconds":8,"resolution":"720p","aspectRatio":"16:9"}' \
+  -F negativePrompt="blurry, watermark, deformed face, distorted body" \
+  -F seed="20260520" \
+  -F input_reference="@reference.jpg;type=image/jpeg"
+​
+4K 横屏图生视频
+4K 横屏图生视频需要上传 16:9 的参考图，并同时传 resolution="4k" 和 metadata.resolution="4k"。
+curl -X POST "https://api.laozhang.ai/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F model="veo-3.1-fast-generate-preview" \
+  -F prompt="Animate the 4K reference image with a slow cinematic camera push-in, subtle parallax, crisp details, stable lighting" \
+  -F seconds="8" \
+  -F duration="8" \
+  -F size="3840x2160" \
+  -F resolution="4k" \
+  -F aspectRatio="16:9" \
+  -F 'metadata={"durationSeconds":8,"resolution":"4k","aspectRatio":"16:9"}' \
+  -F negativePrompt="blurry, watermark, distorted, low quality" \
+  -F seed="20260521" \
+  -F input_reference="@reference-4k.jpg;type=image/jpeg"
+​
+首尾帧生成
+首尾帧任务必须同时提供首帧和尾帧。首帧字段名使用 input_reference，尾帧字段名使用 last_frame 或 lastFrame。建议使用 Veo 3.1 系列、固定传 8 秒；参考图场景不要传 negativePrompt。
+curl -X POST "https://api.laozhang.ai/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -F model="veo-3.1-generate-preview" \
+  -F prompt="从第一张画面自然过渡到最后一张画面，镜头平稳推进，城市灯光虚化，发丝和衣服有轻微风动，过渡自然真实" \
+  -F input_reference="@first-frame.png;type=image/png" \
+  -F last_frame="@last-frame.png;type=image/png" \
+  -F seconds="8" \
+  -F size="1280x720" \
+  -F resolution="720p" \
+  -F aspectRatio="16:9" \
+  -F seed="20260523"
+尾帧字段 last_frame 和 lastFrame 都可以使用。上游参考图场景不支持 negativePrompt，首尾帧和多参考图请求请不要传该字段。
+​
+多参考图
+多参考图最多支持 3 张，生产接入推荐重复传 referenceImages，并传 referenceType="asset"。该模式只支持 Veo 3.1 系列，建议固定使用 8 秒，不要传 negativePrompt。
+curl -X POST "https://api.laozhang.ai/v1/videos" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F model="veo-3.1-fast-generate-preview" \
+  -F prompt="Use the product appearance and city lighting from the reference images to create a cinematic product shot" \
+  -F seconds="8" \
+  -F duration="8" \
+  -F size="1280x720" \
+  -F resolution="720p" \
+  -F aspectRatio="16:9" \
+  -F 'metadata={"durationSeconds":8,"resolution":"720p","aspectRatio":"16:9"}' \
+  -F referenceType="asset" \
+  -F seed="20260523" \
+  -F referenceImages="@ref-1.png;type=image/png" \
+  -F referenceImages="@ref-2.png;type=image/png"
+图片尺寸建议与 size 参数保持一致，例如 size=1280x720 时上传 1280×720 图片。支持 JPEG、PNG、WebP。视频扩展字段暂不支持；不要传 video。
+​
+查询状态
+创建任务后保存返回的 id 或 task_id，然后轮询状态。
+curl "https://api.laozhang.ai/v1/videos/task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+进行中响应：
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video",
+  "model": "veo-3.1-fast-generate-preview",
+  "status": "in_progress",
+  "progress": 50,
+  "created_at": 1779283975
+}
+完成响应：
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video",
+  "model": "veo-3.1-fast-generate-preview",
+  "status": "completed",
+  "progress": 100,
+  "created_at": 1779283975,
+  "completed_at": 1779284026
+}
+​
+状态值
+状态	说明
+queued	已排队
+in_progress	生成中
+completed	已完成，可下载
+failed	生成失败
+​
+兼容查询任务状态
+如果已有代码使用旧的 video generations 查询路径，可以调用兼容接口：
+curl "https://api.laozhang.ai/v1/video/generations/task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+该接口返回任务状态对象：
+{
+  "id": "task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "object": "video",
+  "model": "veo-3.1-fast-generate-preview",
+  "status": "completed",
+  "progress": 100,
+  "created_at": 1779283975,
+  "completed_at": 1779284026
+}
+兼容查询接口不返回独立公开视频 URL。视频结果请通过 /v1/videos/{id}/content 下载。
+​
+下载视频
+任务完成后，通过 /content 获取 MP4 字节流。接口返回的是视频文件内容，不是公开视频 URL。
+curl -L "https://api.laozhang.ai/v1/videos/task_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/content" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -o veo-3-1-output.mp4
+GET /v1/videos/{id} 返回 completed 后，视频文件可能仍有短暂落盘延迟。如果下载接口返回 task status is IN_PROGRESS，等待 10-20 秒后重试即可。
+​
+Python 完整示例
+import json
+from pathlib import Path
+import time
+
+import requests
+
+API_KEY = "YOUR_API_KEY"
+BASE_URL = "https://api.laozhang.ai"
+
+HEADERS = {
+    "Authorization": f"Bearer {API_KEY}"
+}
+
+
+def video_metadata(seconds, resolution, aspect_ratio):
+    return json.dumps({
+        "durationSeconds": int(seconds),
+        "resolution": resolution,
+        "aspectRatio": aspect_ratio,
+    })
+
+
+def form_items(fields):
+    return [(key, (None, value)) for key, value in fields.items()]
+
+
+def create_text_video(
+    prompt,
+    model="veo-3.1-fast-generate-preview",
+    seconds="8",
+    size="1280x720",
+    resolution="720p",
+    aspect_ratio="16:9",
+):
+    fields = {
+        "model": model,
+        "prompt": prompt,
+        "seconds": seconds,
+        "duration": seconds,
+        "size": size,
+        "resolution": resolution,
+        "aspectRatio": aspect_ratio,
+        "metadata": video_metadata(seconds, resolution, aspect_ratio),
+        "negativePrompt": "blurry, watermark, distorted, low quality",
+    }
+    response = requests.post(
+        f"{BASE_URL}/v1/videos",
+        headers=HEADERS,
+        files={key: (None, value) for key, value in fields.items()},
+        timeout=180,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def create_image_video(
+    prompt,
+    image_path,
+    model="veo-3.1-generate-preview",
+    seconds="8",
+    size="1280x720",
+    resolution="720p",
+    aspect_ratio="16:9",
+):
+    fields = {
+        "model": model,
+        "prompt": prompt,
+        "seconds": seconds,
+        "duration": seconds,
+        "size": size,
+        "resolution": resolution,
+        "aspectRatio": aspect_ratio,
+        "metadata": video_metadata(seconds, resolution, aspect_ratio),
+        "negativePrompt": "blurry, watermark, distorted, low quality",
+    }
+    with open(image_path, "rb") as image_file:
+        files = form_items(fields)
+        files.append(("input_reference", (Path(image_path).name, image_file, "image/jpeg")))
+        response = requests.post(
+            f"{BASE_URL}/v1/videos",
+            headers=HEADERS,
+            files=files,
+            timeout=180,
+        )
+    response.raise_for_status()
+    return response.json()
+
+
+def create_first_last_frame_video(
+    prompt,
+    first_frame_path,
+    last_frame_path,
+    model="veo-3.1-generate-preview",
+):
+    fields = {
+        "model": model,
+        "prompt": prompt,
+        "seconds": "8",
+        "size": "1280x720",
+        "resolution": "720p",
+        "aspectRatio": "16:9",
+        "seed": "20260523",
+    }
+    with open(first_frame_path, "rb") as first_file, open(last_frame_path, "rb") as last_file:
+        files = form_items(fields)
+        files.append(("input_reference", (Path(first_frame_path).name, first_file, "image/png")))
+        files.append(("last_frame", (Path(last_frame_path).name, last_file, "image/png")))
+        response = requests.post(
+            f"{BASE_URL}/v1/videos",
+            headers=HEADERS,
+            files=files,
+            timeout=180,
+        )
+    response.raise_for_status()
+    return response.json()
+
+
+def create_reference_images_video(
+    prompt,
+    image_paths,
+    model="veo-3.1-fast-generate-preview",
+):
+    fields = {
+        "model": model,
+        "prompt": prompt,
+        "seconds": "8",
+        "duration": "8",
+        "size": "1280x720",
+        "resolution": "720p",
+        "aspectRatio": "16:9",
+        "metadata": video_metadata("8", "720p", "16:9"),
+        "referenceType": "asset",
+    }
+    open_files = []
+    try:
+        files = form_items(fields)
+        for image_path in image_paths[:3]:
+            image_file = open(image_path, "rb")
+            open_files.append(image_file)
+            files.append(("referenceImages", (Path(image_path).name, image_file, "image/png")))
+        response = requests.post(
+            f"{BASE_URL}/v1/videos",
+            headers=HEADERS,
+            files=files,
+            timeout=180,
+        )
+    finally:
+        for image_file in open_files:
+            image_file.close()
+    response.raise_for_status()
+    return response.json()
+
+
+def wait_for_video(task_id, timeout=900, interval=15):
+    start = time.time()
+    while time.time() - start < timeout:
+        response = requests.get(
+            f"{BASE_URL}/v1/videos/{task_id}",
+            headers=HEADERS,
+            timeout=60,
+        )
+        response.raise_for_status()
+        payload = response.json()
+
+        status = payload.get("status")
+        progress = payload.get("progress", 0)
+        print(f"status={status}, progress={progress}")
+
+        if status == "completed":
+            return payload
+        if status == "failed":
+            raise RuntimeError(f"video generation failed: {payload}")
+
+        time.sleep(interval)
+
+    raise TimeoutError("video generation timed out")
+
+
+def download_video(task_id, output_path, retries=8, interval=10):
+    last_error = None
+    for _ in range(retries):
+        response = requests.get(
+            f"{BASE_URL}/v1/videos/{task_id}/content",
+            headers=HEADERS,
+            timeout=180,
+        )
+        if response.status_code == 200:
+            with open(output_path, "wb") as output_file:
+                output_file.write(response.content)
+            return output_path
+
+        last_error = response.text
+        if "IN_PROGRESS" not in response.text and "in_progress" not in response.text:
+            response.raise_for_status()
+        time.sleep(interval)
+
+    raise RuntimeError(f"download failed: {last_error}")
+
+
+if __name__ == "__main__":
+    task = create_text_video(
+        prompt="A cinematic lighthouse at sunset, ocean waves, slow camera push-in",
+        model="veo-3.1-fast-generate-preview",
+        seconds="8",
+        size="1280x720",
+    )
+    task_id = task.get("id") or task.get("task_id")
+    wait_for_video(task_id)
+    download_video(task_id, "veo-output.mp4")

@@ -1,0 +1,45 @@
+.account-header-wrap { position: relative; z-index: 10; }
+.account-header {
+  position: sticky; top: 12px; display: flex; align-items: center; gap: 24px; min-height: 62px;
+  padding: 0 17px 0 20px; border: 1px solid var(--stratus-ice-border); border-radius: 16px;
+  background: color-mix(in srgb, var(--stratus-ice-canvas) 91%, transparent); backdrop-filter: blur(15px);
+  box-shadow: 0 8px 26px rgba(44, 98, 117, .075);
+}
+.account-header-brand { flex: none; color: var(--stratus-ice-ink); font-family: var(--app-font-serif); font-size: 19px; font-weight: 800; letter-spacing: -.075em; text-decoration: none; white-space: nowrap; }
+.account-header-brand span { color: var(--stratus-ice-accent); }
+.account-header-links { display: flex; align-items: center; gap: 3px; }
+.account-header-links a, .account-header-mobile a {
+  display: flex; align-items: center; padding: 9px 12px; border-radius: 9px; color: #64808c;
+  font-size: 12px; text-decoration: none; white-space: nowrap; transition: background .18s, color .18s;
+}
+.account-header-links a:hover, .account-header-links a.is-active, .account-header-mobile a:hover, .account-header-mobile a.is-active {
+  color: var(--stratus-ice-primary-text); background: var(--stratus-ice-primary);
+}
+.account-header-user { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.account-header-name { max-width: 150px; overflow: hidden; color: #64808c; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.account-header-language { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(15, 45, 62, .05); }
+.account-header-language button { min-width: 28px; min-height: 27px; padding: 0 7px; border: 0; border-radius: 999px; background: transparent; color: #64808c; cursor: pointer; font: inherit; font-size: 10px; font-weight: 700; }
+.account-header-language button[aria-pressed="true"] { background: #fff; color: var(--stratus-ice-primary-text); box-shadow: 0 1px 4px rgba(15, 45, 62, .09); }
+.account-header-logout, .account-header-menu, .account-header-mobile button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 11px;
+  border: 0; border-radius: 10px; background: #eaf4f5; color: #527988; cursor: pointer; font: inherit; font-size: 11px;
+}
+.account-header-logout:hover, .account-header-menu:hover, .account-header-mobile button:hover { background: var(--stratus-ice-primary); }
+.account-header-menu { display: none; width: 36px; padding: 0; }
+.account-header-mobile { display: none; }
+@media (max-width: 760px) {
+  .account-header { gap: 10px; min-height: 58px; padding: 0 12px; }
+  .account-header-links { display: none; }
+  .account-header-logout span, .account-header-name { display: none; }
+  .account-header-logout { width: 36px; padding: 0; }
+  .account-header-menu { display: inline-flex; }
+  .account-header-mobile {
+    position: absolute; top: calc(100% + 8px); right: 0; left: 0; display: grid; gap: 4px;
+    padding: 9px; border: 1px solid var(--stratus-ice-border); border-radius: 14px;
+    background: var(--stratus-ice-canvas); box-shadow: 0 14px 34px rgba(44, 98, 117, .12);
+  }
+  .account-header-mobile a { min-height: 40px; }
+  .account-header-mobile-user { padding: 9px 12px 4px; color: #78919a; font-size: 11px; }
+  .account-header-mobile button { justify-content: flex-start; min-height: 40px; padding: 0 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .account-header-wrap * { transition-duration: .01ms !important; } }

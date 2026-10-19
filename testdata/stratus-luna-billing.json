@@ -1,0 +1,22 @@
+{
+  "model": "gpt-5.6-luna",
+  "quota_per_usd": 500000,
+  "model_ratio": 0.06179775280898876,
+  "completion_ratio": 1,
+  "accounting_cases": [
+    { "quota_per_usd": 1000000, "model_ratio": 0.12359550561797752, "input": 1000, "output": 1000, "quota": 247 },
+    { "quota_per_usd": 250000, "model_ratio": 0.03089887640449438, "input": 1000, "output": 1000, "quota": 62 }
+  ],
+  "cases": [
+    { "name": "input", "input": 1000000, "output": 0, "group": 1, "quota": 61798 },
+    { "name": "output", "input": 0, "output": 1000000, "group": 1, "quota": 61798 },
+    { "name": "balanced", "input": 1000, "output": 1000, "group": 1, "quota": 124 },
+    { "name": "input-heavy", "input": 1900, "output": 100, "group": 1, "quota": 124 },
+    { "name": "output-heavy", "input": 100, "output": 1900, "group": 1, "quota": 124 },
+    { "name": "group-discount", "input": 1000, "output": 1000, "group": 0.8, "quota": 99 },
+    { "name": "group-markup", "input": 1000, "output": 1000, "group": 2, "quota": 247 },
+    { "name": "free-group", "input": 1000, "output": 1000, "group": 0, "quota": 0 },
+    { "name": "minimum", "input": 1, "output": 0, "group": 1, "quota": 1 },
+    { "name": "empty", "input": 0, "output": 0, "group": 1, "quota": 0 }
+  ]
+}

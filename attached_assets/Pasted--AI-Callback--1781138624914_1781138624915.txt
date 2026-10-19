@@ -1,0 +1,1993 @@
+视频模型说明
+提示
+视频模型根据版本、时长定价均不同，请务必前往 模型价格 页面详细了解。
+快手可灵AI
+Callback 协议
+对于异步任务（图像生成 / 视频生成 / 虚拟试穿），若您在创建任务时主动设置了callback_url，则当任务状态发生变更时、服务端会主动通知，协议如下
+{
+  "task_id": "string", //任务ID，系统生成
+  "task_status": "string", //任务状态，枚举值：submitted（已提交）、processing（处理中）、succeed（成功）、failed（失败）
+  "task_status_msg": "string", //任务状态信息，当任务失败时展示失败原因（如触发平台的内容风控等）
+  "created_at": 1722769557708, //任务创建时间，Unix时间戳、单位ms
+  "updated_at": 1722769557708, //任务更新时间，Unix时间戳、单位ms
+  "task_result":{
+  	"images":[ //图片类任务的结果
+      {
+        "index": int, //图片编号
+        "url": "string" //生成图片的URL，例如：https://h1.inkwai.com/bs2/upload-ylab-stunt/1fa0ac67d8ce6cd55b50d68b967b3a59.png（请注意，为保障信息安全，生成的图片/视频会在30天后被清理，请及时转存）
+      }
+    ],
+    "videos":[ //视频类任务的结果
+  		{
+        "id": "string", //视频ID；全局唯一
+    		"url": "string", //视频的URL（请注意，为保障信息安全，生成的图片/视频会在30天后被清理，请及时转存）
+        "duration": "string" //视频总时长，单位s
+      }
+  	]
+	}
+}
+
+快手可灵AI
+任务：图像生成
+POST
+/kling/v1/images/generations
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+model_name
+enum<string> 
+模型
+可选
+枚举值:
+kling-v1
+kling-v1-5
+kling-v2
+示例:
+kling-v1
+prompt
+string 
+正向文本提示
+必需
+不能超过500个字符
+negative_prompt
+string 
+负向文本提示
+可选
+不能超过200个字符
+image
+string 
+参考图片
+可选
+支持Base64编码或图片URL，支持.jpg / .jpeg / .png格式，大小不能超过10MB，图片分辨率不小于300*300px。
+image_reference
+string 
+图片参考类型
+可选
+枚举值：subject（角色特征参考）, face（人物长相参考）
+使用face（人物长相参考）时，上传图片需仅含1张人脸。
+使用 kling-v1-5 且 image 参数不为空时，当前参数必填
+仅 kling-v1-5 支持当前参数
+image_fidelity
+number 
+图片参考强度
+可选
+生成过程中对用户上传图片的参考强度，可选，取值范围：[0,1]
+示例:
+0.45
+human_fidelity
+number 
+主体参考度
+可选
+即参考图主体（服装、发型等）相似度
+取值范围：[0,1]，数值越大参考强度越大
+示例:
+0.45
+n
+integer 
+生成数量
+可选
+取值范围：[1,9]
+aspect_ratio
+string 
+图片比例
+可选
+枚举值：16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+  "prompt": "粉红色头发和蓝色头发的女孩，闪亮/光泽的风格，石林黄，浅蓝色和浅黑色，童话核心，青色，罗恩，柔和的阴影，动漫风格"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/images/generations',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "prompt": "粉红色头发和蓝色头发的女孩，闪亮/光泽的风格，石林黄，浅蓝色和浅黑色，童话核心，青色，罗恩，柔和的阴影，动漫风格"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+request_id
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+task_status
+string 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CjNQtmctxFMAAAAAAHH7hA",
+    "data": {
+        "task_id": "CjNQtmctxFMAAAAAAHH7hA",
+        "task_status": "submitted",
+        "created_at": 1731252406651,
+        "updated_at": 1731252406651
+    }
+}
+快手可灵AI
+任务：虚拟试穿
+POST
+/kling/v1/images/kolors-virtual-try-on
+该接口可以完美的更换人物服饰，上传一张模态人物图，再上传一张服饰图 即可一键换装。
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+model_name
+enum<string> 
+模型名称
+可选
+枚举值:
+kolors-virtual-try-on-v1-5
+kolors-virtual-try-on-v1
+默认值:
+kolors-virtual-try-on-v1
+human_image
+string 
+上传的人物图片
+必需
+● 支持传入图片Base64编码或图片URL（确保可访问）
+● 图片格式支持.jpg / .jpeg / .png
+● 图片文件大小不能超过10MB，图片分辨率不小于300*300px
+cloth_image
+string 
+虚拟试穿的服饰图片
+必需
+● 支持上传服饰商品图或服饰白底图，支持上装upper、下装lower、与连体装dress
+● 支持传入图片Base64编码或图片URL（确保可访问）
+● 图片格式支持.jpg / .jpeg / .png
+● 图片文件大小不能超过10MB，图片分辨率不小于300*300px
+● 其中 kolors-virtual-try-on-v1-5 模型不仅支持单个服装输入，还支持“上装+下装”形式服装组合输入，即：
+输入单个服饰图片（上装 or 下装 or 连体装）-> 生成试穿的单品图片
+输入组合服饰图片（您可以将多个单品服饰白底图拼接到同一张图片）
+模型检测为“上装+下装” -> 生成试穿的“上装+下装”图片
+模型检测为“上装+上装” -> 生成失败
+模型检测为“下装+下装” -> 生成失败
+模型检测为“连体装+连体装” -> 生成失败
+模型检测为“上装+连体装” -> 生成失败
+模型检测为“下装+连体装” -> 生成失败
+组合服饰图片示例
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+  "model_name":"kolors-virtual-try-on-v1-5",
+  "human_image": "https://gw.alicdn.com/imgextra/i1/1860536677/O1CN012wEzZ11zC7RDNm0Jr_!!1860536677.jpg",
+  "cloth_image":"https://gw.alicdn.com/imgextra/i4/3370044138/O1CN01p0Zl411gRFvj0NnwQ_!!3370044138.jpg"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/images/kolors-virtual-try-on',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "model_name":"kolors-virtual-try-on-v1-5",
+  "human_image": "https://gw.alicdn.com/imgextra/i1/1860536677/O1CN012wEzZ11zC7RDNm0Jr_!!1860536677.jpg",
+  "cloth_image":"https://gw.alicdn.com/imgextra/i4/3370044138/O1CN01p0Zl411gRFvj0NnwQ_!!3370044138.jpg"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+request_id
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+task_status
+string 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "Cji7cGctxFMAAAAAAEU5sQ",
+    "data": {
+        "task_id": "Cji7cGctxFMAAAAAAEU5sQ",
+        "task_status": "submitted",
+        "created_at": 1731172864209,
+        "updated_at": 1731172864209
+    }
+}
+修改于 超过 1 年前
+上一页
+任务：图像生成
+下一页
+
+快手可灵AI
+任务：文生视频
+POST
+/kling/v1/videos/text2video
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+model_name
+enum<string> 
+模型版本
+可选
+注意：版本越高价格越高，v2.0的价格是v1的10倍，10秒为20倍价格。
+枚举值:
+kling-v1
+kling-v1-5
+kling-v1-6
+kling-v2-master
+kling-v2-1-master
+kling-v2-5-turbo
+示例:
+kling-v1-6
+prompt
+string 
+正向文本提示
+必需
+不能超过2500个字符
+negative_prompt
+string 
+负向文本提示
+可选
+不能超过2500个字符
+cfg_scale
+number 
+创意想象力
+可选
+值越大，创意相关性越高，取值范围：[0,1]
+示例:
+0.5
+mode
+enum<string> 
+视频模式
+可选
+注意 注意 注意：设置为 pro 模式 价格 * 3.5倍
+kling-v1-5、kling-v2-5-turbo只支持pro模式
+kling-v2-master kling-v2-1-master 不支持该参数
+其中std：标准模式（标准），基础模式，性价比高
+其中pro：专家模式（高品质），高表现模式，生成视频质量更佳
+枚举值:
+std
+高性能
+pro
+高质量
+示例:
+pro
+camera_control
+object 
+运镜控制
+可选
+控制摄像机运动方式，未指定则智能匹配
+type
+enum<string> 
+镜头类型
+可选
+预定义的运镜类型
+枚举值：“simple”, “down_back”, “forward_up”, “right_turn_forward”, “left_turn_forward”
+simple：简单运镜，此类型下可在"config"中六选一进行运镜
+down_back：镜头下压并后退 ➡️ 下移拉远，此类型下config参数无需填写
+forward_up：镜头前进并上仰 ➡️ 推进上移，此类型下config参数无需填写
+right_turn_forward：先右旋转后前进 ➡️ 右旋推进，此类型下config参数无需填写
+left_turn_forward：先左旋并前进 ➡️ 左旋推进，此类型下config参数无需填写
+枚举值:
+simple
+简单运镜，此类型下可在"config"中六选一进行运镜
+down_back
+镜头下压并后退 ➡️ 下移拉远，此类型下config参数无需填写
+forward_up
+镜头前进并上仰 ➡️ 推进上移，此类型下config参数无需填写
+right_turn_forward
+先右旋转后前进 ➡️ 右旋推进，此类型下config参数无需填写
+left_turn_forward
+先左旋并前进 ➡️ 左旋推进，此类型下config参数无需填写
+示例:
+simple
+config
+object 
+镜头配置
+可选
+包含六个字段，用于指定摄像机在不同方向上的运动或变化
+当运镜类型指定simple时必填，指定其他类型时不填
+以下参数6选1，即只能有一个参数不为0，其余参数为0
+aspect_ratio
+enum<string> 
+画面比例
+可选
+枚举值:
+16:9
+9:16
+1:1
+示例:
+1:1
+duration
+enum<string> 
+视频时长（单位秒）
+可选
+注意 注意 注意：设置时长 10 价格 * 两倍
+枚举值:
+5
+字符串格式
+10
+字符串格式
+示例:
+5
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+  "model_name":"kling-v1-6",
+  "prompt": "20岁的女生，瓜子脸，五官精致，鹅蛋脸，黑色长发，皮肤白暂，氛围光线，穿着一袭白色短裙，坐在街道旁边的长椅上，面带微笑，甩着头发",
+  "mode": "std",
+  "aspect_ratio": "1:1",
+  "duration": "5"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/text2video',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "model_name":"kling-v1-6",
+  "prompt": "20岁的女生，瓜子脸，五官精致，鹅蛋脸，黑色长发，皮肤白暂，氛围光线，穿着一袭白色短裙，坐在街道旁边的长椅上，面带微笑，甩着头发",
+  "mode": "std",
+  "aspect_ratio": "1:1",
+  "duration": "5"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CmYgjmbyMToAAAAAAF6svw",
+    "data": {
+        "task_id": "CmYgjmbyMToAAAAAAF6svw",
+        "task_status": "submitted",
+        "created_at": 1727338013674,
+        "updated_at": 1727338013674
+    }
+}
+快手可灵AI
+任务：图生视频
+POST
+/kling/v1/videos/image2video
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+model_name
+enum<string> 
+模型版本
+可选
+注意v2-master大师版本 价格是v1.0的10～20倍
+枚举值:
+kling-v1
+kling-v1-5
+kling-v1-6
+kling-v2-master
+kling-v2-1
+kling-v2-1-master
+kling-v2-5-turbo
+示例:
+kling-v1-6
+image
+string 
+参考图片
+必需
+支持Base64编码或图片URL，支持.jpg / .jpeg / .png格式，大小不能超过10MB，分辨率不小于300*300px，图片宽高比要在1:2.5 ~ 2.5:1之间
+image_tail
+string 
+参考图像 - 尾帧控制
+可选
+支持Base64编码或图片URL，支持.jpg / .jpeg / .png格式，大小不能超过10MB，分辨率不小于300*300px，填写该参数后，mode参数只能设置为pro
+prompt
+string 
+正向文本提示
+可选
+不能超过2500个字符
+negative_prompt
+string 
+负向文本提示
+可选
+不能超过2500个字符
+cfg_scale
+number 
+创意想象力
+可选
+值越大，创意相关性越高，取值范围：[0,1]
+示例:
+0.5
+mode
+enum<string> 
+视频质量模式
+可选
+注意 注意 注意：设置为 pro 模式 价格 * 3.5倍
+其中std：标准模式（标准），基础模式，性价比高
+其中pro：专家模式（高品质），高表现模式，生成视频质量更佳
+枚举值:
+std
+高性能
+pro
+高质量
+示例:
+pro
+static_mask
+string 
+静态笔刷涂抹区域（用户通过运动笔刷涂抹的 mask 图片
+可选
+● 支持传入图片Base64编码或图片URL（确保可访问，格式要求同 image 字段）
+● 图片格式支持.jpg / .jpeg / .png
+● 图片长宽比必须与输入图片相同（即image字段），否则任务失败（failed）
+static_mask 和 dynamic_masks.mask 这两张图片的分辨率必须一致，否则任务失败（failed）
+dynamic_masks
+array [object] 
+动态笔刷配置列表
+可选
+可配置多组（最多6组），每组包含“涂抹区域 mask”与“运动轨迹 trajectories”序列
+不同模型版本、视频模式支持范围不同
+mask
+string 
+可选
+动态笔刷涂抹区域（用户通过运动笔刷涂抹的 mask 图片）
+● 支持传入图片Base64编码或图片URL（确保可访问，格式要求同 image 字段）
+● 图片格式支持.jpg / .jpeg / .png
+● 图片长宽比必须与输入图片相同（即image字段），否则任务失败（failed）
+static_mask 和 dynamic_masks.mask 这两张图片的分辨率必须一致，否则任务失败（failed）
+trajectories
+array [object] 
+可选
+运动轨迹坐标序列
+● 生成5s的视频，轨迹长度不超过77，即坐标个数取值范围：[2, 77]
+● 轨迹坐标系，以图片左下角为坐标原点
+注1：坐标点个数越多轨迹刻画越准确，如只有2个轨迹点则为这两点连接的直线
+注2：轨迹方向以传入顺序为指向，以最先传入的坐标为轨迹起点，依次链接后续坐标形成运动轨迹
+duration
+enum<string> 
+视频时长（单位秒）
+可选
+注意 注意 注意：设置时长 10 价格 * 两倍
+枚举值:
+5
+字符串格式
+10
+字符串格式
+示例:
+5
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+camera_control
+object 
+运镜控制
+可选
+控制摄像机运动方式，未指定则智能匹配
+type
+enum<string> 
+镜头类型
+可选
+simple：简单运镜，此类型下可在"config"中六选一进行运镜
+down_back：镜头下压并后退 ➡️ 下移拉远，此类型下config参数无需填写
+forward_up：镜头前进并上仰 ➡️ 推进上移，此类型下config参数无需填写
+right_turn_forward：先右旋转后前进 ➡️ 右旋推进，此类型下config参数无需填写
+left_turn_forward：先左旋并前进 ➡️ 左旋推进，此类型下config参数无需填写
+枚举值:
+simple
+简单运镜，此类型下可在"config"中六选一进行运镜
+down_back
+镜头下压并后退 ➡️ 下移拉远，此类型下config参数无需填写
+forward_up
+镜头前进并上仰 ➡️ 推进上移，此类型下config参数无需填写
+right_turn_forward
+先右旋转后前进 ➡️ 右旋推进，此类型下config参数无需填写
+left_turn_forward
+先左旋并前进 ➡️ 左旋推进，此类型下config参数无需填写
+示例:
+simple
+config
+object 
+镜头配置
+可选
+包含六个字段，用于指定摄像机的运动或变化
+示例
+{
+  "image": "https://p2.a.kwimgs.com/bs2/upload-ylab-stunt/ai_portal/1731125871/6N0QrAnAeU/409-f054fa25c21a.png",
+  "prompt": "一位年轻的中国女性自信地走在一片广阔的绿色草地上，身边有一匹棕色的马，她的脸是用IPA或Ecomid技术创作的，展示了受顾柔软自然外表启发的高度实现的皮肤纹理，有微妙的皮肤缺陷，如淡淡的雀斑和浅色毛孔，以保持真实感，富有表现力的眼睛和柔软的嘴唇为她的表情增添了深度，她长长的黑发在风中自然流动，穿着米色连身裤，上面有可见的织物皱纹，黑色靴子略带灰尘，柔和的自然光线突出了她的脸，与她旁边马的精致皮毛纹理无缝融合，带有IC照明设置的电影构图增强了深度和真实感，鲜艳而自然的色彩，环境光散射在草地上，远处滚动蓝天下的山丘上有蓬松的白云，绿草上有微妙的纹理变化，微风中她头发和马尾的动态运动，以电影和纪录片风格编辑，强调现实主义，用50mm镜头、f/2.8光圈、超现实纹理、浅景深和散景背景拍摄",
+  "model": "kling-v1-5",
+  "mode": "std",
+  "duration": "5"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/image2video',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "image": "https://p2.a.kwimgs.com/bs2/upload-ylab-stunt/ai_portal/1731125871/6N0QrAnAeU/409-f054fa25c21a.png",
+  "prompt": "一位年轻的中国女性自信地走在一片广阔的绿色草地上，身边有一匹棕色的马，她的脸是用IPA或Ecomid技术创作的，展示了受顾柔软自然外表启发的高度实现的皮肤纹理，有微妙的皮肤缺陷，如淡淡的雀斑和浅色毛孔，以保持真实感，富有表现力的眼睛和柔软的嘴唇为她的表情增添了深度，她长长的黑发在风中自然流动，穿着米色连身裤，上面有可见的织物皱纹，黑色靴子略带灰尘，柔和的自然光线突出了她的脸，与她旁边马的精致皮毛纹理无缝融合，带有IC照明设置的电影构图增强了深度和真实感，鲜艳而自然的色彩，环境光散射在草地上，远处滚动蓝天下的山丘上有蓬松的白云，绿草上有微妙的纹理变化，微风中她头发和马尾的动态运动，以电影和纪录片风格编辑，强调现实主义，用50mm镜头、f/2.8光圈、超现实纹理、浅景深和散景背景拍摄",
+  "model": "kling-v1-5",
+  "mode": "std",
+  "duration": "5"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CmYgjmbyMToAAAAAAF6svw",
+    "data": {
+        "task_id": "CmYgjmbyMToAAAAAAF6svw",
+        "task_status": "submitted",
+        "created_at": 1727338013674,
+        "updated_at": 1727338013674
+    }
+}
+修改于 7 个月前
+上一页
+任务：文生视频
+下一页
+快手可灵AI
+任务：多图生视频
+POST
+/kling/v1/videos/multi-image2video
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+model_name
+enum<string> 
+模型版本
+必需
+官方目前仅支持 kling-v1-6
+值:
+kling-v1-6
+image_list
+array [object] 
+参考图片
+可选
+支持Base64编码或图片URL，支持.jpg / .jpeg / .png格式，大小不能超过10MB，分辨率不小于300*300px，图片宽高比要在1:2.5 ~ 2.5:1之间
+image
+string 
+必需
+图片网络url或base64编码
+prompt
+string 
+正向文本提示
+可选
+不能超过2500个字符
+negative_prompt
+string 
+负向文本提示
+可选
+不能超过2500个字符
+mode
+enum<string> 
+视频质量模式
+可选
+注意 注意 注意：设置为 pro 模式 价格 * 3.5倍
+其中std：标准模式（标准），基础模式，性价比高
+其中pro：专家模式（高品质），高表现模式，生成视频质量更佳
+枚举值:
+std
+高性能
+pro
+高质量
+示例:
+pro
+duration
+enum<string> 
+视频时长（单位秒）
+可选
+注意 注意 注意：设置时长 10 价格 * 两倍
+枚举值:
+5
+字符串格式
+10
+字符串格式
+示例:
+5
+aspect_ratio
+enum<string> 
+生成图片的画面纵横比（宽:高）
+可选
+● 支持传入图片Base64编码或图片URL（确保可访问，格式要求同 image 字段）
+● 图片格式支持.jpg / .jpeg / .png
+● 图片长宽比必须与输入图片相同（即image字段），否则任务失败（failed）
+static_mask 和 dynamic_masks.mask 这两张图片的分辨率必须一致，否则任务失败（failed）
+枚举值:
+16:9
+9:16
+1:1
+默认值:
+16:9
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+    "model_name": "kling-v1-6",
+    "image_list": [
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        },
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        },
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        }
+    ],
+    "prompt": "一位年轻的中国女性自信地走在一片广阔的绿色草地上，身边有一匹棕色的马，她的脸是用IPA或Ecomid技术创作的，展示了受顾柔软自然外表启发的高度实现的皮肤纹理，有微妙的皮肤缺陷，如淡淡的雀斑和浅色毛孔，以保持真实感，富有表现力的眼睛和柔软的嘴唇为她的表情增添了深度，她长长的黑发在风中自然流动，穿着米色连身裤，上面有可见的织物皱纹，黑色靴子略带灰尘，柔和的自然光线突出了她的脸，与她旁边马的精致皮毛纹理无缝融合，带有IC照明设置的电影构图增强了深度和真实感，鲜艳而自然的色彩，环境光散射在草地上，远处滚动蓝天下的山丘上有蓬松的白云，绿草上有微妙的纹理变化，微风中她头发和马尾的动态运动，以电影和纪录片风格编辑，强调现实主义，用50mm镜头、f/2.8光圈、超现实纹理、浅景深和散景背景拍摄",
+    "mode": "std",
+    "duration": "5"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/multi-image2video',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+    "model_name": "kling-v1-6",
+    "image_list": [
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        },
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        },
+        {
+            "image": "https://p2.a.kwimgs.com/..."
+        }
+    ],
+    "prompt": "一位年轻的中国女性自信地走在一片广阔的绿色草地上，身边有一匹棕色的马，她的脸是用IPA或Ecomid技术创作的，展示了受顾柔软自然外表启发的高度实现的皮肤纹理，有微妙的皮肤缺陷，如淡淡的雀斑和浅色毛孔，以保持真实感，富有表现力的眼睛和柔软的嘴唇为她的表情增添了深度，她长长的黑发在风中自然流动，穿着米色连身裤，上面有可见的织物皱纹，黑色靴子略带灰尘，柔和的自然光线突出了她的脸，与她旁边马的精致皮毛纹理无缝融合，带有IC照明设置的电影构图增强了深度和真实感，鲜艳而自然的色彩，环境光散射在草地上，远处滚动蓝天下的山丘上有蓬松的白云，绿草上有微妙的纹理变化，微风中她头发和马尾的动态运动，以电影和纪录片风格编辑，强调现实主义，用50mm镜头、f/2.8光圈、超现实纹理、浅景深和散景背景拍摄",
+    "mode": "std",
+    "duration": "5"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CmYgjmbyMToAAAAAAF6svw",
+    "data": {
+        "task_id": "CmYgjmbyMToAAAAAAF6svw",
+        "task_status": "submitted",
+        "created_at": 1727338013674,
+        "updated_at": 1727338013674
+    }
+}
+修改于 12 个月前
+上一页
+任务：图生视频
+下一页
+快手可灵AI
+任务：视频延长
+POST
+/kling/v1/videos/video-extend
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+video_id
+string 
+视频ID（注意：不是任务ID）
+必需
+● 支持文生视频接口生成的视频ID（仅支持V1.0模型，不支持V1.5模型）
+● 支持图生视频接口生成的视频ID（仅支持V1.0模型，不支持V1.5模型）
+● 支持视频延长接口生成的视频ID（注意不能超过3分钟）
+如果原视频是 pro 模式生成的，则扣费x3.5倍
+prompt
+string 
+正向文本提示
+可选
+不能超过2500个字符
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+  "video_id": "c01bbafe-712e-4a00-8265-fe7b4e9b17bf",
+  "prompt": "轻吻镜头"
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/video-extend',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "video_id": "c01bbafe-712e-4a00-8265-fe7b4e9b17bf",
+  "prompt": "轻吻镜头"
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CmCmrWduIncAAAAAAUxTLg",
+    "data": {
+        "task_id": "CmCmrWduIncAAAAAAUxTLg",
+        "task_status": "submitted",
+        "created_at": 1736059079626,
+        "updated_at": 1736059079626
+    }
+}
+
+快手可灵AI
+任务：视频配音-对口型
+POST
+/kling/v1/videos/lip-sync
+查看示例：（示例有效期30天-如无法查看说明已过期）
+查看原视频
+查看配音后视频
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+input
+object 
+必需
+video_id
+string 
+视频ID（注意：不是任务ID）
+必需
+通过可灵AI生成的视频的ID
+用于指定视频、判断视频是否可用于对口型服务
+与input·video_url参数二选一填写，不能同时为空，也不能同时有值
+仅支持使用30天内生成的5秒视频和10秒视频，超过10秒的视频不支持对口型
+如果原视频是10秒，则扣费x2倍
+video_url
+string 
+视频链接
+必需
+所上传视频的获取链接
+用于指定视频，并判断视频是否可用于对口型服务
+与input·video_id参数二选一填写，不能同时为空，也不能同时有值
+视频文件支持.mp4/.mov，文件大小不超过100MB，视频时长不超过10s且不短于2s，仅支持720p和1080p、长宽的边长均位于720px~1920px之间，上述校验不通过会返回错误码等信息
+系统会校验视频内容，如有问题会返回错误码等信息
+mode
+enum<string> 
+视频模式
+必需
+○ text2video：文本生成视频模式，此模式时input·text、input·voice_id、input·voice_language参数为必填；音频生成视频模式相关参数无效
+○ audio2video：音频生成视频模式，此模式时input·audio_type参数为必填，文本生成视频模式相关参数无效
+枚举值:
+text2video
+audio2video
+示例:
+text2video
+text
+string 
+口型文字
+可选
+● input·mode参数值为text2video时，当前参数必填
+● 文本内容最大长度120，内容过长会返回错误码等信息
+● 系统会校验文本内容，如有问题会返回错误码等信息
+voice_id
+string 
+音色ID
+可选
+● input·mode参数值为text2video时，当前参数必填
+● 系统提供多种音色可供选择，具体音色效果、音色ID、音色语种对应关系点此查看；音色试听不支持自定义文案
+● 音色试听文件命名规范：音色名称#音色ID#音色语种
+voice_language
+enum<string> 
+音色语种
+可选
+● input·mode参数值为text2video时，当前参数必填
+● 音色语种与音色ID对应，详见上文
+枚举值:
+zh
+en
+默认值:
+zh
+示例:
+zh
+voice_speed
+number 
+语速
+可选
+● 有效范围：0.8~2.0，精确至小数点后1位，超出部分将自动四舍五入
+● input·mode参数值为text2video时，当前参数必填
+>= 0.8
+< 2
+默认值:
+1
+audio_type
+string 
+音频文件类型
+可选
+● 枚举值：file，url
+● file：上传文件模式，此时input·audio_file参数必填
+● url：提供下载链接模式，此时input·audio_url参数必填
+● input·mode参数值为audio2video时，当前参数必填
+audio_file
+string 
+音频文件路径
+可选
+● input·audio_type参数值为file时，当前参数必填
+● 音频文件支持.mp3/.wav/.m4a/.acc，文件大小不超过5MB，Base64编码，格式不匹配或文件过大会返回错误码等信息
+● 系统会校验音频内容，如有问题会返回错误码等信息
+audio_url
+string 
+音频文件地址
+可选
+● input·audio_type参数值为url时，当前参数必填
+● 音频文件支持.mp3/.wav/.m4a/.acc，文件大小不超过5MB，格式不匹配或文件过大会返回错误码等信息
+● 系统会校验音频内容，如有问题会返回错误码等信息
+callback_url
+string 
+通知地址
+可选
+本次任务结果回调通知地址，详见 CallBack协议
+示例
+{
+  "input": {
+    "video_id": "c01bbafe-712e-4a00-8265-fe7b4e9b17bf",
+    "mode": "text2video",
+    "text": "天空一声巨响，老娘闪亮登场",
+    "voice_id": "chat1_female_new-3",
+    "voice_language":"zh"
+  }
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/lip-sync',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "input": {
+    "video_id": "c01bbafe-712e-4a00-8265-fe7b4e9b17bf",
+    "mode": "text2video",
+    "text": "天空一声巨响，老娘闪亮登场",
+    "voice_id": "chat1_female_new-3",
+    "voice_language":"zh"
+  }
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "ClpejWduJGYAAAAAAUvWMw",
+    "data": {
+        "task_id": "ClpejWduJGYAAAAAAUvWMw",
+        "task_status": "submitted",
+        "created_at": 1736058335197,
+        "updated_at": 1736058335197
+    }
+}
+修改于 大约 1 年前
+上一页
+任务：视频延长
+下一页
+快手可灵AI
+任务：视频特效-单图
+POST
+/kling/v1/videos/effects
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+根据 effect_scene 实现不同的特效效果。 - 单图特效：fuzzyfuzzy、squish、expansion - 双人互动特效：hug、kiss、heart_gesture
+effect_scene
+enum<string> 
+场景名称
+必需
+特效场景名称
+枚举值:
+fuzzyfuzzy
+快来惹毛我
+squish
+捏捏乐
+expansion
+万物膨胀
+input
+object 
+任务输入结构体
+必需
+支持不同任务输入的结构体。根据 scene 不同，结构体里传的字段不同，具体见「场景请求体」说明。
+model_name
+enum<string> 
+模型名称
+必需
+注意：单人特效仅支持 kling-v1-6
+值:
+kling-v1-6
+image
+string 
+必需
+参考图像
+支持传入图片Base64编码或图片URL（确保可访问）
+请注意，若您使用base64的方式，请确保您传递的所有图像数据参数均采用Base64编码格式。在提交数据时，请不要在Base64编码字符串前添加任何前缀，例如data:image/png;base64,。正确的参数格式应该直接是Base64编码后的字符串。
+示例：
+正确的Base64编码参数：
+1
+iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==
+错误的Base64编码参数（包含data:前缀）：
+1
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==
+请仅提供Base64编码的字符串部分，以便系统能够正确处理和解析您的数据。
+图片格式支持.jpg / .jpeg / .png
+图片文件大小不能超过10MB，图片分辨率不小于300*300px，图片宽高比要在1:2.5 ~ 2.5:1之间
+duration
+enum<string> 
+视频时长
+必需
+单位 秒
+值:
+5
+callback_url
+string 
+任务结果回调通知地址
+可选
+本次任务结果回调通知地址，如果配置，服务端会在任务状态发生变更时主动通知。具体通知的消息 schema 见“Callback 协议”。
+external_task_id
+string 
+自定义任务 ID
+可选
+用户自定义任务 ID，传入不会覆盖系统生成的任务 ID，但支持通过该 ID 进行任务查询。单用户下需要保证唯一性。
+示例
+{
+  "effect_scene": "expansion",
+  "input": {
+    "model_name": "kling-v1-6",
+    "image": "https://p1-kling.klingai.com/bs2/upload-ylab-stunt/kling/ai_se/%E8%86%A8%E8%83%80case-%E8%B7%AF%E4%B8%8A%E7%BA%A2%E8%89%B2%E6%B1%BD%E8%BD%A6.jpg?x-kcdn-pid=112452&x-oss-process=image",
+    "duration": "5"
+  }
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/effects',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "effect_scene": "expansion",
+  "input": {
+    "model_name": "kling-v1-6",
+    "image": "https://p1-kling.klingai.com/bs2/upload-ylab-stunt/kling/ai_se/%E8%86%A8%E8%83%80case-%E8%B7%AF%E4%B8%8A%E7%BA%A2%E8%89%B2%E6%B1%BD%E8%BD%A6.jpg?x-kcdn-pid=112452&x-oss-process=image",
+    "duration": "5"
+  }
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+message
+string 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+action
+string 
+必需
+status
+string 
+必需
+fail_reason
+string 
+必需
+submit_time
+integer 
+必需
+start_time
+integer 
+必需
+finish_time
+integer 
+必需
+progress
+string 
+必需
+data
+object 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+必需
+request_id
+string 
+必需
+string 
+必需
+示例
+{
+    "code": 0,
+    "message": "SUCCEED",
+    "request_id": "CmYgjmbyMToAAAAAAF6svw",
+    "data": {
+        "task_id": "CmYgjmbyMToAAAAAAF6svw",
+        "task_status": "submitted",
+        "created_at": 1727338013674,
+        "updated_at": 1727338013674
+    }
+}
+修改于 大约 1 年前
+上一页
+任务：视频配音-对口型
+下一页
+快手可灵AI
+任务：视频特效-双人互动
+POST
+/kling/v1/videos/effects
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Body 参数
+application/json
+根据 effect_scene 实现不同的特效效果。 - 单图特效：fuzzyfuzzy、squish、expansion - 双人互动特效：hug、kiss、heart_gesture
+effect_scene
+enum<string> 
+场景名称
+必需
+特效场景名称
+枚举值:
+hug
+拥抱
+kiss
+亲吻
+heart_gesture
+比心
+input
+object 
+任务输入结构体
+必需
+支持不同任务输入的结构体。根据 scene 不同，结构体里传的字段不同，具体见「场景请求体」说明。
+model_name
+enum<string> 
+模型名称
+可选
+请求模型
+枚举值:
+kling-v1
+kling-v1-5
+kling-v1-6
+images
+string 
+必需
+参考图像组
+数组的长度必须是2，上传的第一张图在合照的左边，上传的第二张图在合照的右边
+该服务包含合照功能，即用户上传两张人想图，可灵AI将自适应拼接为合照，如图所示先后上传
+"https://p2-kling.klingai.com/bs2/upload-ylab-stunt/c54e463c95816d959602f1f2541c62b2.png?x-kcdn-pid=112452",
+"https://p2-kling.klingai.com/bs2/upload-ylab-stunt/5eef15e03a70e1fa80732808a2f50f3f.png?x-kcdn-pid=112452"
+得到合照的效果为：
+
+支持传入图片Base64编码或图片URL（确保可访问）
+请注意，若您使用base64的方式，请确保您传递的所有图像数据参数均采用Base64编码格式。在提交数据时，请不要在Base64编码字符串前添加任何前缀，例如data:image/png;base64,。正确的参数格式应该直接是Base64编码后的字符串。
+示例：
+正确的Base64编码参数：
+1
+iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==
+错误的Base64编码参数（包含data:前缀）：
+1
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==
+请仅提供Base64编码的字符串部分，以便系统能够正确处理和解析您的数据。
+图片格式支持.jpg / .jpeg / .png
+图片文件大小不能超过10MB，图片分辨率不小于300*300px，图片宽高比要在1:2.5 ~ 2.5:1之间
+duration
+enum<string> 
+视频时长
+必需
+单位 秒
+枚举值:
+5
+10
+mode
+string 
+视频模式
+必需
+枚举值：std，pro
+其中std：标准模式（标准），基础模式，性价比高
+其中pro：专家模式（高品质），高表现模式，生成视频质量更佳
+callback_url
+string 
+任务结果回调通知地址
+可选
+本次任务结果回调通知地址，如果配置，服务端会在任务状态发生变更时主动通知。具体通知的消息 schema 见“Callback 协议”。
+external_task_id
+string 
+自定义任务 ID
+可选
+用户自定义任务 ID，传入不会覆盖系统生成的任务 ID，但支持通过该 ID 进行任务查询。单用户下需要保证唯一性。
+示例
+{
+  "effect_scene": "kiss",
+  "input": {
+    "model_name": "kling-v1-6",
+    "images": [
+      "https://p2-kling.klingai.com/bs2/upload-ylab-stunt/c54e463c95816d959602f1f2541c62b2.png?x-kcdn-pid=112452",
+      "https://p2-kling.klingai.com/bs2/upload-ylab-stunt/5eef15e03a70e1fa80732808a2f50f3f.png?x-kcdn-pid=112452"
+    ],
+    "duration": "5"
+  }
+}
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/effects',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'POST',
+   CURLOPT_POSTFIELDS =>'{
+  "effect_scene": "kiss",
+  "input": {
+    "model_name": "kling-v1-6",
+    "images": [
+      "https://p2-kling.klingai.com/bs2/upload-ylab-stunt/c54e463c95816d959602f1f2541c62b2.png?x-kcdn-pid=112452",
+      "https://p2-kling.klingai.com/bs2/upload-ylab-stunt/5eef15e03a70e1fa80732808a2f50f3f.png?x-kcdn-pid=112452"
+    ],
+    "duration": "5"
+  }
+}',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>',
+      'Content-Type: application/json'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+错误码；具体定义见错误码
+message
+string 
+错误信息
+必需
+request_id
+string 
+必需
+请求ID，系统生成，用于跟踪请求、排查问题
+data
+object 
+必需
+task_id
+string 
+任务ID，系统生成
+必需
+task_info
+object 
+必需
+任务创建时的参数信息
+task_status
+string 
+必需
+任务状态，枚举值：submitted（已提交）、processing（处理中）、succeed（成功）、failed（失败）
+created_at
+integer 
+必需
+任务创建时间，Unix时间戳、单位ms
+updated_at
+integer 
+必需
+任务更新时间，Unix时间戳、单位ms
+示例
+{
+  "code": 0, //错误码；具体定义见错误码
+  "message": "string", //错误信息
+  "request_id": "string", //请求ID，系统生成，用于跟踪请求、排查问题
+  "data":{
+  	"task_id": "string", //任务ID，系统生成
+    "task_info":{ //任务创建时的参数信息
+       "external_task_id": "string" //客户自定义任务ID
+    }, 
+    "task_status": "string", //任务状态，枚举值：submitted（已提交）、processing（处理中）、succeed（成功）、failed（失败）
+    "created_at": 1722769557708, //任务创建时间，Unix时间戳、单位ms
+    "updated_at": 1722769557708 //任务更新时间，Unix时间戳、单位ms
+  }
+}
+修改于 大约 1 年前
+快手可灵AI
+查询：任务结果(本站通用)
+GET
+/task/{task_id}
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Path 参数
+task_id
+string 
+必需
+任务ID，先执行异步任务，获取到任务ID，再进行查询任务结果。
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/task/',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'GET',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+data
+object 
+必需
+status
+string 
+必需
+resp_data
+string 
+必需
+video_url
+string 
+必需
+image_urls
+null 
+必需
+binary_data_base64
+array[string]
+必需
+status
+integer 
+必需
+message
+string 
+必需
+request_id
+string 
+必需
+time_elapsed
+string 
+必需
+示例
+{
+    "status": "Success",
+    // 最终需要根据file_id 使用下载接口 获取视频地址。
+    "file_id": "314053136425242",
+    "task_id": "314052875571396",
+    "base_resp": {
+        "status_msg": "success",
+        "status_code": 0
+    },
+    "video_width": 768,
+    "video_height": 1152
+}
+修改于 9 个月前
+快手可灵AI
+查询：任务结果(官方格式)
+GET
+/kling/v1/videos/{action}/{task_id}
+对已经提交的任务进行查询状态：开发功能时可进行轮询查询，直到返回成功状态。
+查询任务	查询接口
+图片生成任务	/kling/v1/images/generations/:task_id
+虚拟试衣任务	/kling/v1/images/kolors-virtual-try-on/:task_id
+文生视频任务	/kling/v1/videos/text2video/:task_id
+图生视频任务	/kling/v1/videos/image2video/:task_id
+多图生视频任务	/kling/v1/videos/multi-image2video/:task_id
+对口型任务	/kling/v1/videos/lip-sync/:task_id
+视频延伸任务	/kling/v1/videos/video-extend/:task_id
+视频特效任务	/kling/v1/videos/effects/:task_id
+可灵图像生成模型 请阅读 绘画模型 章节	
+也可以使用本站通用的接口
+查询任务	查询接口
+可查本站所有任务	/task/:task_id
+请求参数
+Authorization
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token
+示例：
+Authorization: Bearer ********************
+Path 参数
+action
+string 
+必需
+可选值：text2video | image2video ｜ lip-sync｜video-extend
+示例:
+text2video
+task_id
+string 
+任务ID
+必需
+示例:
+Cji7cGctxFMAAAAAAEU5sQ
+请求示例代码
+cURL
+HTTP_Request2
+pecl_http
+Guzzle
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+   CURLOPT_URL => 'https://api.gpt.ge/kling/v1/videos/text2video/Cji7cGctxFMAAAAAAEU5sQ',
+   CURLOPT_RETURNTRANSFER => true,
+   CURLOPT_ENCODING => '',
+   CURLOPT_MAXREDIRS => 10,
+   CURLOPT_TIMEOUT => 0,
+   CURLOPT_FOLLOWLOCATION => true,
+   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+   CURLOPT_CUSTOMREQUEST => 'GET',
+   CURLOPT_HTTPHEADER => array(
+      'Authorization: Bearer <token>'
+   ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+返回响应
+🟢200
+成功
+application/json
+code
+integer 
+必需
+data
+object 
+必需
+task_id
+string 
+必需
+created_at
+integer 
+必需
+updated_at
+integer 
+必需
+task_result
+object 
+必需
+task_status
+string 
+必需
+task_status_msg
+string 
+可选
+message
+string 
+可选
+request_id
+string 
+必需
+示例
+{
+    "code": 0,
+    "data": {
+        "task_id": "CjNQtmctxFMAAAAAAGZ1Vw",
+        "created_at": 1731233182965,
+        "updated_at": 1731233195037,
+        "task_result": {
+            "images": [
+                {
+                    "url": "https://cdn.klingai.com/bs2/upload-kling-api/0294571330/virtualTryOn/CjNQtmctxFMAAAAAAGZ1Vw-0.png",
+                    "index": 0
+                }
+            ]
+        },
+        "task_status": "succeed",
+        "task_status_msg": ""
+    },
+    "message": "SUCCEED",
+    "request_id": "Cji7cGctxFMAAAAAAGj3vA"
+}
+修改于 9 个月前
+上一页
+查询：任务结果(本站通用)
+下一页
+

@@ -1,0 +1,31 @@
+- [Custom APINET components](custom-apinet-components.md) — key custom files/features that must survive upstream merges; includes RedemptionCodeCard, wallet layout, FreeKassa, Heleket, Pally, branding
+- [Go embed frontend rebuild](go-embed-rebuild.md) — frontend CSS/JS changes require BOTH `npm run build` AND `go build` to take effect; the binary embeds assets at compile time
+- [Payment gateway pattern](payment-gateway-pattern.md) — how to add a new payment method (Heleket as example); covers all files that must be touched across backend + frontend
+- [Heleket API sign formula](heleket-sign.md) — sign = md5(base64(body) + apiKey) with NO colon; amount in topup APIs is USD not credits; unitPrice multiplied not divided
+- [FreeKassa nonce is int32](freekassa-nonce-int32.md) — nonce stored as signed int32; sending ms/ns nonce clamps to int32 max and permanently locks shop; use Unix seconds; recover via API-key regen
+- [i18n translation namespace](i18n-translation-namespace.md) — locale JSON uses a `translation` namespace; new keys must go under data.translation, NOT root, or they won't resolve
+- [V-API / Kling provider](vapi-kling-provider.md) — api.gpt.ge aggregator: all endpoints translated (video, image, audio, 3D); connect via Kling channel with sk-* key + base URL https://api.gpt.ge
+- [MiniMax max_tokens cap](minimax-max-tokens.md) — MiniMax API accepts max_tokens [1, 32768] only; adaptor caps at 32768 to prevent 400 errors from channel param_override injecting larger values
+
+- [Bulk upstream sync verification](bulk-upstream-sync-verification.md) — commit-range diff isn't enough; always full-build + hash-diff after bulk syncing many upstream commits at once
+- [Gateway auto model compatibility](gateway-auto-compatibility.md) — interpret `auto` as model selection only for Gateway keys; ordinary keys may route a literal model named `auto`
+- [Gateway channel health scope](gateway-channel-health-scope.md) — cooldown and recovery probes are process-local; coordinate health across replicas if multi-instance routing needs consistent decisions
+- [Gateway capability policy](gateway-capability-policy.md) — unknown model/provider capability combinations are excluded for feature-dependent requests; avoid assuming aliases imply support
+- [Gateway budget periods](gateway-budget-periods.md) — reset daily and monthly monetary limits on UTC boundaries; keep UI amounts in USD and server accounting in quota units
+- [Gateway lease recovery](gateway-lease-recovery.md) — serialize expiry cleanup, renewal, and settlement per key so stale requests cannot release a replacement's slot
+- [Responses stream settlement](responses-stream-settlement.md) — settle interrupted streams after upstream events without falsely marking success; explicit failures without usage refund.
+- [Image billing integrity](image-billing-integrity.md) — empty successful image responses must fail and refund; partial streams must not reduce charges from observed events alone.
+- [Go package installation](go-package-installation.md) — the Replit package installer may reject Go even when its skill lists it; use Go tooling as fallback.
+- [Stratus design integration](stratus-design-integration.md) — build a Stratus-branded frontend over the existing backend, preserving accounts, payments, and internal contracts.
+- [Workflow port conflicts](workflow-port-conflicts.md) — a failed launch can coexist with a surviving New API process; check port ownership before restarting again.
+- [Temporary verification fixtures](temporary-verification-fixtures.md) — verify fixture initialization and session continuity before trusting protected-route or browser checks.
+- [Stratus auth boundary](stratus-auth-boundary.md) — provider callback URLs belong to the backend contract, not the frontend preview prefix.
+- [Stratus token economy](stratus-token-economy.md) — wallet balance in tokens; model pricing shown as multipliers, not separate input/output prices.
+- [Stratus refund terms](stratus-refund-terms.md) — user approved the reference policy's 35% usage threshold and 24/48/72-hour request and processing windows.
+- [Custom payment credit agreement](payment-credit-contract.md) — approved whole-USD credit conversion for new and pending custom-gateway orders; no retroactive balance recalculation.
+- [Stratus wallet top-up bonus](stratus-wallet-bonus.md) — progressive RUB bonus reaches 50% at 25,000 ₽, then becomes 70%; manual amounts may exceed the slider.
+- [Usage comparison confidence](usage-comparison-confidence.md) — stored history is not proof of complete collection; suppress comparative claims when collection is disabled.
+- [Stratus native dialogs](stratus-native-dialogs.md) — shared CSS reset removes browser-default centering; native modal positioning must be explicit.
+- [Referral token rewards](referral-rewards.md) — 5% of direct invitees’ credited top-up tokens, automatically spendable; no second transferable payout or historical recalculation.
+- [Safer patching for large JSX](patch-context-jsx.md) — use small isolated hunks when a component edit must match exact source context.
+- [Stratus API documentation scope](stratus-api-docs-scope.md) — document only routes registered in this Stratus build, in Russian and English; state model/channel availability limits.

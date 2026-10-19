@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APINET.CLOUD — One Gateway. Infinite Models.</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #050505;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow: hidden;
+  }
+
+  .stage {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    background: #050505;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+  }
+  .orb1 {
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 70%);
+    top: -200px; left: -100px;
+    animation: orb1 15s linear infinite alternate;
+  }
+  .orb2 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%);
+    bottom: -100px; right: -100px;
+    animation: orb2 18s linear infinite alternate;
+  }
+  @keyframes orb1 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(900px,600px) scale(1.2)} }
+  @keyframes orb2 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(-600px,-450px) scale(1.3)} }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* scene system */
+  .scene {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+  }
+  .scene.active { opacity: 1; pointer-events: auto; }
+
+  /* progress bar */
+  .progress-bar {
+    position: absolute; bottom: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  }
+
+  .dots {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 10;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active { background: #3b82f6; transform: scale(1.4); }
+
+  /* ── SCENE 1: Opening hook ── */
+  #s1 .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 18px; border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.7); margin-bottom: 28px;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.5s 0.2s, transform 0.5s 0.2s;
+  }
+  #s1.active .badge { opacity: 1; transform: none; }
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 0 10px rgba(59,130,246,0.9);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.7} }
+
+  #s1 .line1 {
+    font-size: 68px; font-weight: 900; line-height: 1.05;
+    background: linear-gradient(135deg, #fff 60%, rgba(255,255,255,0.6));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    opacity: 0; transform: translateY(36px) rotateX(-20deg);
+    transition: opacity 0.6s 0.4s, transform 0.6s 0.4s;
+  }
+  #s1 .line2 {
+    font-size: 68px; font-weight: 900; line-height: 1.05;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    opacity: 0; transform: translateY(36px) rotateX(-20deg);
+    transition: opacity 0.6s 0.7s, transform 0.6s 0.7s;
+  }
+  #s1.active .line1, #s1.active .line2 { opacity: 1; transform: none; }
+
+  /* ── SCENE 2: 40+ Providers ── */
+  #s2 .s2-inner { width: 1100px; }
+  #s2 h2 {
+    font-size: 52px; font-weight: 900; margin-bottom: 40px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s 0.15s, transform 0.5s 0.15s;
+  }
+  #s2.active h2 { opacity: 1; transform: none; }
+  #s2 h2 .dim { color: rgba(255,255,255,0.4); }
+  .providers-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .p-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    padding: 22px; text-align: center;
+    font-size: 18px; font-weight: 600; color: rgba(255,255,255,0.85);
+    opacity: 0; transform: translateY(18px) scale(0.9);
+  }
+  .p-card:nth-child(1){transition:opacity .35s .25s,transform .35s .25s}
+  .p-card:nth-child(2){transition:opacity .35s .35s,transform .35s .35s}
+  .p-card:nth-child(3){transition:opacity .35s .45s,transform .35s .45s}
+  .p-card:nth-child(4){transition:opacity .35s .55s,transform .35s .55s}
+  .p-card:nth-child(5){transition:opacity .35s .65s,transform .35s .65s}
+  .p-card:nth-child(6){transition:opacity .35s .75s,transform .35s .75s}
+  .p-card:nth-child(7){transition:opacity .35s .85s,transform .35s .85s}
+  .p-card:nth-child(8){transition:opacity .35s .95s,transform .35s .95s}
+  #s2.active .p-card { opacity: 1; transform: none; }
+
+  /* ── SCENE 3: Features ── */
+  #s3 .s3-left {
+    flex: 1;
+    opacity: 0; transform: translateX(-36px);
+    transition: opacity 0.5s 0.25s, transform 0.5s 0.25s;
+  }
+  #s3.active .s3-left { opacity: 1; transform: none; }
+  #s3 h2 { font-size: 46px; font-weight: 900; line-height: 1.2; margin-bottom: 16px; }
+  #s3 .grad { background: linear-gradient(135deg,#60a5fa,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  #s3 p { font-size: 22px; color: rgba(255,255,255,0.55); }
+  #s3 .s3-right {
+    flex: 1; display: flex; flex-direction: column; gap: 16px;
+  }
+  .feat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 18px; padding: 22px 26px;
+    display: flex; align-items: center; gap: 20px;
+    opacity: 0; transform: translateX(36px);
+  }
+  .feat-card:nth-child(1){transition:opacity .4s .35s,transform .4s .35s}
+  .feat-card:nth-child(2){transition:opacity .4s .55s,transform .4s .55s}
+  .feat-card:nth-child(3){transition:opacity .4s .75s,transform .4s .75s}
+  #s3.active .feat-card { opacity: 1; transform: none; }
+  .feat-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .feat-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .feat-desc { font-size: 14px; color: rgba(255,255,255,0.5); }
+
+  /* ── SCENE 4: Code ── */
+  #s4 .s4-label {
+    font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.75); margin-bottom: 28px;
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 0.5s 0.2s, transform 0.5s 0.2s;
+  }
+  #s4.active .s4-label { opacity: 1; transform: none; }
+  .code-box {
+    background: #0d1117;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px; padding: 36px 40px;
+    font-family: 'SF Mono', Consolas, monospace; font-size: 17px; line-height: 2;
+    position: relative; overflow: hidden;
+    width: 640px;
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.6s 0.45s, transform 0.6s 0.45s;
+  }
+  #s4.active .code-box { opacity: 1; transform: none; }
+  .code-box .top-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  }
+  .c-kw { color: #60a5fa; }
+  .c-var { color: #fff; }
+  .c-cls { color: #fde68a; }
+  .c-str { color: #86efac; }
+  .c-hl { position: relative; }
+  .c-hl::after {
+    content: '';
+    position: absolute; inset: -4px -8px;
+    background: rgba(59,130,246,0.2);
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.5s 1.4s;
+  }
+  #s4.active .c-hl::after { opacity: 1; }
+
+  /* ── SCENE 5: Outro ── */
+  #s5 .logo-box {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; font-weight: 900; margin: 0 auto 28px;
+    box-shadow: 0 0 60px rgba(59,130,246,0.4);
+    opacity: 0; transform: scale(0.7) rotate(-12deg);
+    transition: opacity 0.6s 0.3s, transform 0.7s 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  #s5.active .logo-box { opacity: 1; transform: none; }
+  #s5 h1 {
+    font-size: 52px; font-weight: 900; letter-spacing: -1px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s 0.8s, transform 0.5s 0.8s;
+  }
+  #s5.active h1 { opacity: 1; transform: none; }
+  #s5 .cta {
+    display: inline-block;
+    margin-top: 28px;
+    background: #fff; color: #000;
+    padding: 16px 40px; border-radius: 99px;
+    font-size: 20px; font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.5s 1.2s;
+  }
+  #s5.active .cta { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="grid"></div>
+
+  <!-- S1: Opening -->
+  <div class="scene" id="s1">
+    <div style="text-align:center">
+      <div class="badge"><div class="pulse-dot"></div>API INFRASTRUCTURE</div>
+      <div class="line1">One Gateway.</div>
+      <div class="line2">Infinite Models.</div>
+    </div>
+  </div>
+
+  <!-- S2: Providers -->
+  <div class="scene" id="s2">
+    <div class="s2-inner">
+      <h2>40+ AI Providers.<br><span class="dim">Standardized.</span></h2>
+      <div class="providers-grid">
+        <div class="p-card">OpenAI</div>
+        <div class="p-card">Claude</div>
+        <div class="p-card">Gemini</div>
+        <div class="p-card">DeepSeek</div>
+        <div class="p-card">Llama</div>
+        <div class="p-card">Mistral</div>
+        <div class="p-card">Grok</div>
+        <div class="p-card">+33 more</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Features -->
+  <div class="scene" id="s3">
+    <div style="display:flex;gap:64px;align-items:center;width:1100px">
+      <div class="s3-left">
+        <h2>Complete Control<br><span class="grad">Out of the Box</span></h2>
+        <p>Enterprise-grade management<br>for your AI usage.</p>
+      </div>
+      <div class="s3-right">
+        <div class="feat-card">
+          <div class="feat-icon">📊</div>
+          <div><div class="feat-title">Rate Limiting</div><div class="feat-desc">Protect your upstream budgets</div></div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">💰</div>
+          <div><div class="feat-title">Cost Tracking</div><div class="feat-desc">Real-time usage analytics</div></div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">👥</div>
+          <div><div class="feat-title">Team Billing</div><div class="feat-desc">Allocate credits per user</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: Code -->
+  <div class="scene" id="s4">
+    <div style="text-align:center">
+      <div class="s4-label">One line of code change.</div>
+      <div class="code-box">
+        <div class="top-bar"></div>
+        <span class="c-kw">const </span><span class="c-var">client</span> = <span class="c-kw">new </span><span class="c-cls">OpenAI</span>({<br>
+        &nbsp;&nbsp;apiKey: <span class="c-str">"sk-apinet-..."</span>,<br>
+        &nbsp;&nbsp;baseURL: <span class="c-str c-hl">"https://apinet.cloud"</span><br>
+        });
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Outro -->
+  <div class="scene" id="s5">
+    <div style="text-align:center">
+      <div class="logo-box">A</div>
+      <h1>APINET.CLOUD</h1>
+      <div class="cta">Start Routing Today →</div>
+    </div>
+  </div>
+
+  <div class="progress-bar" id="progress"></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  const SCENES = ['s1','s2','s3','s4','s5'];
+  const DURATIONS = [4000, 4500, 4500, 4000, 4000];
+  let current = 0, startTime = null, timer = null, rafId = null;
+
+  const progressEl = document.getElementById('progress');
+  const dotsEl = document.getElementById('dots');
+
+  SCENES.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  });
+
+  function showScene(idx) {
+    SCENES.forEach((id, i) => {
+      document.getElementById(id).classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    startTime = performance.now();
+    animateProgress();
+    clearTimeout(timer);
+    timer = setTimeout(() => { current = (idx + 1) % SCENES.length; showScene(current); }, DURATIONS[idx]);
+  }
+
+  function animateProgress() {
+    cancelAnimationFrame(rafId);
+    const dur = DURATIONS[current];
+    function tick(now) {
+      const pct = Math.min((now - startTime) / dur, 1) * 100;
+      progressEl.style.width = pct + '%';
+      if (pct < 100) rafId = requestAnimationFrame(tick);
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  showScene(0);
+</script>
+</body>
+</html>

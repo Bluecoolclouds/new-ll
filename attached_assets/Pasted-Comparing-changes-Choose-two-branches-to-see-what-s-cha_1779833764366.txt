@@ -1,0 +1,128 @@
+Comparing changes
+Choose two branches to see what’s changed or to start a new pull request. If you need to, you can also  or learn more about diff comparisons.
+...
+ 9 contributors
+ Commits 29
+ Files changed 296
+Commits on May 22, 2026
+perf: reduce heap residency for large base64 relay requests 
+
+@Calcium-Ion
+Calcium-Ion committed 4 days ago
+Copied!
+Commits on May 23, 2026
+🐛 fix(channel): evict auto-disabled multi-key channels from cache (#4983 
+
+@t0ng7u
+t0ng7u authored 4 days ago
+Commits on May 24, 2026
+[BugFix] fix webhook process (#5047)
+
+@Hill-waffo
+Hill-waffo authored 3 days ago
+fix(payment): hide classic Waffo Pancake settings (#5085)
+
+@seefs001
+seefs001 authored 3 days ago
+✨ refactor(web/default): adopt drill-in sidebar pattern for System Se… 
+
+@t0ng7u
+t0ng7u committed 2 days ago
+✨ refactor: system settings UI for consistent, compact layouts 
+
+@t0ng7u
+t0ng7u committed 2 days ago
+⬆️ chore(deps): Upgrade default frontend dependencies 
+
+@t0ng7u
+t0ng7u committed 2 days ago
+🛠️ fix: v1 interface feedback regressions 
+
+@t0ng7u
+t0ng7u committed 2 days ago
+Commits on May 25, 2026
+✨ refactor(ui): Improve usage log filter responsiveness and mobile UX 
+
+@t0ng7u
+t0ng7u committed 2 days ago
+fix(relay): correct image quality parameter handling (#5103)
+
+@lanfunoe
+lanfunoe authored yesterday
+fix: truncate oversized upstream error logs (#5083)
+
+@seefs001
+seefs001 authored yesterday
+✨ refactor(home): redesign hero section to dual-column layout with co… 
+
+@Calcium-Ion
+Calcium-Ion committed yesterday
+fix: 移除 fcIdx -1 偏移，修复并发工具调用撞键问题 (#5095) 
+
+@learner-i
+learner-i authored yesterday
+fix:gemini to claude tool_use err (#5041)
+
+@nekohy
+nekohy authored yesterday
+fix: handle paginated API key search response (#5014) 
+
+@yyhhyyyyyy
+yyhhyyyyyy authored yesterday
+♻️ refactor(channels): rebuild channel create/edit drawer with modula… 
+
+@t0ng7u
+t0ng7u committed yesterday
+Merge remote-tracking branch 'origin/main'
+
+@t0ng7u
+t0ng7u committed yesterday
+♻️ refactor(channels): rebuild channel editor UX with modular section… 
+
+@t0ng7u
+t0ng7u committed yesterday
+Commits on May 26, 2026
+🎨 feat(web/default): add Anthropic theme preset and configurable seri… 
+
+@t0ng7u
+t0ng7u committed yesterday
+fix: prevent duplicate channel action toasts (#5015) 
+
+@yyhhyyyyyy
+yyhhyyyyyy authored 20 hours ago
+🎨 refactor(badge): restore status-badge sizes and classic color scheme 
+
+@Calcium-Ion
+Calcium-Ion committed 18 hours ago
+🎨 fix(theme): default theme font preset falls back to Sans instead of… 
+
+@Calcium-Ion
+Calcium-Ion committed 18 hours ago
+feat(subscription): support balance purchases 
+
+@Calcium-Ion
+Calcium-Ion committed 18 hours ago
+🎨 fix(logs): restore timing background badges and optimize model/toke… 
+
+@Calcium-Ion
+Calcium-Ion committed 18 hours ago
+🎨 fix(logs): remove hardcoded font-mono to support global theme font … 
+
+@Calcium-Ion
+Calcium-Ion committed 17 hours ago
+🎨 fix(charts): improve dark mode chart readability 
+
+@Calcium-Ion
+Calcium-Ion committed 17 hours ago
+fix: consolidate Waffo payment settings save flow (#5110)
+
+@seefs001
+seefs001 authored 17 hours ago
+fix: use actual user id for channel tests (#5109)
+
+@seefs001
+seefs001 authored 17 hours ago
+🎨 fix(logs): tune usage table typography 
+
+@Calcium-Ion
+Calcium-Ion committed 17 hours ago

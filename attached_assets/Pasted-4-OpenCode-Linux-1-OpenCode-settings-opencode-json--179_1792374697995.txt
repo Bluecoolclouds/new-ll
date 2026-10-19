@@ -1,0 +1,88 @@
+4. Инструкция: OpenCode + Linux
+Скрипт
+Вручную
+1
+Откройте OpenCode settings или opencode.json.
+2
+Добавьте custom provider codexsale с OpenAI-compatible package, API key, base URL и моделями ниже.
+3
+Выберите codexsale/gpt-5.6-luna и перезапустите OpenCode, если модели не появились.
+OpenCode custom provider
+
+Provider ID: codexsale
+Provider package: @ai-sdk/openai-compatible
+Default model: codexsale/gpt-5.6-luna
+
+opencode.json
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "codexsale/gpt-5.6-luna",
+  "provider": {
+    "codexsale": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Codex Sale",
+      "options": {
+        "baseURL": "https://codex.sale/v1",
+        "apiKey": "sk-clb-_brPGKGL8JwTLCPMverTYxxZ6b0qVp3O9jPxKjLuTcc"
+      },
+      "models": {
+        "deepseek-flash": {
+          "name": "DeepSeek V4.1 Flash"
+        },
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro"
+        },
+        "gpt-5.5": {
+          "name": "GPT 5.5",
+          "variants": {
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            }
+          }
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna"
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT 5.6 Terra"
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT 5.6 Sol"
+        },
+        "gpt-6-astra": {
+          "name": "GPT 6 Astra"
+        },
+        "gpt-6.1-sol": {
+          "name": "GPT 6.1 Sol"
+        },
+        "gpt-6-sol": {
+          "name": "GPT 6 Sol"
+        },
+        "gpt-6-luna": {
+          "name": "GPT 6 Luna"
+        },
+        "glm-5.3-flash": {
+          "name": "GLM 5.3 Flash"
+        },
+        "glm-5.3": {
+          "name": "GLM 5.3"
+        },
+        "glm-5.2": {
+          "name": "GLM 5.2"
+        }
+      }
+    }
+  }
+}
+
+Ручной режим делает то же самое, что скрипт, только конфиг провайдера вставляете сами.

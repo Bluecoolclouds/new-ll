@@ -1,0 +1,39 @@
+.account-panel-frame { min-width: 0; color: var(--stratus-ice-ink); }
+.account-panel-frame * { box-sizing: border-box; }
+.account-grid { display: grid; grid-template-columns: minmax(0,1fr) 290px; gap: 14px; align-items: start; }
+.account-main { display: grid; gap: 14px; min-width: 0; }
+.account-card { padding: 22px; border: 1px solid var(--stratus-ice-border); border-radius: 18px; background: color-mix(in srgb, var(--stratus-ice-canvas) 82%, var(--stratus-ice-primary)); box-shadow: 0 7px 22px rgba(48,120,139,.045); }
+.account-card h2 { margin: 5px 0 6px; font-family: var(--app-font-serif); font-size: 18px; letter-spacing: -.035em; }
+.account-label { color: #6a9ca9; font-size: 10px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.account-copy { margin: 0; color: #78919a; font-size: 12px; line-height: 1.6; }
+.account-form { display: grid; gap: 14px; margin-top: 18px; }
+.account-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.account-field { display: grid; gap: 6px; min-width: 0; }
+.account-field label { color: #587783; font-size: 11px; font-weight: 700; }
+.account-input { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid var(--stratus-ice-border); border-radius: 10px; outline: none; background: var(--stratus-ice-canvas); color: #315460; font: inherit; font-size: 12px; }
+.account-input:focus { border-color: var(--stratus-ice-accent); box-shadow: 0 0 0 3px color-mix(in srgb,var(--stratus-ice-accent) 14%,transparent); }
+.account-hint { color: #829ba2; font-size: 10px; line-height: 1.5; }
+.account-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 10px 15px; border: 0; border-radius: 10px; background: #244b5a; color: #eaf9fa; font-size: 12px; font-weight: 700; cursor: pointer; }
+.account-btn.secondary { background: #eaf4f5; color: #547781; }
+.account-btn.danger { background: #9e565a; color: #fff5f3; }
+.account-btn:disabled { opacity: .52; cursor: not-allowed; }
+.account-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.account-alert { margin-top: 14px; padding: 11px 13px; border: 1px solid var(--stratus-ice-border); border-radius: 10px; background: #edf6f7; color: #426a77; font-size: 12px; line-height: 1.55; }
+.account-alert.error { border-color: #efd9d5; background: #fbefed; color: #935e5d; }
+.account-alert.success { border-color: #d4e9dd; background: #edf8f2; color: #4b8068; }
+.account-loading { width: 44%; height: 11px; border-radius: 8px; background: #dfedef; animation: account-pulse 1.35s ease-in-out infinite; }
+.account-status { display: flex; align-items: center; gap: 9px; color: #547781; font-size: 12px; }
+.account-dot { width: 9px; height: 9px; border-radius: 50%; background: #78b997; }
+.account-dot.off { background: #d7b277; }
+.account-aside { position: sticky; top: 18px; display: grid; gap: 12px; }
+.account-aside-card { padding: 17px; border: 1px solid var(--stratus-ice-border); border-radius: 16px; background: color-mix(in srgb,var(--stratus-ice-primary) 32%,var(--stratus-ice-canvas)); }
+.account-aside-card strong { display: block; margin-bottom: 6px; font-size: 12px; }
+.account-aside-card p { margin: 0; color: #6b8790; font-size: 11px; line-height: 1.55; }
+.account-secret { margin-top: 9px; padding: 10px 12px; border: 1px solid var(--stratus-ice-border); border-radius: 9px; background: var(--stratus-ice-canvas); color: #315d6d; font-family: var(--app-font-mono); font-size: 12px; letter-spacing: .08em; overflow-wrap: anywhere; }
+.account-codes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; margin: 12px 0; }
+.account-codes code { padding: 8px 9px; border: 1px solid var(--stratus-ice-border); border-radius: 8px; background: #f4faf9; color: #315d6d; font-family: var(--app-font-mono); font-size: 11px; }
+.account-turnstile { display: grid; min-height: 65px; place-items: center; }
+.account-turnstile iframe { max-width: 100%; }
+@keyframes account-pulse { 50% { opacity: .45; } }
+@media (max-width: 760px) { .account-grid { grid-template-columns: 1fr; } .account-aside { position: static; grid-row: 2; } .account-card { padding: 17px; } }
+@media (max-width: 480px) { .account-fields { grid-template-columns: 1fr; } }

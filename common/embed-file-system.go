@@ -1,0 +1,84 @@
+package common
+
+import (
+	"embed"
+	"io/fs"
+	"net/http"
+	"os"
+	"strings"
+
+	"github.com/gin-contrib/static"
+)
+
+// Credit: https://github.com/gin-contrib/static/issues/19
+
+type embedFileSystem struct {
+	http.FileSystem
+}
+
+func (e *embedFileSystem) Exists(prefix string, path string) bool {
+	_, err := e.Open(path)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func (e *embedFileSystem) Open(name string) (http.File, error) {
+	if name == "/" {
+		// This will make sure the index page goes to NoRouter handler,
+		// which will use the replaced index bytes with analytic codes.
+		return nil, os.ErrNotExist
+	}
+	return e.FileSystem.Open(name)
+}
+
+func EmbedFolder(fsEmbed embed.FS, targetPath string) static.ServeFileSystem {
+	efs, err := fs.Sub(fsEmbed, targetPath)
+	if err != nil {
+		panic(err)
+	}
+	return &embedFileSystem{
+		FileSystem: http.FS(efs),
+	}
+}
+
+// themeAwareFileSystem delegates to the appropriate embedded FS based on
+// the current theme (via GetTheme). This enables runtime theme switching
+// without restarting the server.
+type themeAwareFileSystem struct {
+	defaultFS static.ServeFileSystem
+	classicFS static.ServeFileSystem
+	stratusFS static.ServeFileSystem
+}
+
+func (t *themeAwareFileSystem) Exists(prefix string, path string) bool {
+	return t.forPath(path).Exists(prefix, path)
+}
+
+func (t *themeAwareFileSystem) Open(name string) (http.File, error) {
+	return t.forPath(name).Open(name)
+}
+
+func (t *themeAwareFileSystem) forPath(name string) static.ServeFileSystem {
+	path := strings.TrimPrefix(name, "/")
+	if t.stratusFS != nil && (strings.HasPrefix(path, "stratus-assets/") || strings.HasPrefix(path, "stratus-images/")) {
+		return t.stratusFS
+	}
+	if GetTheme() == "classic" {
+		return t.classicFS
+	}
+	if GetTheme() == "stratus" && t.stratusFS != nil && t.stratusFS.Exists("/", name) {
+		return t.stratusFS
+	}
+	// The shared auth, wallet and admin screens still load default-theme assets.
+	return t.defaultFS
+}
+
+func NewThemeAwareFS(defaultFS, classicFS static.ServeFileSystem, stratusFS ...static.ServeFileSystem) static.ServeFileSystem {
+	t := &themeAwareFileSystem{defaultFS: defaultFS, classicFS: classicFS}
+	if len(stratusFS) > 0 {
+		t.stratusFS = stratusFS[0]
+	}
+	return t
+}

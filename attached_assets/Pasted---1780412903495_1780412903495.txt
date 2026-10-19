@@ -1,0 +1,121 @@
+Авторизация
+Передача токена при запросах
+Для того чтобы обратиться к нужным методам, вам необходимо в заголовке Authorization передавать токен:
+
+Authorization: Bearer {token}
+
+Иначе сервер вернет ошибку авторизации 401.
+Токен вы можете получить на странице API интеграций в личном кабинете
+Пример запроса
+curl -X 'https://pal24.pro/api/v1/bill/create' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+
+Базовый пример использования API
+Создание счета и обработка Postback
+Для базового подключения к сервису вам нужно научиться работать с одним видом запроса и обрабатывать postback.
+Основной запрос, который вам нужен для начала работы - /api/v1/bill/create
+
+Пример запроса:
+curl --location --request POST 'https://pal24.pro/api/v1/bill/create' \
+--header 'Authorization: Bearer 123|q4uNcWNKMNZoSFSY1XTxp36nsM0kUMSu0otSA95' \
+--form 'amount=16' \
+--form 'order_id="Заказ 123"' \
+--form 'description="Описание ссылки"' \
+--form 'type="normal"' \
+--form 'shop_id="G1vrEyX0LR"' \
+--form 'currency_in="RUB"' \
+--form 'custom="my_custom_data"' \
+--form 'payer_pays_commission=1' \
+--form 'name="Платёж"'
+
+Пример ответа:
+{
+  "success": "true",
+  "link_url": "https://pally.info/link/3P1p2rgW7Y",
+  "link_page_url": "https://pally.info/transfer/3P1p2rgW7Y",
+  "bill_id": "3P1p2rgW7Y
+}
+
+Далее вам необходимо направить пользователя на ссылку, указанную в "link_page_url". После оплаты пользователь будет перенаправлен на страницу, указанную в Success/Fail URL в зависимости от статуса платежа.
+
+Перенаправление пользователя происходит посредством POST запроса следующего формата:
+{
+  "OutSum": "18.54",
+  "CurrencyIn": "RUB",
+  "InvId": "Заказ 123",
+  "custom": "my_custom_data",
+  "SignatureValue": "5A41374P24C99A2156D1D306C800B53C"
+}
+
+После редиректа на Success или Fail URL пользователь должен увидеть сообщение со статусом платежа.
+Так как вы можете получить order_id обратно, и в пример выше - это поле InvId, то можно сразу показать сообщение вида
+
+Ваш заказ InvId успешно оплачен. Благодарим за платёж!
+
+или
+
+Оплата по заказу InvId не прошла. Пожалуйста, попробуйте ещё раз или обратитесь в службу поддержки
+
+Так же вы получите Postback на указанный в настройках магазина Result URL. Формат данных следующий:
+{
+  "Status": "SUCCESS",
+  "InvId": "Заказ 123",
+  "Commission": "2.54",
+  "CurrencyIn": "RUB",
+  "OutSum": "18.54",
+  "TrsId": "3P1p2rgW7Y",
+  "custom": "my_custom_data",
+  "SignatureValue": "4A41373E24C99A2656D1D306C800B53C"
+}
+
+На основе этого Postback вам нужно сменить статус заказа в вашей системе.
+Получив статус SUCCESS вы в своей базе меняете статус заказа на "ОПЛАЧЕНО"
+Получив статус FAIL вы соотвественно меняете у себя статус заказа на "НЕ ОПЛАЧЕНО"
+Описанного выше достаточно, чтобы начать принимать платежи.
+
+Success POST запрос
+Перенаправление пользователя в случае успешной оплаты
+В результате выполнения успешного платежа, пользователь перенаправляется на Success URL, указанный в настройках магазина. Перенаправление идет в виде POST запроса на Success URL.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+InvId	Да	string		payment-19238465	Уникальный идентификатор заказа, переданный при формировании счета
+OutSum	Да	decimal		380.55	Сумма платежа
+CurrencyIn	Да	enum	USD
+RUB
+EUR	RUB	Валюта, в которой оплачивался счет
+custom	Нет	string		additional_information	Произвольное поле, переданное при формировании счета
+SignatureValue	Да	string		DC32D403CE6BD2E54D4D213278DB286C	Подпись запроса. Формируется следующим образом:
+strtoupper(md5($OutSum . ":" . $InvId . ":" . $apiToken))
+Пример запроса
+curl -X POST 'https://pal24.pro/redirect/payment/success' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT' \
+-d 'InvId=123' \
+-d 'OutSum=12345' \
+-d 'CurrencyIn=RUB' \
+-d 'custom=custom_information' \
+-d 'SignatureValue=398320589F8E31ACE27CC681BCBD8BDA'
+
+Fail POST запрос
+Перенаправление пользователя в случае неуспешной оплаты
+В результате выполнения неуспешного платежа, пользователь перенаправляется на Fail URL, указанный в настройках магазина. Перенаправление идет в виде POST запроса на Fail URL.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+InvId	Да	string		payment-19238465	Уникальный идентификатор заказа, переданный при формировании счета
+OutSum	Да	decimal		380.55	Сумма платежа
+CurrencyIn	Да	enum	USD
+RUB
+EUR	RUB	Валюта, в которой оплачивался счет
+custom	Нет	string		additional_information	Произвольное поле, переданное при формировании счета
+SignatureValue	Да	string		DC32D403CE6BD2E54D4D213278DB286C	Подпись запроса. Формируется следующим образом:
+strtoupper(md5($OutSum . ":" . $InvId . ":" . $apiToken))
+Пример запроса
+curl -X POST 'https://pal24.pro/redirect/payment/fail' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT' \
+-d 'InvId=123' \
+-d 'OutSum=12345' \
+-d 'CurrencyIn=RUB' \
+-d 'custom=custom_information' \
+-d 'SignatureValue=398320589F8E31ACE27CC681BCBD8BDA'

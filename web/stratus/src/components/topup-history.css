@@ -1,0 +1,5 @@
+.settings-topup-history { min-height: 0; color: var(--stratus-ice-ink); background: transparent; }
+.settings-topup-history > .wallet-history { width: min(100%, 920px); }
+.settings-topup-history .settings-topup-history-intro { margin: 10px 0 4px; color: #718d98; font-size: 11px; line-height: 1.5; }
+.settings-topup-history-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; color: #557985; font-size: 11px; text-decoration: none; }
+.settings-topup-history-link:hover { color: #315d6d; text-decoration: underline; text-underline-offset: 3px; }

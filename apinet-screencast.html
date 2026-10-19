@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>APINET.CLOUD — Видео-гайд</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+
+/* ── OUTER WRAPPER ── */
+.wrapper{position:relative;width:1280px;height:720px}
+
+/* ── BROWSER CHROME ── */
+.browser{width:1280px;height:720px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5);display:flex;flex-direction:column}
+.chrome{background:#f1f3f4;height:48px;display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0;border-bottom:1px solid #dde1e5}
+.chrome .dots{display:flex;gap:6px}
+.chrome .dot{width:12px;height:12px;border-radius:50%}
+.chrome .dot.r{background:#ff5f57}.chrome .dot.y{background:#febc2e}.chrome .dot.g{background:#28c840}
+.addr-bar{flex:1;background:#fff;border:1px solid #dde1e5;border-radius:20px;height:28px;display:flex;align-items:center;padding:0 14px;font-size:13px;color:#444;gap:6px;max-width:560px;margin:0 auto}
+.addr-bar .lock{color:#188038;font-size:11px}
+.page-content{flex:1;overflow:hidden;position:relative}
+
+/* ── CURSOR ── */
+.cursor{position:absolute;width:22px;height:22px;pointer-events:none;z-index:1000;transition:left 0.6s cubic-bezier(0.25,1,0.5,1),top 0.6s cubic-bezier(0.25,1,0.5,1)}
+.cursor svg{filter:drop-shadow(1px 2px 3px rgba(0,0,0,0.4))}
+.click-ripple{position:absolute;width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.4);transform:scale(0);transition:transform 0.3s,opacity 0.3s;top:-3px;left:-3px}
+.cursor.clicking .click-ripple{transform:scale(1.5);opacity:0}
+
+/* ── SCENE SYSTEM ── */
+.scene{position:absolute;inset:0;opacity:0;transition:opacity 0.5s ease;pointer-events:none}
+.scene.active{opacity:1;pointer-events:auto}
+
+/* ── STEP LABEL OVERLAY ── */
+.step-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:16px 24px;display:flex;align-items:center;gap:12px;opacity:0;transition:opacity 0.4s}
+.step-overlay.show{opacity:1}
+.step-badge{background:#3b82f6;color:#fff;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.step-text{color:#fff;font-size:15px;font-weight:500}
+
+/* ── PROGRESS ── */
+.progress{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);transition:none;z-index:20}
+
+/* ── PAGE: HOME ── */
+.p-home{background:#f8faff;height:100%;display:flex;flex-direction:column}
+.p-home nav{background:#fff;border-bottom:1px solid #e5e7eb;height:56px;display:flex;align-items:center;padding:0 28px;gap:24px}
+.p-home nav .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:#111}
+.p-home nav .logo .cloud{width:28px;height:28px;background:linear-gradient(135deg,#60a5fa,#3b82f6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.p-home nav .links{display:flex;gap:20px;margin-left:20px}
+.p-home nav .links a{font-size:13px;color:#555;text-decoration:none}
+.p-home nav .signin-btn{margin-left:auto;background:#111;color:#fff;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:600}
+.p-home .hero{display:flex;padding:40px 56px;gap:40px;flex:1}
+.p-home .hero-left{flex:1;padding-top:20px}
+.p-home .hero-left .badge{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:99px;padding:5px 12px;font-size:12px;color:#2563eb;font-weight:600;margin-bottom:20px}
+.p-home .hero-left .badge .dot{width:6px;height:6px;border-radius:50%;background:#3b82f6}
+.p-home .hero-left h1{font-size:42px;font-weight:900;line-height:1.1;color:#111;margin-bottom:8px}
+.p-home .hero-left h1 .accent{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.p-home .hero-left p{font-size:15px;color:#666;line-height:1.6;margin-bottom:24px;max-width:420px}
+.p-home .hero-left .btns{display:flex;gap:10px}
+.p-home .hero-left .btn-dark{background:#111;color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.p-home .hero-left .btn-out{border:1px solid #ddd;background:#fff;color:#333;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:500}
+.p-home .hero-right{width:480px;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,0.07)}
+.p-home .hero-right .tabs{display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid #e5e7eb}
+.p-home .hero-right .tab{padding:8px 14px;font-size:13px;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px}
+.p-home .hero-right .tab.active{color:#3b82f6;border-color:#3b82f6;font-weight:600}
+.p-home .hero-right .tag{display:inline-block;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:12px}
+.code-area{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.8;color:#374151}
+.code-area .label{font-size:10px;color:#9ca3af;letter-spacing:1px;margin-bottom:6px;font-family:sans-serif}
+.c-url{color:#dc2626}.c-hdr{color:#6b7280}.c-kv{color:#2563eb}.c-str{color:#16a34a}.c-resp{color:#16a34a}.c-dim{color:#9ca3af}
+.code-area .resp-section{margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb}
+.code-area .meta{font-size:10px;color:#9ca3af;margin-top:8px;font-family:sans-serif}
+
+/* ── PAGE: REGISTER ── */
+.p-register{background:#fff;height:100%;display:flex}
+.p-register .form-side{flex:1;padding:50px 56px;display:flex;flex-direction:column;justify-content:center}
+.p-register .form-side .logo-row{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:#111;margin-bottom:40px}
+.p-register .form-side .logo-row .cloud{width:26px;height:26px;background:linear-gradient(135deg,#60a5fa,#3b82f6);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.p-register h2{font-size:26px;font-weight:800;color:#111;margin-bottom:6px}
+.p-register .sub{font-size:14px;color:#666;margin-bottom:28px}
+.p-register .sub a{color:#3b82f6;text-decoration:none;font-weight:500}
+.p-register label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.p-register .field{margin-bottom:16px}
+.p-register input{width:100%;border:1px solid #d1d5db;border-radius:8px;height:40px;padding:0 12px;font-size:14px;color:#111;outline:none;background:#fff}
+.p-register input.focused{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.p-register input.filled{border-color:#d1d5db;color:#111}
+.p-register .input-wrap{position:relative}
+.p-register .input-wrap .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:13px}
+.p-register .create-btn{width:100%;background:#111;color:#fff;border-radius:8px;height:40px;font-size:14px;font-weight:700;margin-top:4px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.p-register .photo-side{width:580px;background:linear-gradient(180deg,#c8d6e5 0%,#e8f0f8 50%,#f0f4f8 100%);position:relative;overflow:hidden}
+.cloud-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.cloud-bg .cloud-shape{background:rgba(255,255,255,0.7);border-radius:50%;filter:blur(30px)}
+
+/* ── PAGE: WALLET ── */
+.p-wallet{background:#f9fafb;height:100%;display:flex;flex-direction:column}
+.p-wallet .topbar{background:#fff;border-bottom:1px solid #e5e7eb;height:52px;display:flex;align-items:center;padding:0 24px;gap:20px}
+.p-wallet .topbar .logo-s{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;color:#111}
+.p-wallet .topbar .cloud-s{width:24px;height:24px;background:linear-gradient(135deg,#60a5fa,#3b82f6);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.p-wallet .topbar .nav-links{display:flex;gap:16px;margin-left:16px}
+.p-wallet .topbar .nav-links a{font-size:13px;color:#555;text-decoration:none}
+.p-wallet .topbar .nav-links a.active{color:#3b82f6;font-weight:600}
+.p-wallet .topbar .user-pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:#f3f4f6;border-radius:99px;padding:4px 12px 4px 6px}
+.p-wallet .topbar .avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700}
+.p-wallet .topbar .uname{font-size:13px;font-weight:600;color:#111}
+.p-wallet .body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #e5e7eb;border-radius:10px;background:#fff;overflow:hidden}
+.stat-cell{padding:14px 18px;border-right:1px solid #e5e7eb}
+.stat-cell:last-child{border-right:none}
+.stat-cell .s-label{font-size:11px;color:#9ca3af;font-weight:600;letter-spacing:0.5px;margin-bottom:4px}
+.stat-cell .s-value{font-size:22px;font-weight:800;color:#111;margin-bottom:2px}
+.stat-cell .s-desc{font-size:11px;color:#9ca3af}
+.wallet-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1}
+.wcard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px}
+.wcard .wc-title{font-size:12px;font-weight:700;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.wcard .wc-title .ic{font-size:14px}
+.recharge-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ra-btn{border:1px solid #e5e7eb;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;color:#374151;cursor:pointer}
+.ra-btn.selected{border-color:#3b82f6;background:#eff6ff;color:#2563eb}
+.recharge-input-row{display:flex;gap:8px;align-items:center}
+.recharge-input-row input{flex:1;border:1px solid #d1d5db;border-radius:7px;height:36px;padding:0 10px;font-size:14px}
+.pay-btn{background:#111;color:#fff;border-radius:7px;height:36px;padding:0 16px;font-size:13px;font-weight:600;white-space:nowrap}
+.code-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px}
+.code-card .cc-label{display:flex;align-items:center;gap:6px;font-size:11px;color:#9ca3af;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px}
+.code-input-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.code-input-row input{border:1px solid #d1d5db;border-radius:6px;height:34px;padding:0 10px;font-size:13px;background:#fff}
+.code-input-row input.typing{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.15)}
+.redeem-btn{border:1px solid #d1d5db;background:#fff;border-radius:6px;height:34px;padding:0 14px;font-size:13px;font-weight:600;color:#374151}
+.redeem-btn.active{border-color:#3b82f6;color:#2563eb}
+.success-toast{position:absolute;top:16px;right:16px;background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.1);opacity:0;transform:translateY(-8px);transition:opacity 0.4s,transform 0.4s;z-index:50}
+.success-toast.show{opacity:1;transform:none}
+.success-toast .ic{width:28px;height:28px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.success-toast .t-title{font-size:13px;font-weight:700;color:#111}
+.success-toast .t-sub{font-size:12px;color:#6b7280}
+
+/* ── PAGE: TOKENS ── */
+.p-tokens{background:#f9fafb;height:100%;display:flex;flex-direction:column}
+.p-tokens .topbar{background:#fff;border-bottom:1px solid #e5e7eb;height:52px;display:flex;align-items:center;padding:0 24px;gap:20px}
+.p-tokens .body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.tokens-header{display:flex;align-items:center;justify-content:space-between}
+.tokens-header h2{font-size:18px;font-weight:800;color:#111}
+.tokens-header p{font-size:13px;color:#9ca3af;margin-top:2px}
+.create-btn-blue{background:#3b82f6;color:#fff;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.token-list{display:flex;flex-direction:column;gap:8px}
+.token-row{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.token-row .t-icon{width:36px;height:36px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.token-row .t-name{font-size:14px;font-weight:700;color:#111}
+.token-row .t-key{font-family:'SF Mono',Consolas,monospace;font-size:12px;color:#9ca3af;margin-top:2px}
+.token-row .t-status{margin-left:auto;display:flex;align-items:center;gap:6px}
+.badge-green{background:#dcfce7;color:#16a34a;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
+.token-row .t-actions{display:flex;gap:6px;margin-left:12px}
+.t-action-btn{border:1px solid #e5e7eb;border-radius:6px;padding:5px 10px;font-size:12px;color:#6b7280;background:#fff}
+.new-token-row{background:#fff;border:2px dashed #bfdbfe;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(-8px);transition:opacity 0.5s,transform 0.5s}
+.new-token-row.appear{opacity:1;transform:none}
+.new-token-row .t-icon{background:#dbeafe}
+.new-token-row .t-key-full{font-family:'SF Mono',Consolas,monospace;font-size:12px;color:#2563eb;margin-top:2px;word-break:break-all}
+.create-dialog{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:24px;width:400px;box-shadow:0 16px 48px rgba(0,0,0,0.12);opacity:0;transition:opacity 0.3s;z-index:40;pointer-events:none}
+.create-dialog.show{opacity:1;pointer-events:auto}
+.dialog-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;transition:opacity 0.3s;z-index:39;pointer-events:none}
+.dialog-overlay.show{opacity:1;pointer-events:auto}
+.create-dialog h3{font-size:16px;font-weight:800;color:#111;margin-bottom:4px}
+.create-dialog p{font-size:13px;color:#9ca3af;margin-bottom:18px}
+.create-dialog label{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block}
+.create-dialog input{width:100%;border:1px solid #d1d5db;border-radius:7px;height:38px;padding:0 10px;font-size:14px;margin-bottom:16px;color:#111}
+.create-dialog input.focused{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.dialog-btns{display:flex;gap:8px;justify-content:flex-end}
+.dialog-btns .btn-cancel{border:1px solid #e5e7eb;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;color:#374151;background:#fff}
+.dialog-btns .btn-create{background:#3b82f6;color:#fff;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:700}
+
+/* ── TYPING ANIMATION ── */
+.typed::after{content:'|';animation:blink 0.7s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="browser">
+  <!-- Browser Chrome -->
+  <div class="chrome">
+    <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+    <div class="addr-bar"><span class="lock">🔒</span><span id="addr">apinet.cloud</span></div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content" id="pageContent">
+
+    <!-- SCENE 1: Homepage -->
+    <div class="scene active" id="s1">
+      <div class="p-home">
+        <nav>
+          <div class="logo"><div class="cloud">☁</div>APINET.CLOUD</div>
+          <div class="links">
+            <a href="#">Home</a><a href="#">Console</a><a href="#">Model Square</a><a href="#">Rankings</a><a href="#">Docs</a>
+          </div>
+          <div class="signin-btn">Sign in</div>
+        </nav>
+        <div class="hero">
+          <div class="hero-left">
+            <div class="badge"><div class="dot"></div>AI Application Infrastructure Foundation</div>
+            <h1>Unified API Gateway<br>for<br><span class="accent">Vast Range of AI Models</span></h1>
+            <p>Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.</p>
+            <div class="btns">
+              <div class="btn-dark">Get Started →</div>
+              <div class="btn-out">View Pricing</div>
+              <div class="btn-out">📖 Docs</div>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="tabs">
+              <div class="tab active">Chat</div>
+              <div class="tab">Responses</div>
+              <div class="tab">Claude</div>
+              <div class="tab">Gemini</div>
+              <div style="margin-left:auto;display:flex;align-items:center;font-size:11px;color:#16a34a;gap:4px;padding:0 10px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block"></span>200 OK</div>
+            </div>
+            <div class="tag">POST</div><span style="font-size:13px;color:#555;margin-left:6px">/v1/chat/completions</span>
+            <div class="code-area" style="margin-top:10px">
+              <div class="label">REQUEST</div>
+              <span class="c-url">curl -X POST "/v1/chat/completions"</span> \<br>
+              <span class="c-hdr" style="margin-left:12px">-H "Authorization: Bearer sk-••••"</span> \<br>
+              <span class="c-hdr" style="margin-left:12px">-d '{</span><br>
+              <span style="margin-left:20px"><span class="c-kv">"model"</span>: <span class="c-str">"your-model"</span>,</span><br>
+              <span style="margin-left:20px"><span class="c-kv">"messages"</span>: [</span><br>
+              <span style="margin-left:32px">{ <span class="c-kv">"role"</span>: <span class="c-str">"user"</span>, <span class="c-kv">"content"</span>: <span class="c-str">"..."</span> }</span><br>
+              <span style="margin-left:20px">]</span><br>
+              <span class="c-hdr">}'</span>
+              <div class="resp-section">
+                <div class="label">RESPONSE</div>
+                <span class="c-resp">{"choices": [{ "message": { "content": "Chat request routed." } }],</span><br>
+                <span class="c-resp">"usage": { "total_tokens": 27 }}</span>
+              </div>
+              <div class="meta">142 MS &nbsp;•&nbsp; 27 TOKENS &nbsp;•&nbsp; COST $0.00081 &nbsp;&nbsp;&nbsp;&nbsp; STREAM &nbsp;•&nbsp; SSE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 2: Register -->
+    <div class="scene" id="s2">
+      <div class="p-register">
+        <div class="form-side">
+          <div class="logo-row"><div class="cloud">☁</div>APINET.CLOUD</div>
+          <h2>Create an account</h2>
+          <div class="sub">Already have an account? <a href="#">Sign in.</a></div>
+          <div class="field">
+            <label>Username</label>
+            <input type="text" id="inp-user" placeholder="Enter your username" class="focused">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <div class="input-wrap">
+              <input type="password" id="inp-pass" placeholder="Enter password (8-72 characters)">
+              <span class="eye">👁</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Confirm password</label>
+            <div class="input-wrap">
+              <input type="password" id="inp-pass2" placeholder="Confirm password">
+              <span class="eye">👁</span>
+            </div>
+          </div>
+          <div class="create-btn" id="create-acc-btn">Create account</div>
+        </div>
+        <div class="photo-side">
+          <div class="cloud-bg">
+            <div class="cloud-shape" style="width:400px;height:300px;position:absolute;top:20%;left:10%"></div>
+            <div class="cloud-shape" style="width:300px;height:200px;position:absolute;top:40%;right:5%;opacity:0.5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 3: Wallet -->
+    <div class="scene" id="s3">
+      <div class="p-wallet">
+        <div class="topbar">
+          <div class="logo-s"><div class="cloud-s">☁</div>APINET.CLOUD</div>
+          <div class="nav-links" style="margin-left:16px">
+            <a href="#">Панель</a>
+            <a href="#" class="active">Кошелёк</a>
+            <a href="#">Токены</a>
+            <a href="#">Журнал</a>
+          </div>
+          <div class="user-pill" style="margin-left:auto">
+            <div class="avatar">U</div>
+            <div class="uname">user123</div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="stats-row">
+            <div class="stat-cell">
+              <div class="s-label">💳 ТЕКУЩИЙ БАЛАНС</div>
+              <div class="s-value" id="balance-val">0</div>
+              <div class="s-desc">Остаток квоты</div>
+            </div>
+            <div class="stat-cell">
+              <div class="s-label">📊 ВСЕГО ИСПОЛЬЗОВАНО</div>
+              <div class="s-value">0</div>
+              <div class="s-desc">Суммарная квота</div>
+            </div>
+            <div class="stat-cell">
+              <div class="s-label">📈 ЗАПРОСОВ СЕГОДНЯ</div>
+              <div class="s-value">0</div>
+              <div class="s-desc">За последние 24 ч.</div>
+            </div>
+          </div>
+          <div class="wallet-grid">
+            <div class="wcard">
+              <div class="wc-title"><span class="ic">💸</span>ПОПОЛНЕНИЕ</div>
+              <div class="recharge-amounts">
+                <div class="ra-btn selected">$10</div>
+                <div class="ra-btn">$20</div>
+                <div class="ra-btn">$50</div>
+                <div class="ra-btn">$100</div>
+              </div>
+              <div class="recharge-input-row">
+                <input type="text" value="10" placeholder="Сумма ($)">
+                <div class="pay-btn">Пополнить</div>
+              </div>
+            </div>
+            <div class="wcard">
+              <div class="wc-title"><span class="ic">🎁</span>ЕСТЬ ПРОМОКОД?</div>
+              <div class="code-card">
+                <div class="code-card .cc-label" style="display:flex;align-items:center;gap:6px;font-size:11px;color:#9ca3af;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">
+                  <span>🎁</span>Введите промокод для активации
+                </div>
+                <div class="code-input-row">
+                  <input type="text" id="promo-input" placeholder="Введите промокод">
+                  <div class="redeem-btn" id="redeem-btn">Применить</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="success-toast" id="toast">
+          <div class="ic">✅</div>
+          <div>
+            <div class="t-title">Промокод активирован!</div>
+            <div class="t-sub">+500 000 токенов зачислено</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: Tokens -->
+    <div class="scene" id="s4">
+      <div class="p-tokens">
+        <div class="topbar">
+          <div class="logo-s"><div class="cloud-s">☁</div>APINET.CLOUD</div>
+          <div class="nav-links" style="margin-left:16px">
+            <a href="#">Панель</a>
+            <a href="#">Кошелёк</a>
+            <a href="#" class="active" style="color:#3b82f6;font-weight:600">Токены</a>
+            <a href="#">Журнал</a>
+          </div>
+          <div class="user-pill" style="margin-left:auto">
+            <div class="avatar">U</div>
+            <div class="uname">user123</div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="tokens-header">
+            <div>
+              <h2>API Токены</h2>
+              <p>Управляйте ключами доступа к API</p>
+            </div>
+            <div class="create-btn-blue" id="create-token-btn">+ Создать токен</div>
+          </div>
+          <div class="token-list" id="token-list">
+            <div class="token-row">
+              <div class="t-icon">🔑</div>
+              <div>
+                <div class="t-name">Default Token</div>
+                <div class="t-key">sk-apinet-••••••••••••••••••••••</div>
+              </div>
+              <div class="t-status"><span class="badge-green">Активен</span></div>
+              <div class="t-actions">
+                <div class="t-action-btn">Копировать</div>
+                <div class="t-action-btn">Изменить</div>
+              </div>
+            </div>
+          </div>
+          <div class="new-token-row" id="new-token-row">
+            <div class="t-icon" style="background:#dbeafe">🔑</div>
+            <div>
+              <div class="t-name">My New Key</div>
+              <div class="t-key-full" id="new-key-val">sk-apinet-</div>
+            </div>
+            <div class="t-status"><span class="badge-green">Активен</span></div>
+            <div class="t-actions">
+              <div class="t-action-btn">Копировать</div>
+            </div>
+          </div>
+        </div>
+        <!-- Create dialog -->
+        <div class="dialog-overlay" id="dialog-overlay"></div>
+        <div class="create-dialog" id="create-dialog">
+          <h3>Создать токен</h3>
+          <p>Введите название для нового API-ключа</p>
+          <label>Название</label>
+          <input type="text" id="token-name-inp" placeholder="Например: My App" class="focused">
+          <div class="dialog-btns">
+            <div class="btn-cancel">Отмена</div>
+            <div class="btn-create">Создать</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor">
+      <div class="click-ripple"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 2 L4 18 L8 14 L11 20 L13 19 L10 13 L16 13 Z" fill="white" stroke="#333" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- Step overlay -->
+    <div class="step-overlay" id="stepOverlay">
+      <div class="step-badge" id="stepBadge">Шаг 1</div>
+      <div class="step-text" id="stepText">Открываем сайт apinet.cloud</div>
+    </div>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress" id="progress" style="border-radius:0 0 12px 12px"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const cursor = $('cursor');
+const addr = $('addr');
+const stepOverlay = $('stepOverlay');
+const stepBadge = $('stepBadge');
+const stepText = $('stepText');
+const progress = $('progress');
+
+let raf, startT;
+
+function moveCursor(x, y){ cursor.style.left = x+'px'; cursor.style.top = y+'px'; }
+function click(){ cursor.classList.add('clicking'); setTimeout(()=>cursor.classList.remove('clicking'),350); }
+
+function setAddr(url){ addr.textContent = url; }
+function setStep(badge, text){ stepBadge.textContent = badge; stepText.textContent = text; stepOverlay.classList.add('show'); }
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+// Typing helper — returns promise resolving after typing is done
+function typeInto(el, text, delay=70){
+  return new Promise(resolve => {
+    el.value = ''; el.classList.add('typed');
+    let i = 0;
+    const t = setInterval(()=>{
+      el.value += text[i++];
+      if(i >= text.length){ clearInterval(t); el.classList.remove('typed'); resolve(); }
+    }, delay);
+  });
+}
+
+function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function startProgress(ms){
+  startT = performance.now();
+  cancelAnimationFrame(raf);
+  function tick(now){
+    const pct = Math.min((now - startT) / ms * 100, 100);
+    progress.style.width = pct + '%';
+    if(pct < 100) raf = requestAnimationFrame(tick);
+  }
+  raf = requestAnimationFrame(tick);
+}
+
+async function run(){
+  // ── SCENE 1: Homepage ──
+  showScene('s1');
+  setAddr('apinet.cloud');
+  moveCursor(640, 360);
+  setStep('Шаг 0', 'Открываем apinet.cloud — главная страница');
+  startProgress(4000);
+  await wait(1500);
+  moveCursor(1215, 42); // Sign in button
+  await wait(700); click();
+  await wait(1800);
+
+  // ── SCENE 2: Register ──
+  showScene('s2');
+  setAddr('apinet.cloud/register');
+  setStep('Шаг 1', 'Регистрируемся — занимает 30 секунд');
+  startProgress(6000);
+  await wait(500);
+  moveCursor(320, 280); await wait(400); click();
+  await wait(300);
+  await typeInto($('inp-user'), 'user123', 80);
+  await wait(300);
+  moveCursor(320, 352); await wait(300); click();
+  $('inp-pass').classList.add('focused'); $('inp-user').classList.remove('focused');
+  await wait(200);
+  await typeInto($('inp-pass'), '••••••••', 100);
+  await wait(300);
+  moveCursor(320, 422); await wait(300); click();
+  $('inp-pass2').classList.add('focused'); $('inp-pass').classList.remove('focused');
+  await wait(200);
+  await typeInto($('inp-pass2'), '••••••••', 100);
+  await wait(300);
+  moveCursor(320, 492); await wait(400); click();
+  $('create-acc-btn').style.background = '#2563eb';
+  await wait(1500);
+
+  // ── SCENE 3: Wallet ──
+  showScene('s3');
+  setAddr('apinet.cloud/user/wallet');
+  setStep('Шаг 2', 'Пополняем баланс и вводим промокод');
+  startProgress(6500);
+  moveCursor(640, 360);
+  await wait(1000);
+  // Click promo field
+  moveCursor(580, 470); await wait(500); click();
+  $('promo-input').classList.add('typing');
+  await typeInto($('promo-input'), 'START2024', 100);
+  await wait(300);
+  moveCursor(720, 470); await wait(400); click();
+  $('redeem-btn').classList.add('active');
+  await wait(500);
+  // Show toast
+  $('toast').classList.add('show');
+  // Animate balance
+  let bal = 0;
+  const targetBal = 500000;
+  const balStep = targetBal / 40;
+  const balInt = setInterval(()=>{
+    bal = Math.min(bal + balStep, targetBal);
+    $('balance-val').textContent = Math.round(bal).toLocaleString('ru');
+    if(bal >= targetBal) clearInterval(balInt);
+  }, 40);
+  await wait(2500);
+  $('toast').classList.remove('show');
+  await wait(500);
+
+  // ── SCENE 4: Tokens ──
+  showScene('s4');
+  setAddr('apinet.cloud/user/token');
+  setStep('Шаг 3', 'Создаём API-ключ');
+  startProgress(6000);
+  moveCursor(640, 300);
+  await wait(800);
+  moveCursor(1100, 175); await wait(400); click();
+  // Show dialog
+  $('dialog-overlay').classList.add('show');
+  $('create-dialog').classList.add('show');
+  await wait(400);
+  moveCursor(780, 310); await wait(300); click();
+  await typeInto($('token-name-inp'), 'My New Key', 90);
+  await wait(400);
+  moveCursor(850, 390); await wait(400); click();
+  $('create-dialog').classList.remove('show');
+  $('dialog-overlay').classList.remove('show');
+  // Appear new token
+  await wait(400);
+  const newRow = $('new-token-row');
+  newRow.classList.add('appear');
+  // Type out key
+  const keyEl = $('new-key-val');
+  const fullKey = 'sk-apinet-xT9mK2pL8nQwR7vY3bZ6';
+  keyEl.textContent = 'sk-apinet-';
+  await wait(200);
+  let ki = 10;
+  const keyInt = setInterval(()=>{
+    if(ki < fullKey.length){ keyEl.textContent += fullKey[ki++]; }
+    else clearInterval(keyInt);
+  }, 60);
+  setStep('Готово!', 'Ключ создан — используйте baseURL: https://apinet.cloud/v1');
+  await wait(3000);
+
+  // Restart
+  await wait(1000);
+  $('new-token-row').classList.remove('appear');
+  $('promo-input').value = '';
+  $('promo-input').classList.remove('typing');
+  $('redeem-btn').classList.remove('active');
+  $('balance-val').textContent = '0';
+  $('inp-user').value = ''; $('inp-pass').value = ''; $('inp-pass2').value = '';
+  $('create-acc-btn').style.background = '';
+  run();
+}
+
+// Start cursor in center
+moveCursor(640, 360);
+run();
+</script>
+</body>
+</html>

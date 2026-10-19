@@ -1,0 +1,47 @@
+#1 - VIP / SVIP Авто-апгрейд
+What & Why
+Реализовать автоматическое переключение групп пользователей:
+
+default → vip: пользователь накопил суммарных трат ≥ $1 000 за всё время
+vip → svip: пользователь является VIP и потратил ≥ $100 за текущий день → сразу переходит в SVIP
+svip → vip: наступает день, когда пользователь потратил < $100 → возвращается в VIP
+Сейчас эти правила написаны только в тексте на фронтенде, но реальной логики в системе нет.
+
+Done looks like
+Пользователь, накопивший $1 000 трат, автоматически получает группу vip (без перезапуска)
+VIP-пользователь, потративший $100 за один день, немедленно получает svip
+В полночь (UTC) фоновый процесс проверяет SVIP-пользователей: если вчера потрачено < $100 — группа возвращается в vip
+Карточка VIP в кошельке показывает новую формулировку правила SVIP и прогресс к $100/день (вместо среднего за 30 дней)
+Out of scope
+Ручное управление группой администратором (уже есть)
+Переход ниже default (не предусмотрен)
+Уведомления пользователю о смене группы
+Steps
+Redis-счётчик дневных трат — После каждого списания квоты атомарно инкрементировать Redis-ключ user_daily_quota:{userId}:{YYYY-MM-DD} (TTL 48 ч). Если Redis недоступен — fallback: запрос SUM(quota) по таблице logs за сегодня.
+
+Утилиты модели — Добавить в model/user.go функции: GetUserDailyQuota(userId int, date time.Time) (int, error) (запрос к logs) и UpdateUserGroup(userId int, group string) error (GORM update + InvalidateUserCache). Убедиться что функция обновления группы в подписке (model/subscription.go) не конфликтует.
+
+Реал-тайм апгрейд — В service/quota.go, в фоне после успешного UpdateUserUsedQuotaAndRequestCount, проверить:
+
+Если группа пользователя default и used_quota / QuotaPerUnit ≥ 1 000 → вызвать UpdateUserGroup(userId, "vip")
+Если группа vip и дневной счётчик (из Redis или DB) ≥ 100 * QuotaPerUnit → вызвать UpdateUserGroup(userId, "svip") Обе проверки — асинхронно через gopool.Go, чтобы не добавлять задержку к запросу.
+Ночной фоновый таск (даунгрейд) — Создать service/vip_auto_group_task.go по образцу subscription_reset_task.go. Запускать тикер раз в 1 час. При срабатывании: для каждого пользователя с группой svip проверить дневной расход вчерашнего дня — если < $100 × QuotaPerUnit → UpdateUserGroup(userId, "vip"). Обрабатывать батчами по 200 пользователей. Запускать только на мастер-ноде (common.IsMasterNode).
+
+Запуск таска — Добавить вызов StartVipAutoGroupTask() в точку инициализации сервисов (там же где StartSubscriptionQuotaResetTask()).
+
+Фронтенд — В vip-tier-card.tsx изменить:
+
+Текст правила SVIP: «Потратьте $100 за один день будучи VIP — получите SVIP. SVIP сохраняется пока вы тратите ≥ $100 каждый день.»
+Прогресс-бар SVIP: показывать трату за сегодня (today_quota из ответа API) вместо 30-дневного среднего. Если поле отсутствует — считать 0.
+Добавить поле today_quota в тип UserWalletData.
+API для today_quota — В эндпоинте кошелька (controller, который возвращает UserWalletData) добавить поле today_quota: сумма квоты из logs за сегодня для текущего пользователя (с Redis-кешированием).
+
+Relevant files
+service/quota.go
+service/subscription_reset_task.go
+model/user.go
+model/log.go
+model/user_cache.go
+common/topup-ratio.go
+web/default/src/features/wallet/components/vip-tier-card.tsx
+web/default/src/features/wallet/types

@@ -1,0 +1,105 @@
+4. Инструкция: OpenClaw
+Вручную
+1
+Откройте ~/.openclaw/openclaw.json или OpenClaw config, который использует агент.
+2
+Смерджите блок провайдера codexsale и список моделей ниже.
+3
+Используйте codexsale/gpt-5.6-luna как primary model и перезапустите OpenClaw.
+OpenClaw manual provider
+
+Provider ID: codexsale
+API: openai-completions
+Primary model: codexsale/gpt-5.6-luna
+
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "codexsale": {
+        "baseUrl": "https://codex.sale/v1",
+        "apiKey": "sk-clb-_brPGKGL8JwTLCPMverTYxxZ6b0qVp3O9jPxKjLuTcc",
+        "api": "openai-completions",
+        "timeoutSeconds": 300,
+        "models": [
+          {
+            "id": "gpt-5.5",
+            "name": "GPT 5.5",
+            "reasoning": true,
+            "compat": {
+              "supportedReasoningEfforts": [
+                "low",
+                "medium",
+                "high",
+                "xhigh"
+              ],
+              "reasoningEffortMap": {
+                "xhigh": "xhigh"
+              }
+            }
+          },
+          {
+            "id": "deepseek-flash",
+            "name": "DeepSeek V4.1 Flash"
+          },
+          {
+            "id": "deepseek-v4-pro",
+            "name": "DeepSeek V4 Pro"
+          },
+          {
+            "id": "gpt-5.6-luna",
+            "name": "GPT 5.6 Luna"
+          },
+          {
+            "id": "gpt-5.6-terra",
+            "name": "GPT 5.6 Terra"
+          },
+          {
+            "id": "gpt-5.6-sol",
+            "name": "GPT 5.6 Sol"
+          },
+          {
+            "id": "gpt-6-astra",
+            "name": "GPT 6 Astra"
+          },
+          {
+            "id": "gpt-6.1-sol",
+            "name": "GPT 6.1 Sol"
+          },
+          {
+            "id": "gpt-6-sol",
+            "name": "GPT 6 Sol"
+          },
+          {
+            "id": "gpt-6-luna",
+            "name": "GPT 6 Luna"
+          },
+          {
+            "id": "glm-5.3-flash",
+            "name": "GLM 5.3 Flash"
+          },
+          {
+            "id": "glm-5.3",
+            "name": "GLM 5.3"
+          },
+          {
+            "id": "glm-5.2",
+            "name": "GLM 5.2"
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "codexsale/gpt-5.6-luna"
+      },
+      "models": {
+        "codexsale/*": {}
+      }
+    }
+  }
+}
+
+Ручной режим полезен, если OpenClaw работает в закрытом окружении или с кастомным config path.

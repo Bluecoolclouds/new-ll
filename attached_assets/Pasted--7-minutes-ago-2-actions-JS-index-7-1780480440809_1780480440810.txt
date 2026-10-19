@@ -1,0 +1,42 @@
+чет не работает вроде проверь
+
+7 minutes ago
+
+2 actions
+Браузер теперь грузит новый JS (index.792bc1a463.js), но /api/user/pally/pay всё ещё не вызывается. Значит дело не в минимальной сумме. Нужно внимательно проследить весь путь от клика кнопки. Дай разберусь в реальном коде:
+
+
+2 actions
+Поток ясен — processPayment должен вызвать /api/user/pally/pay. Но не вызывает. Читаю весь хук:
+
+
+2 actions
+Ключевой момент — isPallyPayment(paymentType). Если method.type для Pally не совпадает с тем, что проверяет isPallyPayment, то Pally-ветка пропускается и идёт обычный requestPayment. Проверю:
+
+
+2 actions
+isPallyPayment проверяет === 'pally', и раз /api/user/pally/amount вызывается, значит method.type === 'pally' верный. Но эти вызовы amount могут идти из handleMethodChange (просто выбор метода для предпросмотра), а не из клика по кнопке оплаты. Проверю как устроены кнопки в форме:
+
+
+6 actions
+Давай посмотрю на саму кнопку и значение localCurrency по умолчанию — возможно canProceed = false блокирует клик:
+
+
+4 actions
+Логи показывают: после загрузки нового JS пользователь только просматривал Pally (preview), затем переключился на FreeKassa. Кнопка оплаты, вероятно, заблокирована (canProceed = false) из-за рассогласования двух формул минимума. Проверю бэкенд, чтобы понять истинный минимум и единицы:
+
+
+2 actions
+Теперь вижу настоящий баг. Бэкенд getPallyPayMoney(amount) = amount × 0.0002 RUB. Фронтенд шлёт Math.floor(topupAmount) = 5 (долларов), значит money = 5 × 0.0002 = 0.001 руб → меньше минимума 100 руб → бэкенд отклоняет. Здесь unitPrice = 0.0002 это RUB за КРЕДИТ, а не за доллар. Сравню с FreeKassa, чтобы понять принятый паттерн:
+
+
+2 actions
+Читаю полную логику FreeKassa, чтобы понять корректный паттерн единиц:
+
+
+2 actions
+FreeKassa — это эталон. Его FreeKassaUnitPrice = RUB за доллар, а req.Amount в долларах (или кредитах при Tokens-режиме). Pally же использует 0.0002 (RUB за кредит) и шлёт доллары без конвертации → 5 × 0.0002 = 0.001 руб. Сравню дефолты и настройки обоих:
+
+
+2 actions
+Now I have the complete picture. Two clean reference points: FreeKassa uses 90.0 RUB per dollar; Pally uses 0.0002 RUB per credit — but the frontend sends dollars to both. So Pally computes 5 × 0.0002 = 0.001 RUB. Let me verify display type and QuotaPerUnit before fixing:

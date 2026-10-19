@@ -1,0 +1,744 @@
+[17.06.2026 1:27] CryptoSYGNALS: Да, посмотрела код. Коротко:
+
+Что поддерживает apinet
+
+Сейчас в коде есть несколько разных механизмов web search, в зависимости от провайдера/канала:
+
+1) OpenAI-style chat completions
+
+В общий request уже добавлено поле:
+
+• web_search_options
+• плюс vendor-specific поля:
+  • search_parameters — для xAI
+  • enable_search — для Qwen/Ali-подобных
+  • web_search — для Baidu v2
+  • search_domain_filter, search_recency_filter, search_mode — для Perplexity
+
+Это видно в:
+
+• /root/apinet/dto/openai_request.go
+
+───
+
+2) Claude web search
+
+Поддержка есть явно.
+
+Если в запросе приходит:
+
+"web_search_options": {
+  "search_context_size": "low|medium|high",
+  "user_location": {...}
+}
+
+то apinet превращает это в Claude tool:
+
+• type: "web_search_20250305"
+• name: "web_search"
+
+и мапит:
+
+• low → max_uses = 1
+• medium → max_uses = 5
+• high → max_uses = 10
+
+Файлы:
+
+• /root/apinet/relay/channel/claude/relay-claude.go
+• /root/apinet/dto/claude.go
+
+И ещё считает usage:
+
+• claude_web_search_requests
+
+───
+
+3) OpenAI Responses API built-in web search
+
+Поддержка тоже есть.
+
+Код знает built-in tool:
+
+• web_search_preview
+
+и built-in call:
+
+• web_search_call
+
+То есть если использовать Responses API и передать tool типа:
+
+{
+  "type": "web_search_preview",
+  "search_context_size": "medium"
+}
+
+apinet:
+
+• сохраняет этот tool в relay info
+• считает вызовы web_search_call
+• умеет биллить это как tool usage
+
+Файлы:
+
+• /root/apinet/dto/openai_response.go
+• /root/apinet/relay/common/relay_info.go
+• /root/apinet/relay/channel/openai/relay_responses.go
+
+───
+
+4) Perplexity
+
+Есть отдельный канал/adaptor perplexity.
+
+Прокидываются поля:
+
+• search_domain_filter
+• search_recency_filter
+• return_images
+• return_related_questions
+• search_mode
+
+Файлы:
+
+• /root/apinet/relay/channel/perplexity/*
+
+То есть для Perplexity search — это нативная часть канала, не просто prompt.
+
+───
+
+5) xAI / Grok
+
+Есть поддержка через суффикс модели -search.
+
+Если upstream model заканчивается на -search, то adaptor:
+
+• убирает суффикс из model
+• автоматически добавляет в request:
+
+"search_parameters": {
+  "mode": "on"
+}
+
+Файл:
+
+• /root/apinet/relay/channel/xai/adaptor.go
+
+───
+
+6) Baidu v2
+
+Есть похожая логика через суффикс модели -search.
+
+Если модель оканчивается на -search, то автоматически добавляется:
+
+"web_search": {
+  "enable": true,
+  "enable_citation": true,
+  "enable_trace": true,
+  "enable_status": false
+}
+
+Файл:
+
+• /root/apinet/relay/channel/baidu_v2/adaptor.go
+
+───
+
+7) Qwen / Ali
+
+Есть следы поддержки internet-search режима:
+
+• константа -internet
+• поле enable_search
+
+Но по коду, который я посмотрела, полной автоконверсии как у xAI/Baidu я не вижу в этом фрагменте. То есть DTO под это готово, но надо ещё отдельно смотреть, где конкретно enable_search реально выставляется.
+
+Файлы:
+
+• /root/apinet/dto/openai_request.go
+• /root/apinet/relay/channel/ali/text.go
+• /root/apinet/relay/channel/ali/dto.go
+
+───
+
+8) Gemini
+
+В DTO есть:
+
+• retrievalConfig
+
+Но в текущем adaptor’е:
+
+• ConvertOpenAIResponsesRequest для Gemini вообще not implemented
+• явной рабочей прокидки web search из OpenAI-compatible запроса в Gemini search я пока не увидела
+
+Файлы:
+
+• `/r
+[17.06.2026 1:28] CryptoSYGNALS: oot/apinet/dto/gemini.go`
+
+• /root/apinet/relay/channel/gemini/adaptor.go
+
+То есть заготовки есть, но по найденному коду не похоже, что web search для Gemini уже полноценно реализован в этом OpenAI-compatible слое.
+
+───
+
+Как это реализовано в apinet
+
+Для chat completions
+
+apinet принимает расширенные поля прямо в общем OpenAI-compatible request:
+
+{
+  "model": "...",
+  "messages": [...],
+  "web_search_options": {
+    "search_context_size": "medium"
+  }
+}
+
+Дальше в TextHelper это проходит через adaptor конкретного провайдера.
+
+Файл:
+
+• /root/apinet/relay/compatible_handler.go
+
+Там ещё есть валидация:
+
+• search_context_size должен быть low | medium | high
+• если не указан, ставится medium
+
+Файл:
+
+• /root/apinet/relay/helper/valid_request.go
+
+───
+
+Для OpenAI Responses API
+
+Search идёт не через web_search_options, а через built-in tools.
+
+То есть запрос должен быть примерно такого типа:
+
+{
+  "model": "gpt-...",
+  "input": "...",
+  "tools": [
+    {
+      "type": "web_search_preview",
+      "search_context_size": "medium"
+    }
+  ]
+}
+
+И apinet уже умеет:
+
+• распознать этот tool
+• отследить вызовы web_search_call
+• посчитать usage/price
+
+───
+
+Что по сути “какие модели поддерживают”
+
+Вот важный момент: в apinet нет одного централизованного списка “эти модели умеют web search”.
+
+Поддержка сейчас выглядит так:
+
+• Claude — да, через web_search_options
+• OpenAI Responses-compatible модели — да, если модель/канал реально умеет built-in web_search_preview
+• Perplexity — да, нативно
+• xAI — да, через -search / search_parameters.mode=on
+• Baidu v2 — да, через -search / web_search.enable=true
+• Qwen/Ali — похоже частично подготовлено, но надо дочитать конкретный adaptor
+• Gemini — явной законченной реализации в этом слое я не увидела
+
+То есть ответ: это не “у модели само по себе”, а завязано на канал/adaptor и формат запроса.
+
+───
+
+Практический вывод
+
+Если хочешь включать search в apinet, сейчас есть такие паттерны:
+
+Вариант A — Claude
+
+"web_search_options": {
+  "search_context_size": "medium"
+}
+
+Вариант B — OpenAI Responses
+
+"tools": [
+  {
+    "type": "web_search_preview",
+    "search_context_size": "medium"
+  }
+]
+
+Вариант C — xAI
+
+использовать модель/маппинг с суффиксом -search
+
+Вариант D — Baidu v2
+
+использовать модель/маппинг с суффиксом -search
+
+Вариант E — Perplexity
+
+использовать их channel + optional search-поля
+
+───
+
+Ещё заметила
+
+В системе уже есть pricing/billing под это:
+
+• web_search
+• web_search_preview
+• model-specific цены вроде:
+  • web_search_preview:gpt-4o*
+  • web_search_preview:gpt-4.1*
+
+То есть search в продукте уже задуман как полноценная feature с тарификацией.
+
+───
+
+Если хочешь, я следующим сообщением могу сделать ещё более полезную штуку:
+
+1. найти точные модели/каналы, которые у вас реально заведены в конфиге,
+2. и составить табличку вида:
+
+• модель / channel
+• search support: yes/no/partial
+• как включать
+• какой request body слать
+
+Это уже будет не “по коду вообще”, а по вашему конкретному инстансу.
+[17.06.2026 1:34] CryptoSYGNALS: Ниже нормальная инструкция для людей, как пользоваться web search в apinet без копания в коде.
+
+───
+
+Web Search в apinet: как использовать
+
+Коротко
+
+В apinet web search не включается одинаково для всех моделей.
+
+Есть 3 основных варианта:
+
+1. через web_search_options
+подходит для части OpenAI-compatible запросов, особенно для Claude-интеграции
+
+2. через Responses API tools
+для моделей/каналов, которые поддерживают built-in tool web_search_preview
+
+3. через provider-specific параметры
+например:
+
+  • xAI / Grok → search_parameters
+  • Perplexity → search-поля в запросе
+  • Baidu → web_search
+  • Qwen/Ali → enable_search (если канал это реально поддерживает)
+
+───
+
+Главное правило
+
+Просто написать в prompt:
+
+“поищи в интернете”
+
+недостаточно.
+
+Если search не включён через request body или не поддержан конкретным каналом/моделью, модель либо:
+
+• не сможет искать,
+• либо начнёт фантазировать.
+
+───
+
+Вариант 1. Claude / OpenAI-compatible chat completions
+
+Если ваш клиент работает через обычный endpoint в стиле:
+
+• /v1/chat/completions
+
+можно передавать:
+
+{
+  "model": "claude-...",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Какие новости по OpenAI за сегодня?"
+    }
+  ],
+  "web_search_options": {
+    "search_context_size": "medium"
+  }
+}
+
+Параметры
+
+web_search_options.search_context_size
+
+Допустимые значения:
+
+• low
+• medium
+• high
+
+Если не указать, по коду apinet по умолчанию ставит:
+
+"medium"
+
+Когда использовать
+
+Используйте этот способ, если:
+
+• у вас chat completions
+• модель/канал поддерживает web search через этот механизм
+• особенно если это Claude
+
+───
+
+Вариант 2. OpenAI Responses API
+
+Если вы используете endpoint в стиле:
+
+• /v1/responses
+
+то search включается через tools.
+
+Пример:
+
+{
+  "model": "gpt-4.1",
+  "input": "Найди свежую информацию о релизах OpenAI за последние 7 дней",
+  "tools": [
+    {
+      "type": "web_search_preview",
+      "search_context_size": "medium"
+    }
+  ]
+}
+
+Когда использовать
+
+Используйте этот способ, если:
+
+• ваш клиент уже работает с Responses API
+• модель/канал поддерживает built-in tool web_search_preview
+
+Важно
+
+Для Responses API search включается не через web_search_options, а именно через:
+
+"tools": [{ "type": "web_search_preview", ... }]
+
+───
+
+Вариант 3. Perplexity
+
+Если запрос идёт в канал Perplexity, можно использовать их search-параметры.
+
+Пример:
+
+{
+  "model": "sonar",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Сравни последние новости по NVIDIA и AMD"
+    }
+  ],
+  "search_mode": "web",
+  "search_recency_filter": "week",
+  "return_related_questions": true
+}
+
+Поддерживаемые поля
+
+По коду есть такие поля:
+
+• search_domain_filter
+• search_recency_filter
+• return_images
+• return_related_questions
+• search_mode
+
+Когда использовать
+
+Если модель идёт через Perplexity channel, это один из самых естественных способов делать поиск.
+
+───
+
+Вариант 4. xAI / Grok
+
+Для xAI в apinet есть специальная логика: search включается через search-параметры.
+
+На уровне кода есть режим, где для search добавляется:
+
+"search_parameters": {
+  "mode": "on"
+}
+
+Для людей проще думать так
+
+Если у вас в конфиге/маппинге заведена модель с search-режимом, используйте search-вариант модели, а не обычную модель.
+
+Условно:
+
+• обычная модель: grok-...
+• search-вариант: grok-...-search
+
+Точ
+[17.06.2026 1:35] CryptoSYGNALS: ное имя зависит от того, как это заведено у вас в инстансе.
+
+───
+
+Вариант 5. Baidu
+
+Для Baidu v2 в коде тоже есть search-режим.
+Если используется search-модель/алиас, apinet сам добавляет:
+
+"web_search": {
+  "enable": true,
+  "enable_citation": true,
+  "enable_trace": true,
+  "enable_status": false
+}
+
+Для обычного пользователя логика та же:
+
+• если нужен поиск — выбирайте search-вариант модели/канала
+
+───
+
+Вариант 6. Qwen / Ali
+
+В коде есть подготовка под:
+
+"enable_search": true
+
+Но тут важная оговорка:
+по коду видно, что поддержка частично подготовлена, но не везде явно доведена до конца одинаково, как у Claude/xAI/Baidu.
+
+Значит practically
+
+Если хотите использовать Qwen/Ali search:
+
+• сначала проверьте, что ваш конкретный channel/model alias это реально поддерживает
+• и только потом шлите enable_search
+
+Пример:
+
+{
+  "model": "qwen-...",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Найди актуальные цены на RTX 5090"
+    }
+  ],
+  "enable_search": true
+}
+
+───
+
+Что рекомендуется пользователям
+
+Самый безопасный способ
+
+Если делаете универсальную интеграцию для клиентов, дайте людям такой выбор:
+
+Режим A — обычный запрос
+
+Без search-полей.
+
+Режим B — запрос с web search
+
+В зависимости от выбранного API:
+
+• для chat completions → добавлять web_search_options
+• для responses → добавлять tools: [{type: "web_search_preview"}]
+• для provider-specific каналов → включать их родные search-поля
+
+───
+
+Готовые примеры
+
+1. Claude через chat completions
+
+curl https://your-apinet.example/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Найди свежие новости про Apple Vision Pro"
+      }
+    ],
+    "web_search_options": {
+      "search_context_size": "medium"
+    }
+  }'
+
+───
+
+2. OpenAI Responses API
+
+curl https://your-apinet.example/v1/responses \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4.1",
+    "input": "Найди свежие новости про Apple Vision Pro",
+    "tools": [
+      {
+        "type": "web_search_preview",
+        "search_context_size": "medium"
+      }
+    ]
+  }'
+
+───
+
+3. Perplexity
+
+curl https://your-apinet.example/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "sonar",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сделай сводку свежих новостей по SpaceX"
+      }
+    ],
+    "search_mode": "web",
+    "search_recency_filter": "week",
+    "return_related_questions": true
+  }'
+
+───
+
+4. Qwen/Ali-style
+
+curl https://your-apinet.example/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "qwen-...",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Найди свежие статьи про RAG architecture"
+      }
+    ],
+    "enable_search": true
+  }'
+
+───
+
+Как выбрать search_context_size
+
+low
+
+Когда нужен:
+
+• быстрый ответ
+• минимальный search overhead
+• грубая проверка фактов
+
+medium
+
+Лучший default.
+Подходит почти для всего:
+
+• новости
+• цены
+• актуальные факты
+• быстрые сравнительные ответы
+
+high
+
+Используйте когда:
+
+• нужен более широкий поиск
+• важна полнота
+• запрос сложный или исследовательский
+
+───
+
+Ограничения и ожидания
+
+Важно понимать
+
+Web search:
+
+• может стоить дороже
+• может добавлять задержку
+• зависит от того, поддерживает ли это **конкретный provider/channel/model a
+[17.06.2026 1:35] CryptoSYGNALS: lias**
+
+То есть
+
+Один и тот же запрос:
+
+• с одной моделью сработает
+• с другой — нет
+• с третьей потребует другой формат body
+
+───
+
+Что написать в документации для клиентов
+
+Я бы рекомендовал очень простую формулировку:
+
+Web search
+
+apinet поддерживает web search для части моделей и провайдеров.
+Способ включения зависит от API-режима и провайдера:
+
+• Chat Completions: используйте web_search_options
+• Responses API: используйте tool web_search_preview
+• Provider-specific каналы: используйте их нативные search-поля (search_parameters, search_mode, enable_search, web_search и т.д.)
+
+Пример для Chat Completions
+
+"web_search_options": {
+  "search_context_size": "medium"
+}
+
+Пример для Responses API
+
+"tools": [
+  {
+    "type": "web_search_preview",
+    "search_context_size": "medium"
+  }
+]
+
+───
+
+Моя рекомендация
+
+Если делаешь инструкцию “для людей”, лучше написать правило так:
+
+Рекомендуемый путь
+
+• Claude / chat-completions → web_search_options
+• OpenAI Responses-compatible → tools: [{type: "web_search_preview"}]
+• Perplexity → использовать их search-поля
+• остальные → проверять поддержку конкретного model alias
+
+───
+
+Если хочешь, я могу следующим сообщением сделать ещё более полезную штуку:
+готовый markdown-документ для вашей docs/wiki, аккуратно оформленный, чтобы его можно было сразу вставить в документацию apinet.

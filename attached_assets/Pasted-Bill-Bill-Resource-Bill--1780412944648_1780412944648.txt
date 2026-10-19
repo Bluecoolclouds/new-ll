@@ -1,0 +1,344 @@
+Bill
+
+Bill Resource
+Описание модели Bill
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Уникальный идентификатор счета
+order_id	string			order-285394168	Уникальный идентификатор заказа на вашей стороне
+active	boolean		true
+false	true	Флаг активности счета
+status	enum		NEW
+PROCESS
+UNDERPAID
+SUCCESS
+OVERPAID
+FAIL	NEW	Статус счета
+amount	decimal			24600.05	Сумма, на которую выставлен счет
+type	enum		MULTI
+NORMAL	MULTI	Тип счета
+created_at	datetime	Y-m-d H:i:s		2020-10-19 17:00:00	Дата и время создания счета
+currency_in	enum		USD
+RUB
+EUR	USD	Валюта, в которой оплачивается счет
+ttl	enum			600	Время жизни счета на оплату в секундах.
+
+Order Item Resource
+Структура объекта товара (используется в массиве "items" при создании счёта)
+Важно: передача пустой строки ("") или строки "NULL" в любом поле является недопустимой. Если данные для поля отсутствуют — поле необходимо полностью исключить из запроса.
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+name	string			Steam	Наименование товара или услуги
+price	decimal			500.00	Стоимость позиции в виде строки с двумя знаками после запятой (например: 500.00)
+quantity	decimal			1	Количество единиц товара в виде строки (например: 1)
+category	string			steam	Внутренняя категория продукта. Примеры: steam, digital/stars, digital/subscription/xbox, digital/subscription/netflix
+extra	array			{"steam_account": "jordas123"}	Объект с идентификатором аккаунта, связанным с покупкой. Набор обязательных полей зависит от категории товара. Если данных нет — поле необходимо полностью исключить из запроса, не передавать пустые или нулевые значения.
+extra[steam_account]	string			jordas123	Логин Steam-аккаунта, на который производится пополнение. Обязателен для товаров категории Steam.
+extra[telegram_username]	string			DurovunaDR	Username Telegram-аккаунта для пополнения Stars (например: DurovunaDR). Обязателен при продаже через веб-сайт и через Telegram-бот.
+extra[telegram_id]	string			5099904440	Числовой идентификатор Telegram-аккаунта (например: 5099904440). Обязателен только при продаже через Telegram-бот.
+extra[account]	string			user@example.com	Аккаунт или email, на который активируется услуга (например: user@example.com). Передавать только при наличии данных.
+
+POST /api/v1/bill/create
+Создать счет на оплату
+Для того чтобы провести оплату необходимо создать счет. Если тип счета многоразовый, то по одному счету можно произвести несколько платежей. Домен в shop_url должен совпадать с доментом success_url и fail_url.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+amount	Да	decimal		380.99	Сумма счета на оплату
+shop_id	Да	string		LXZv3R7Q8B	Уникальный идентификатор магазина, к которому относится платеж. Без этого параметра не будет работать Success URL, Fail URL и Result URL
+order_id	Нет	string		order-285394168	Уникальный идентификатор заказа. Будет возвращен в postback.
+description	Нет	string		Order #285394168	Описание платежа
+type	Нет	enum	normal
+multi	normal	Тип платежа. Одноразовый или многоразовый. Если выбран одноразовый, то второй раз оплатить не получится.
+locale	Нет	enum	en
+ru	en	Локаль, язык в котором будет отображаться форма платежа
+currency_in	Нет	enum	RUB
+USD
+EUR	RUB	Валюта, в которой оплачивается счет. Если не передана, то используется валюта магазина. Если shop_id не определен, то используется RUB.
+custom	Нет	string		my-custom-string	Произвольное поле. Будет возвращено в postback.
+payer_pays_commission	Нет	enum	1
+0	1	Параметр, который указывает на то, кто будет оплачивать комиссию за входящий платёж.
+payer_data[phone]	Нет	string		+79991234567	Номер телефона плательщика.
+payer_data[email]	Нет	string		payer@email.com	Параметр, который заполняет email клиента на платёжной странице.
+name	Нет	string		Donation	Название ссылки. Укажите, за что принимаете средства. Этот текст будет отображен в платежной форме.
+ttl	Нет	integer		600	Время жизни счета на оплату в секундах.
+return_url	Нет	string		https://exmpl.com/return	URL для кнопки "Назад в магазин" на странице оплаты. Домен должен совпадать с тем, что указан при добавлении магазина в систему
+success_url	Нет	string		https://exmpl.com/order-285394168/success	Страница успешной оплаты.
+fail_url	Нет	string		https://exmpl.com/order-285394168/fail	Страница неуспешной оплаты.
+payment_method	Нет	enum	BANK_CARD
+SBP	SBP	Если указан этот параметр, то при переходе на платежную форму этот способ оплаты будет выбран автоматически, без возможности выбора другого способ оплаты.
+request_fields[email]	Нет	boolean		false	Обязательный запрос электронной почты у плательщика
+request_fields[phone]	Нет	boolean		false	Обязательный запрос номера телефона у плательщика
+request_fields[name]	Нет	boolean		false	Обязательный запрос ФИО у плательщика
+request_fields[comment]	Нет	boolean		false	Обязательный запрос комментария у плательщика
+items	Нет	array		Order Item Resource	Список товаров
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+success	boolean		true
+false	true	Флаг успешности запроса
+link_url	string	URL		https://pally.info/link/5QWlqB2kKJ	Ссылка на страницу с QR кодом
+link_page_url	string	URL		https://pally.info/transfer/5QWlqB2kKJ	Ссылка на оплату
+bill_id	string			5QWlqB2kKJ	Уникальный идентификатор счета
+Пример запроса
+curl -X POST 'https://pal24.pro/api/v1/bill/create' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT' \
+-d 'amount=100.05' \
+-d 'description=Some desc' \
+-d 'order_id=15' \
+-d 'type=multi' \
+-d 'shop_id=LXZv3R7Q8B' \
+-d 'custom=123' \
+-d 'currency_in=RUB'
+Пример ответа
+{
+    "success": "true",
+    "link_url": "https://pally.info/link/GkLWvKx3",
+    "link_page_url": "https://pally.info/transfer/GkLWvKx3",
+    "bill_id": "GkLWvKx3"
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+400	api:error.transaction_rejected	Транзакция отклонена
+401	Unauthenticated	Неверный API Токен
+403	api:error.invalid_amount	Неверная сумма
+403	api:error.merchant_banned	Доступ для мерчанта запрещен
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.access_denied	Мерчант не имеет доступ до магазина
+403	api:error.ip_access_denied	IP не внесен в вайтлист
+403	api:error.rate-not-found	Направление недоступно
+422		Ошибка валидации входных данных
+500	api:error.general_error	Внутренняя ошибка
+
+POST /api/v1/bill/toggle_activity
+Активировать/деактивировать счет на оплату
+Деактивация счета может быть полезна для ручного отключения платежной ссылки с типом MULTI, т.к. такой тип платежных ссылок не меняет свой статус после оплаты и может быть оплачен еще сколько угодно раз.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+id	Да	string		LXZv3R7Q8B	Уникальный идентификатор счета
+active	Да	boolean	0
+1	0	0 - деактивировать счет, 1 - активировать счет
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Уникальный идентификатор счета
+order_id	string			order-285394168	Уникальный идентификатор заказа на вашей стороне
+active	boolean		true
+false	true	Флаг активности счета
+status	enum		NEW
+PROCESS
+UNDERPAID
+SUCCESS
+OVERPAID
+FAIL	NEW	Статус счета
+amount	decimal			24600.05	Сумма, на которую выставлен счет
+type	enum		MULTI
+NORMAL	MULTI	Тип счета
+created_at	datetime	Y-m-d H:i:s		2020-10-19 17:00:00	Дата и время создания счета
+currency_in	enum		USD
+RUB
+EUR	USD	Валюта, в которой оплачивается счет
+ttl	enum			600	Время жизни счета на оплату в секундах.
+success	boolean		true
+false	true	Флаг успешности запроса
+Пример запроса
+curl -X POST 'https://pal24.pro/api/v1/bill/toggle_activity' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT' \
+-d 'id=LXZv3R7Q5B' \
+-d 'active=1'
+Пример ответа
+{
+    "id": "LXZv3R7Q5B",
+    "activity": "false",
+    "status": "NEW",
+    "type": "MULTI",
+    "amount": 100.05,
+    "currency_in": "USD",
+    "created_at": "2020-11-11 14:46:20",
+    "success": true
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.merchant_banned	Доступ для мерчанта запрещен
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.bill_not_found	Счет не найден
+403	api:error.merchant_subscription_inactive	Подписка неактивна
+403	api:error.merchant_subscription_not_found	Мерчант не имеет подписки
+403	api:error.bill_is_finished	Счет уже оплачен (При типе счета "Одноразовый")
+422		Ошибка валидации входных данных
+500	api:error.general_error	Внутренняя ошибка
+
+GET /api/v1/bill/payments
+Получить платежи, относящиеся к счету на оплату
+Используйте этот метод для получения всех платежей по счету.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+id	Да	string		LXZv3R7Q8B	Уникальный идентификатор счета
+per_page	Нет	integer		50	Количество элементов на странице
+cursor	Нет	string		eyJpZCI6NzY1LCJfcG	Указатель на страницу
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+success	boolean		true
+false	true	Флаг успешности запроса
+data	array	Payment		См. описание Payment	Массив платежей, относящихся к этому счету на оплату
+links	array	Links		См. описание Pagination Links	Ссылки для пагинации
+meta	array	Meta		См. описание Pagination Meta	Мета данные пагинации
+Пример запроса
+curl -X GET 'https://pal24.pro/api/v1/bill/payments ?id=LXZv3R7Q8B ' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Пример ответа
+{
+    "success": true,
+    "data": [
+        {
+            "id": "PQX2XD25a0",
+            "bill_id": "5QWlqB2kKJ",
+            "status": "SUCCESS",
+            "amount": 35400,
+            "amount_received": 33875.6,
+            "from_card": "676454******7272",
+            "currency_in": "RUB",
+            "created_at": "2020-10-19 17:00:00"
+        },
+        {
+            "id": "zeAmwP2d5Q",
+            "bill_id": "5QWlqB3kKJ",
+            "status": "NEW",
+            "amount": 3200,
+            "amount_received": 3062.2,
+            "from_card": "676454******7272",
+            "currency_in": "RUB",
+            "created_at": "2020-10-18 17:00:00"
+        },
+        {
+            "id": "NDa7lNmdzx",
+            "bill_id": "5QWlqB4kKJ",
+            "status": "FAIL",
+            "amount": 26100,
+            "amount_received": 24976.08,
+            "from_card": "553691******4442",
+            "currency_in": "RUB",
+            "created_at": "2020-10-01 17:00:00"
+        }
+    ],
+    "links": {
+        "prev": "https://pally.info/api/v1/bill/payments?cursor=eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ",
+        "next": "https://pally.info/api/v1/bill/payments?cursor=eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+    },
+    "meta": {
+        "path": "https://pally.info/api/v1/bill/payments",
+        "per_page": 1000,
+        "next_cursor": "eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9",
+        "prev_cursor": "eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ"
+    }
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.too_many_payments	Запрос пытается получить слишком много платежей
+403	api:error.merchant_banned	Доступ для мерчанта запрещен
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.bill_not_found	Счет не найден
+
+GET /api/v1/bill/search
+Найти счета на оплату
+Поиск по счетам. Можно указать периоды времени или магазин, чтобы найти нужные счета.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+start_date	Нет	datetime		2025-01-01	Начальная датавремя для получения счетов в UTC
+finish_date	Нет	datetime		2024-12-01 23:59:59	Конечная датавремя для получения счетов в UTC
+shop_id	Нет	string		LXZv3R7Q8B	Уникальный идентификатор магазина
+per_page	Нет	integer		50	Количество элементов на странице
+cursor	Нет	string		eyJpZCI6NzY1LCJfcG	Указатель на страницу
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+success	boolean		true
+false	true	Флаг успешности запроса
+data	array	Bill		Cм. описание Bill Resource	Массив счетов она оплату, удовлетворяющих криетриям запроса
+links	array	Links		См. описание Pagination Links	Ссылки для пагинации
+meta	array	Meta		См. описание Pagination Meta	Мета данные пагинации
+Пример запроса
+curl -X GET 'https://pal24.pro/api/v1/bill/search ?start_date=2024-01-01&finish_date=2025-12-01 ' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Пример ответа
+{
+    "success": true,
+    "data": [
+        {
+            "id": "LXZv3R7Q5B",
+            "status": "NEW",
+            "type": "MULTI",
+            "amount": 100.05,
+            "currency_in": "RUB",
+            "created_at": "2020-11-11 14:46:20"
+        }
+    ],
+    "links": {
+        "prev": "https://pally.info/api/v1/bill/search?cursor=eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ",
+        "next": "https://pally.info/api/v1/bill/search?cursor=eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+    },
+    "meta": {
+        "path": "https://pally.info/api/v1/bill/search",
+        "per_page": 1000,
+        "next_cursor": "eyJpZCI6NzU2LCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9",
+        "prev_cursor": "eyJpZCI6NzY1LCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ"
+    }
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.access_denied	Мерчант не имеет доступ до магазина
+403	api:error.ip_access_denied	IP не внесен в вайтлист
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.bill_not_found	Счет не найден
+403	api:error.shop_not_found	Магазин не найден. Возникает только в случае, если shop_id был передан
+422		Ошибка валидации входных данных
+
+GET /api/v1/bill/status
+Получить статус счета на оплату
+Если счет имеет тип MULTI, то его статус не будет изменяться.
+Параметры запроса
+Название параметра	Обязательный параметр	Тип	Возможные значения	Пример	Описание
+id	Да	string		LXZv3R7Q8B	Уникальный идентификатор счета
+Параметры ответа
+Название параметра	Тип	Формат	Возможные значения	Пример	Описание
+id	string			jZqmaPvl9W	Уникальный идентификатор счета
+order_id	string			order-285394168	Уникальный идентификатор заказа на вашей стороне
+active	boolean		true
+false	true	Флаг активности счета
+status	enum		NEW
+PROCESS
+UNDERPAID
+SUCCESS
+OVERPAID
+FAIL	NEW	Статус счета
+amount	decimal			24600.05	Сумма, на которую выставлен счет
+type	enum		MULTI
+NORMAL	MULTI	Тип счета
+created_at	datetime	Y-m-d H:i:s		2020-10-19 17:00:00	Дата и время создания счета
+currency_in	enum		USD
+RUB
+EUR	USD	Валюта, в которой оплачивается счет
+ttl	enum			600	Время жизни счета на оплату в секундах.
+success	boolean		true
+false	true	Флаг успешности запроса
+Пример запроса
+curl -X GET 'https://pal24.pro/api/v1/bill/status ?id=LXZv3R7Q5B ' \
+-H 'Authorization: Bearer 72|oBCB7Z3SmUm1gvkpEdRcSR2q1ERHpG4vD3DNBmuT'
+Пример ответа
+{
+    "id": "LXZv3R7Q5B",
+    "order_id": "order-285394168",
+    "status": "NEW",
+    "type": "MULTI",
+    "amount": 100.05,
+    "currency_in": "RUB",
+    "created_at": "2020-11-11 14:46:20",
+    "ttl": 600,
+    "success": true
+}
+Возможные ошибки
+Код ответа	Ключ ошибки	Описание ошибки
+401	Unauthenticated	Неверный API Токен
+403	api:error.access_denied	Мерчант не имеет доступ до магазина
+403	api:error.ip_access_denied	IP не внесен в вайтлист
+403	api:error.merchant_not_found	Мерчант не найден
+403	api:error.bill_not_found	Счет не найден
+403	api:error.shop_not_found	Магазин не найден. Возникает только в случае, если shop_id был передан
+422		Ошибка валидации входных данных

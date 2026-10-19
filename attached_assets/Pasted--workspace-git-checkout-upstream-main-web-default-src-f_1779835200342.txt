@@ -1,0 +1,55 @@
+~/workspace$ git checkout upstream/main -- \
+  web/default/src/features/keys/api.ts \
+  web/default/src/features/keys/components/api-keys-table.tsx \
+  web/default/src/routes/_authenticated/keys/index.tsx \
+  web/default/src/components/config-drawer.tsx \
+  web/default/src/components/group-badge.tsx \
+  web/default/src/components/status-badge.tsx \
+  web/default/src/context/theme-customization-provider.tsx \
+  web/default/src/lib/theme-customization.ts \
+  web/default/src/styles/index.css \
+  web/default/src/styles/theme-presets.css \
+  web/default/src/styles/theme.css \
+  web/default/src/features/subscriptions/api.ts \
+  web/default/src/features/subscriptions/components/dialogs/subscription-purchase-dialog.tsx \
+  web/default/src/features/wallet/components/subscription-plans-card.tsx \
+  web/default/src/features/wallet/index.tsx \
+  web/default/src/features/usage-logs/components/columns/column-helpers.tsx \
+  web/default/src/features/usage-logs/components/columns/common-logs-columns.tsx \
+  web/default/src/components/layout/hooks/use-sidebar-view.ts \
+  web/default/src/components/layout/components/sidebar-view-header.tsx
+
+git checkout upstream/main -- \
+  controller/subscription.go \
+  model/subscription.go \
+  model/topup.go \
+  router/api-router.go
+error: pathspec 'web/default/src/components/layout/hooks/use-sidebar-view.ts' did not match any file(s) known to git
+~/workspace$ git checkout upstream/main -- \
+  web/default/src/features/keys/api.ts \
+  web/default/src/features/keys/components/api-keys-table.tsx \
+  web/default/src/routes/_authenticated/keys/index.tsx \
+  web/default/src/components/config-drawer.tsx \
+  web/default/src/components/group-badge.tsx \
+  web/default/src/components/status-badge.tsx \
+  web/default/src/context/theme-customization-provider.tsx \
+  web/default/src/lib/theme-customization.ts \
+  web/default/src/styles/index.css \
+  web/default/src/styles/theme-presets.css \
+  web/default/src/styles/theme.css \
+  web/default/src/features/subscriptions/api.ts \
+  web/default/src/features/subscriptions/components/dialogs/subscription-purchase-dialog.tsx \
+  web/default/src/features/wallet/components/subscription-plans-card.tsx \
+  web/default/src/features/wallet/index.tsx \
+  web/default/src/features/usage-logs/components/columns/column-helpers.tsx \
+  web/default/src/features/usage-logs/components/columns/common-logs-columns.tsx
+~/workspace$ for f in web/default/src/i18n/locales/*.json; do
+  if grep -q "<<<<<<<" "$f" 2>/dev/null; then
+    sed -i '/^<<<<<<< HEAD$/,/^=======$/d; /^>>>>>>> .*/d' "$f"
+  fi
+done
+git add -A
+git commit -m "Apply remaining upstream rc.9-rc.10 changes" --no-edit
+[main 22f7eee9] Apply remaining upstream rc.9-rc.10 changes
+ 17 files changed, 1209 insertions(+), 187 deletions(-)
+~/workspace$ 

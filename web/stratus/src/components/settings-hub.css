@@ -1,0 +1,19 @@
+.settings-hub { overflow-x: clip; background: var(--stratus-ice-canvas); }
+.settings-hub-shell { width: min(1320px, 100%); min-width: 0; margin: 0 auto; padding: 18px 34px 54px; }
+.settings-hub-heading { margin: 38px 2px 22px; }
+.settings-hub-kicker { color: #7195a0; font-size: 10px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+.settings-hub-heading h1 { margin: 10px 0 8px; color: var(--stratus-ice-ink); font-family: var(--app-font-serif); font-size: clamp(32px, 4vw, 44px); font-weight: 600; letter-spacing: -.065em; line-height: 1.04; }
+.settings-hub-heading p { margin: 0; color: #718d98; font-size: 13px; line-height: 1.6; }
+.settings-tabs { display: flex; align-items: center; gap: 5px; width: max-content; max-width: 100%; margin: 0 0 16px; border-bottom: 1px solid var(--stratus-ice-border); }
+.settings-tab { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 15px; border-radius: 10px 10px 0 0; color: #66818b; font-size: 12px; text-decoration: none; white-space: nowrap; transition: color .18s, background .18s; }
+.settings-tab:hover { color: var(--stratus-ice-primary-text); background: color-mix(in srgb, var(--stratus-ice-primary) 38%, transparent); }
+.settings-tab.is-selected { color: #315d6d; font-weight: 700; }
+.settings-tab.is-selected::after { position: absolute; right: 10px; bottom: -1px; left: 10px; height: 2px; border-radius: 2px; background: var(--stratus-ice-accent); content: ""; }
+.settings-panel { min-width: 0; outline: none; animation: settings-panel-enter .2s ease-out both; }
+.settings-hub.account-settings { background: var(--stratus-ice-canvas) !important; }
+.settings-hub .account-card { border-color: var(--stratus-ice-border); background: color-mix(in srgb, var(--stratus-ice-canvas) 82%, var(--stratus-ice-primary)); }
+.settings-hub-loading { display: grid; min-height: 50vh; place-items: center; color: #718d98; font-size: 13px; }
+@keyframes settings-panel-enter { from { opacity: .72; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 760px) { .settings-hub-shell { padding: 12px 13px 38px; } .settings-hub-heading { margin: 27px 2px 18px; } .settings-tabs { width: 100%; overflow-x: auto; } .settings-tab { flex: 1; justify-content: center; padding: 0 10px; } }
+@media (max-width: 390px) { .settings-tab { gap: 6px; font-size: 11px; } .settings-tab svg { width: 13px; } }
+@media (prefers-reduced-motion: reduce) { .settings-panel, .settings-tab { animation-duration: .01ms; transition-duration: .01ms; } }

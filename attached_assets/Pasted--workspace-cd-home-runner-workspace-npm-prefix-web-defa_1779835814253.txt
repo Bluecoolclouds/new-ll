@@ -1,0 +1,48 @@
+~/workspace$ cd /home/runner/workspace && npm --prefix web/default run build && sleep 10 && go build -o new-api . && echo "ALL DONE"
+
+> newapi-web@1.0.0 build
+> rsbuild build
+
+Rsbuild v2.0.7
+
+info    build started...
+error   Build errors: 
+File: ./src/features/channels/components/drawers/channel-mutate-drawer.tsx:48:1-76
+  × Module not found: Can't resolve '../../hooks/use-channel-mutate-form' in '/home/runner/workspace/web/default/src/features/channels/components/drawers'
+    ╭─[48:0]
+ 46 │ import { fetchModels, getAllModels, getChannel, getChannelKey, getGroups, getPrefillGroups, refreshCodexCredential } from '../../api';
+ 47 │ import { ADD_MODE_OPTIONS, CHANNEL_TYPE_OPTIONS, CHANNEL_TYPE_WARNINGS, ERROR_MESSAGES, FIELD_DESCRIPTIONS, FIELD_PLACEHOLDERS, MODEL_FETCHABLE_TYPES } from '../../constants';
+ 48 │ import { useChannelMutateForm } from '../../hooks/use-channel-mutate-form';
+    · ───────────────────────────────────────────────────────────────────────────
+ 49 │ import { CHANNEL_FORM_DEFAULT_VALUES, channelFormSchema, channelsQueryKeys, transformChannelToFormDefaults, deduplicateKeys, getChannelTypeIcon, getKeyPromptForType, parseModelsString, formatModelsArray, extractRedirectModels, extractMappingSourceModels, hasModelConfigChanged, findMissingModelsInMapping, validateModelMappingJson } from '../../lib';
+ 50 │ import { collectInvalidStatusCodeEntries, collectNewDisallowedStatusCodeRedirects } from '../../lib/status-code-risk-guard';
+    ╰────
+Import traces (entry → error):
+  ./src/main.tsx
+  ./src/routeTree.gen.ts
+  … (3 hidden)
+  ./src/features/channels/components/channels-dialogs.tsx
+  ./src/features/channels/components/drawers/channel-mutate-drawer.tsx ×
+
+File: ./src/features/channels/components/drawers/channel-mutate-drawer.tsx:58:1-168
+  × Module not found: Can't resolve './sections' in '/home/runner/workspace/web/default/src/features/channels/components/drawers'
+    ╭─[58:0]
+ 56 │ import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog';
+ 57 │ import { ModelMappingEditor } from '../model-mapping-editor';
+ 58 │ import { ChannelAdvancedSection, ChannelApiAccessSection, ChannelAuthSection, ChannelBasicSection, ChannelEditorLoadingState, ChannelModelsSection } from './sections';
+    · ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ 59 │ // Helper functions
+ 60 │ const createEmptyModelMappingGuardrail = ()=>({
+    ╰────
+Import traces (entry → error):
+  ./src/main.tsx
+  ./src/routeTree.gen.ts
+  … (3 hidden)
+  ./src/features/channels/components/channels-dialogs.tsx
+  ./src/features/channels/components/drawers/channel-mutate-drawer.tsx ×
+
+error   build failed in 10.3 s
+error   Rspack build failed.
+    at file:///home/runner/workspace/web/default/node_modules/@rsbuild/core/dist/753.js:4296:141
+    at file:///home/runner/workspace/web/default/node_modules/@rspack/core/dist/index.js:11587:54
+~/workspace$ 

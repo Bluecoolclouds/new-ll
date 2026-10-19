@@ -1,0 +1,137 @@
+17 hours ago
+@github-actions github-actions
+ v1.0.0-rc.9
+ 5bc4c74
+v1.0.0-rc.9
+Highlights
+v1.0.0-rc.9 adds subscription balance purchases and introduces a broader UI refresh across settings, channels, logs, themes, and the home page. It also improves relay performance and fixes several channel, webhook, payment, image, and tool-call reliability issues.
+
+New Features
+Added support for purchasing account balance from the subscription flow.
+Added an Anthropic-inspired theme preset with configurable serif typography.
+Bug Fixes
+Fixed webhook processing failures so callbacks are handled more reliably (#5047).
+Fixed Waffo payment settings so saves are consistent and outdated classic options are no longer shown (#5110).
+Fixed image relay quality handling so requested quality settings are applied correctly (#5103).
+Fixed Gemini/Claude tool-call conversion issues, including concurrent tool calls and tool_use payload handling (#5095).
+Fixed duplicate toast notifications when performing channel actions (#5015).
+Fixed channel tests to run with the correct user context (#5109).
+Fixed automatically disabled channels being reused from cache (#4983).
+Oversized upstream error messages are now truncated to keep logs usable (#5083).
+Improvements
+Reduced memory usage for large base64 relay requests.
+Redesigned System Settings with a drill-in sidebar and more compact, consistent layouts.
+Rebuilt the channel create/edit experience with clearer modular sections and improved selection controls.
+Improved usage log filtering, mobile usability, table typography, timing badges, and dark-mode chart readability.
+Refreshed the home page hero section with a clearer two-column layout.
+Restored more consistent status badge sizing, colors, and global theme font behavior.
+What's Changed
+🐛 fix(channel): evict auto-disabled multi-key channels from cache by @t0ng7u in #4983
+[BugFix] fix webhook process by @Hill-waffo in #5047
+fix(payment): hide classic Waffo Pancake settings by @seefs001 in #5085
+fix(relay): correct image quality parameter handling by @lanfunoe in #5103
+fix: truncate oversized upstream error logs by @seefs001 in #5083
+fix: 移除 fcIdx -1 偏移，修复并发工具调用撞键问题 by @learner-i in #5095
+fix:gemini to claude tool_use err by @nekohy in #5041
+fix: handle paginated API key search response by @yyhhyyyyyy in #5014
+fix: prevent duplicate channel action toasts by @yyhhyyyyyy in #5015
+fix: consolidate Waffo payment settings save flow by @seefs001 in #5110
+fix: use actual user id for channel tests by @seefs001 in #5109
+New Contributors
+@learner-i made their first contribution in #5095
+Full Changelog: v1.0.0-rc.8...v1.0.0-rc.9
+
+Contributors
+@seefs001
+@lanfunoe
+@yyhhyyyyyy
+@t0ng7u
+@nekohy
+@learner-i
+@Hill-waffo
+seefs001, lanfunoe, and 5 other contributors
+Assets
+7
+3 people reacted
+v1.0.0-rc.10
+7 hours ago
+@github-actions github-actions
+ v1.0.0-rc.10
+ 74985fa
+v1.0.0-rc.10 Latest
+git tag v1.0.0-rc.10
+Assets
+7
+checksums-linux.txt
+sha256:1f638ac404a7a37f2c95d2109845b64895dcc371bc4947b0d719b6214468d069
+180 Bytes
+7 hours ago
+checksums-windows.txt
+sha256:be33771ab0c6378ae34915774d7fec4a17605ea0abec139883c11c8d53cbe47c
+91 Bytes
+7 hours ago
+new-api-arm64-v1.0.0-rc.10
+sha256:8f256f03c95646375bd23ce25e1a6b2e8306f5799530414e7aa3d0fd382625b0
+82.8 MB
+7 hours ago
+new-api-v1.0.0-rc.10
+sha256:e5d7a8f94117c290f91cf4a4846d8f5567d30a51b085bcac782b3f561d5b6daa
+85.3 MB
+7 hours ago
+new-api-v1.0.0-rc.10.exe
+sha256:f038be63579f424d4b105c8b7494aff62c62e39bc63010db09546e136658510c
+86.9 MB
+7 hours ago
+Source code
+(zip)
+7 hours ago
+Source code
+(tar.gz)
+7 hours ago
+v1.0.0-rc.8
+5 days ago
+@github-actions github-actions
+ v1.0.0-rc.8
+ b9bc6f0
+v1.0.0-rc.8
+Highlights
+This release adds Waffo Pancake gateway support with admin catalog/product binding and focuses on polishing admin/API behavior. It also improves model metadata and pricing consistency, channel-test diagnostics, dashboard/reporting filters, and request-processing efficiency.
+
+New Features
+Added Waffo Pancake gateway support with admin catalog/product binding (#4935).
+Bug Fixes
+Dashboard content now follows configured visibility settings consistently (#4975).
+Performance metric summaries now include only active groups (#4976).
+Model pricing displays are now normalized to avoid inconsistent values (#4985).
+Model ownership metadata is now resolved from active channels for more accurate model listings (#4416).
+Default frontend links now point to the correct routes (#5016).
+Restored the previous usage-log filtering behavior to avoid regressions from the earlier filter change.
+Improvements
+Channel tests now show clearer failure details when checks fail (#4988).
+Reduced request-processing overhead to improve performance under load (#5009).
+What's Changed
+fix: expose param override audits for sensitive message fields by @seefs001 in #4974
+fix: respect dashboard content visibility settings by @seefs001 in #4975
+fix: filter perf metrics summary by active groups by @seefs001 in #4976
+fix: improve channel test failure details UX by @yyhhyyyyyy in #4988
+fix: normalize model pricing display drift by @yyhhyyyyyy in #4985
+fix: resolve model owned_by from active channels by @yyhhyyyyyy in #4416
+perf: optimize request metadata extraction and disabled field filtering by @seefs001 in #5009
+fix: update default frontend hardcoded route links by @yyhhyyyyyy in #5016
+修复 切换新版前端Turnstile 开启后注册页未显示验证的问题 by @JunXiaoRuo in #5011
+[Feature Request] Waffo Pancake gateway — full integration with subscription support + admin catalog binding flow by @Hill-waffo in #4935
+fix: enforce Waffo subscription compliance and product ID update by @seefs001 in #5038
+New Contributors
+@JunXiaoRuo made their first contribution in #5011
+@Hill-waffo made their first contribution in #4935
+Full Changelog: v1.0.0-rc.7...v1.0.0-rc.8
+
+Contributors
+@seefs001
+@JunXiaoRuo
+@yyhhyyyyyy
+@Hill-waffo
+seefs001, JunXiaoRuo, and 2 other contributors
+Assets
+7
+2 people reacted

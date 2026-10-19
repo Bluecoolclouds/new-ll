@@ -1,0 +1,123 @@
+Создать заказ и получить ссылку на оплату
+В некоторых случаях необходимо передавать дополнительные поля, узнать их можно в запросе getCurrencies (параметр fields)
+
+query Parameters
+shopId
+required
+integer
+Example: shopId=777
+ID магазина
+
+nonce
+required
+integer
+Example: nonce=123456789
+Уникальный ID запроса, должен всегда быть больше предыдущего значения
+
+signature
+required
+string
+Example: signature=190f3e3b87275da51031223a010e6da6
+Подпись запроса
+
+paymentId	
+string
+Example: paymentId=987654321
+Номер заказа в Вашем магазине
+
+i
+required
+integer
+Example: i=6
+ID платежной системы
+
+email
+required
+string
+Example: email=user@site.ru
+Email покупателя
+
+ip
+required
+string
+Example: ip=85.8.8.8
+IP покупателя
+
+amount
+required
+numeric
+Example: amount=100.23
+Сумма оплаты
+
+currency
+required
+string
+Example: currency=RUB
+Валюта оплаты
+
+tel	
+string
+Example: tel=+79261231212
+Телефон плательщика, требуется в некоторых способах оплат
+
+success_url	
+string
+Example: success_url=https://site.ru/success
+Переопределение урла успеха (для включения данного параметра обратитесь в поддержку)
+
+failure_url	
+string
+Example: failure_url=https://site.ru/error
+Переопределение урла ошибки (для включения данного параметра обратитесь в поддержку)
+
+notification_url	
+string
+Example: notification_url=https://site.ru/notify
+Переопределение урла уведомлений (для включения данного параметра обратитесь в поддержку)
+
+recurrent	
+string
+Example: recurrent=Y
+Флаг рекуррентного платежа
+
+recurrent_period	
+string
+Example: recurrent_period=month
+Периодичность рекуррентного платежа (возможные значения - day, week, month, year)
+
+recurrent_description	
+string
+Example: recurrent_description=Подписка на VPN
+Описание рекуррентного платежа (от 10 до 200 символов)
+
+recurrent_order_id	
+numeric
+Example: recurrent_order_id=777
+ID рекуррентного платежа для повторной оплаты
+
+Responses
+200 Информация о заказе
+Response Schema: application/json
+type	
+string
+type
+
+orderId	
+int
+orderId
+
+orderHash	
+string
+orderHash
+
+location	
+string
+location
+
+400 Ошибка запроса
+Response Schema: application/json
+type	
+string
+message	
+string
+401 

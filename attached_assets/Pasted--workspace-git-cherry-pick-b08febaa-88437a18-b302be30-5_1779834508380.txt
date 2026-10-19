@@ -1,0 +1,39 @@
+~/workspace$ git cherry-pick b08febaa 88437a18 b302be30 583da452 51ca897c 349d5429 3d850d38 33608826 a64f26d1 ad224ecf bc8110ce 10119349 6b6c9904 a8b7c92e 9e283ab1 f223db93 c91ba0c4 5bc4c748 65f8afe9 f8add4ca dc245ae7 1d320373 74985fa8
+Auto-merging web/default/src/features/system-settings/billing/index.tsx
+Auto-merging web/default/src/features/system-settings/billing/section-registry.tsx
+Auto-merging web/default/src/features/system-settings/general/channel-affinity/index.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/system-settings/general/channel-affinity/index.tsx
+Auto-merging web/default/src/features/system-settings/integrations/payment-settings-section.tsx
+Auto-merging web/default/src/features/system-settings/models/group-ratio-form.tsx
+CONFLICT (content): Merge conflict in web/default/src/features/system-settings/models/group-ratio-form.tsx
+Auto-merging web/default/src/features/system-settings/models/model-pricing-sheet.tsx
+Auto-merging web/default/src/features/system-settings/models/ratio-settings-card.tsx
+Auto-merging web/default/src/features/system-settings/site/index.tsx
+Auto-merging web/default/src/features/wallet/index.tsx
+Auto-merging web/default/src/i18n/locales/_reports/_sync-report.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/_reports/_sync-report.json
+CONFLICT (modify/delete): web/default/src/i18n/locales/_reports/fr.untranslated.json deleted in b08febaa (✨ refactor: system settings UI for consistent, compact layouts) and modified in HEAD.  Version HEAD of web/default/src/i18n/locales/_reports/fr.untranslated.json left in tree.
+CONFLICT (modify/delete): web/default/src/i18n/locales/_reports/ja.untranslated.json deleted in b08febaa (✨ refactor: system settings UI for consistent, compact layouts) and modified in HEAD.  Version HEAD of web/default/src/i18n/locales/_reports/ja.untranslated.json left in tree.
+CONFLICT (modify/delete): web/default/src/i18n/locales/_reports/ru.untranslated.json deleted in b08febaa (✨ refactor: system settings UI for consistent, compact layouts) and modified in HEAD.  Version HEAD of web/default/src/i18n/locales/_reports/ru.untranslated.json left in tree.
+CONFLICT (modify/delete): web/default/src/i18n/locales/_reports/vi.untranslated.json deleted in b08febaa (✨ refactor: system settings UI for consistent, compact layouts) and modified in HEAD.  Version HEAD of web/default/src/i18n/locales/_reports/vi.untranslated.json left in tree.
+CONFLICT (modify/delete): web/default/src/i18n/locales/_reports/zh.untranslated.json deleted in b08febaa (✨ refactor: system settings UI for consistent, compact layouts) and modified in HEAD.  Version HEAD of web/default/src/i18n/locales/_reports/zh.untranslated.json left in tree.
+Auto-merging web/default/src/i18n/locales/en.json
+Auto-merging web/default/src/i18n/locales/fr.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/fr.json
+Auto-merging web/default/src/i18n/locales/ja.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/ja.json
+Auto-merging web/default/src/i18n/locales/ru.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/ru.json
+Auto-merging web/default/src/i18n/locales/vi.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/vi.json
+Auto-merging web/default/src/i18n/locales/zh.json
+CONFLICT (content): Merge conflict in web/default/src/i18n/locales/zh.json
+error: could not apply b08febaa... ✨ refactor: system settings UI for consistent, compact layouts
+hint: After resolving the conflicts, mark them with
+hint: "git add/rm <pathspec>", then run
+hint: "git cherry-pick --continue".
+hint: You can instead skip this commit with "git cherry-pick --skip".
+hint: To abort and get back to the state before "git cherry-pick",
+hint: run "git cherry-pick --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+~/workspace$ 

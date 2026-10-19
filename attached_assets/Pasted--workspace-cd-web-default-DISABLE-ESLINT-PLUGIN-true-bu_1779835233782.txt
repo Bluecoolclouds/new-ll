@@ -1,0 +1,70 @@
+~/workspace$ cd web/default && DISABLE_ESLINT_PLUGIN=true bun run build
+$ rsbuild build
+Rsbuild v2.0.7
+
+info    build started...
+Error: Can't resolve '@fontsource-variable/lora' in '/home/runner/workspace/web/default/src/styles'
+    at finishWithoutResolve (/home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:942:18)
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:1034:14
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:1111:5
+    at eval (eval at create (/home/runner/workspace/web/default/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:1111:5
+    at eval (eval at create (/home/runner/workspace/web/default/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/DescriptionFilePlugin.js:94:43
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:1111:5
+    at eval (eval at create (/home/runner/workspace/web/default/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at /home/runner/workspace/web/default/node_modules/enhanced-resolve/lib/Resolver.js:1111:5 {
+  details: "resolve '@fontsource-variable/lora' in '/home/runner/workspace/web/default/src/styles'\n" +
+    '  Parsed request is a module\n' +
+    '  using description file: /home/runner/workspace/web/default/package.json (relative path: ./src/styles)\n' +
+    '    resolve as module\n' +
+    "      /home/runner/workspace/web/default/src/styles/node_modules doesn't exist or is not a directory\n" +
+    "      /home/runner/workspace/web/default/src/node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /home/runner/workspace/web/default/node_modules\n' +
+    '        single file module\n' +
+    '          using description file: /home/runner/workspace/web/default/package.json (relative path: ./node_modules/@fontsource-variable/lora)\n' +
+    '            no extension\n' +
+    "              /home/runner/workspace/web/default/node_modules/@fontsource-variable/lora doesn't exist\n" +
+    '            .css\n' +
+    "              /home/runner/workspace/web/default/node_modules/@fontsource-variable/lora.css doesn't exist\n" +
+    "        /home/runner/workspace/web/default/node_modules/@fontsource-variable/lora doesn't exist\n" +
+    "      /home/runner/workspace/web/node_modules doesn't exist or is not a directory\n" +
+    "      /home/runner/workspace/node_modules doesn't exist or is not a directory\n" +
+    "      /home/runner/node_modules doesn't exist or is not a directory\n" +
+    "      /home/node_modules doesn't exist or is not a directory\n" +
+    "      /node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /nix/store/r201x5hk7sxmxd9myi7hl43229znn1nd-nodejs-20.19.3/lib/node_modules\n' +
+    '        single file module\n' +
+    '          No description file found in /nix/store/r201x5hk7sxmxd9myi7hl43229znn1nd-nodejs-20.19.3/lib/node_modules/@fontsource-variable or above\n' +
+    '          no extension\n' +
+    "            /nix/store/r201x5hk7sxmxd9myi7hl43229znn1nd-nodejs-20.19.3/lib/node_modules/@fontsource-variable/lora doesn't exist\n" +
+    '          .css\n' +
+    "            /nix/store/r201x5hk7sxmxd9myi7hl43229znn1nd-nodejs-20.19.3/lib/node_modules/@fontsource-variable/lora.css doesn't exist\n" +
+    "        /nix/store/r201x5hk7sxmxd9myi7hl43229znn1nd-nodejs-20.19.3/lib/node_modules/@fontsource-variable/lora doesn't exist"
+}
+error   Build errors: 
+File: ./src/styles/index.css:1:1
+  × Module build failed (from ./node_modules/@rsbuild/core/compiled/postcss-loader/index.js):
+  ╰─▶   ×
+        │ SyntaxError
+        │
+        │ (1:1) from "tailwindcss" plugin: /home/runner/workspace/web/default/src/styles/index.css Can't resolve '@fontsource-variable/lora' in '/home/runner/workspace/web/default/src/styles'
+        │
+        │ > 1 | /*
+        │     | ^
+        │   2 | Copyright (C) 2023-2026 QuantumNous
+        │   3 | 
+        │
+      
+
+
+File: ./src/styles/index.css:1:1
+  × Module build failed (from ./node_modules/@rspack/core/dist/cssExtractLoader.js):
+  ╰─▶   × Error: Module build failed (from ./node_modules/@rsbuild/core/compiled/postcss-loader/index.js):
+        │     at file:///home/runner/workspace/web/default/node_modules/@rspack/core/dist/index.js:3783:103
+      
+Import traces (entry → error):
+  ./src/main.tsx
+  ./src/styles/index.css ×
+
+error   build failed in 6.30 s

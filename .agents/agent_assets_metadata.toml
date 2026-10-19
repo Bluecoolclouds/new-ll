@@ -1,0 +1,191 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "A0kRVO7R7UNaRgE07Lz4I"
+uri = "file://.local/apinet_ratios.json"
+type = "unspecified"
+title = "apinet_ratios.json — все цены (DeepSeek исправлен)"
+logical_id = "ccba9166-a5af-4a36-8f57-a49baeadb471"
+
+[[outputs]]
+id = "qM3PMyZMgpPZx2ERtolF9"
+uri = "file://.local/model_ratio.json"
+type = "unspecified"
+title = "1. model_ratio.json — 378 моделей (входные токены)"
+logical_id = "36ac7ac5-a87a-4769-8401-61b5a2302e3e"
+
+[[outputs]]
+id = "lqJL6I0-FlWGG5b999T0a"
+uri = "file://.local/completion_ratio.json"
+type = "unspecified"
+title = "2. completion_ratio.json — 337 моделей (выходные токены)"
+logical_id = "ac17e11c-240b-456f-b31a-3d40317e7bc0"
+
+[[outputs]]
+id = "mP7RlRvBeoZAD7Phusa5I"
+uri = "file://.local/cache_ratio.json"
+type = "unspecified"
+title = "3. cache_ratio.json — 57 моделей (cache hit)"
+logical_id = "aa7211ec-fb3c-44ee-9c31-780c66bbcb18"
+
+[[outputs]]
+id = "M5kK6nioZX0bA1EnmM9Qn"
+uri = "file://.local/create_cache_ratio.json"
+type = "unspecified"
+title = "4. create_cache_ratio.json — 24 модели (создание кэша)"
+logical_id = "e767b584-89ad-455b-a303-ecdaf372e54b"
+
+[[outputs]]
+id = "y8LY9uj7QSYowEF1N9Ziq"
+uri = "file://.local/model_price.json"
+type = "unspecified"
+title = "5. model_price.json — 157 моделей (фиксированная цена)"
+logical_id = "6a2d8d5d-07cc-440a-8720-bf21fdbc1fa8"
+
+[[outputs]]
+id = "U7cHFP2vDc1EdbFwuMgow"
+uri = "file://.local/all_pricing_combined.json"
+type = "unspecified"
+title = "6. all_pricing_combined.json — всё вместе"
+logical_id = "353e698a-7577-4e73-91a4-715c2c14799d"
+
+[[outputs]]
+id = "objIq7SjCrAxktdLMVE0u"
+uri = "file://.local/1_model_ratio_FIXED.json"
+type = "unspecified"
+title = "1. Коэффициент модели — FIXED"
+logical_id = "98eff2c0-1055-4dfe-ae17-9a10280f8a2e"
+
+[[outputs]]
+id = "NDyESRjYaWsv5thdf-mXt"
+uri = "file://.local/2_completion_ratio_FIXED.json"
+type = "unspecified"
+title = "2. Коэффициент завершения — FIXED"
+logical_id = "6267cc4c-275f-488b-a91d-a0a68c3af75b"
+
+[[outputs]]
+id = "Y02jqCbE99YmOr_c7I5hZ"
+uri = "file://.local/3_cache_ratio_FIXED.json"
+type = "unspecified"
+title = "3. Кэш промптов — без изменений"
+logical_id = "5eea5ccd-c268-451a-b07b-e889744dface"
+
+[[outputs]]
+id = "Mvwc6DXygPGFvX8kSuhnT"
+uri = "file://.local/4_create_cache_ratio_FIXED.json"
+type = "unspecified"
+title = "4. Создать кэш — без изменений"
+logical_id = "074e4adc-0d5f-4c53-b75c-ee6531e48837"
+
+[[outputs]]
+id = "4YRHcjogEpkU4r05n1alP"
+uri = "file://.local/5_model_price_FIXED.json"
+type = "unspecified"
+title = "5. Фиксированная цена — без изменений"
+logical_id = "5a84a847-40ad-4f04-a4d2-fc0217f836d6"
+
+[[outputs]]
+id = "73MEvleMekSaIfUqdwMXr"
+uri = "file://.local/1_model_ratio_COMPLETE.json"
+type = "unspecified"
+title = "1. Коэффициент модели — 378 моделей"
+logical_id = "d23981e5-215d-40b4-8217-40b4c795ced7"
+
+[[outputs]]
+id = "hpE6CxAih0fJp1atKrZ3d"
+uri = "file://.local/2_completion_ratio_COMPLETE.json"
+type = "unspecified"
+title = "2. Коэффициент завершения — 442 модели"
+logical_id = "090acd38-e92d-4766-a357-51cbbcd3550f"
+
+[[outputs]]
+id = "3s0Bml-UoagaY8vll92IA"
+uri = "file://.local/3_cache_ratio_COMPLETE.json"
+type = "unspecified"
+title = "3. Кэш промптов — 57 моделей"
+logical_id = "028f61af-0c64-409e-b97d-0bbca6b3f0a2"
+
+[[outputs]]
+id = "3Ih9QYMkSnospx2VEGH4f"
+uri = "file://.local/4_create_cache_ratio_COMPLETE.json"
+type = "unspecified"
+title = "4. Создать кэш — 24 модели"
+logical_id = "9248d598-ce5a-4a88-b564-e08b69757e4f"
+
+[[outputs]]
+id = "g-3ExisnmnQYhlXVnlON4"
+uri = "file://.local/5_model_price_COMPLETE.json"
+type = "unspecified"
+title = "5. Фиксированная цена — 353 модели"
+logical_id = "9bf7f22a-0508-4efe-b058-c9f6879744f0"
+
+[[outputs]]
+id = "JClH1XWQckqIgDV16iFrH"
+uri = "file://apinet-agent-docs.zip"
+type = "unspecified"
+title = "APINET Agent Docs — память, описание, база знаний"
+logical_id = "5552c845-6b80-455d-92fd-dc74d29da0d5"
+
+[[outputs]]
+id = "jXYedaDWocSXD5_l9i9ni"
+uri = "file://widget-bot.tar.gz"
+type = "unspecified"
+title = "widget-bot.tar.gz (ADMIN_IDS=635680174 прописан)"
+logical_id = "3b7d2091-f52c-4c53-929d-1fce755400a4"
+
+[[outputs]]
+id = "8eMTo2s1txGM0SrT8H-mL"
+uri = "file://widget-only.tar.gz"
+type = "unspecified"
+title = "widget.js v9 — вертикальный блок + правильный текст AI"
+logical_id = "133b88a8-3055-4329-8f6c-44725d613367"
+
+[[outputs]]
+id = "tlW3un_ayBlN27FIUarFd"
+uri = "file://apinet-video.zip"
+type = "unspecified"
+title = "ApinetVideo.tsx — компонент анимированного видео"
+logical_id = "6053d44b-e5b3-48d7-aedf-7dd094a6b06a"
+
+[[outputs]]
+id = "ocXgub56Tm5khn_OMEVrs"
+uri = "file://apinet-video-guide.zip"
+type = "unspecified"
+title = "APINET.CLOUD — Видео-гайд (HTML)"
+logical_id = "e75fced0-2bb1-411e-ac24-c8356183ce5c"
+
+[[outputs]]
+id = "KvpFjrXnND3_Hlyoku5W6"
+uri = "file://apinet-promo.zip"
+type = "unspecified"
+title = "VideoTemplate — promo (40+ AI)"
+logical_id = "7082cc8a-9c7c-433b-9412-c70fc62cf926"
+
+[[outputs]]
+id = "K-tENWvSdAGrmwkXRYRyN"
+uri = "file://apinet-screencast.zip"
+type = "unspecified"
+title = "APINET.CLOUD — Скринкаст (реальный интерфейс)"
+logical_id = "9118155d-7ece-49d4-a2a4-45480cee7cee"
+
+[[outputs]]
+id = "I_apQQzR9FbHvqiAhYC5e"
+uri = "file://APINET_INTEGRATION_API.md"
+type = "text"
+title = "APINET Integration API — документация для разработчика"
+logical_id = "048eecc2-4e67-4bb7-82c2-0deba2a6b6f5"
+
+[[outputs]]
+id = "eSJMSdIpmojagVpXITY27"
+uri = "file://docs/stratus-model-pricing-guide.md"
+type = "text"
+title = "Инструкция по ценам моделей Stratus"
+description = "Где задавать Model ratio и Group ratio в New API, как рассчитывается коэффициент Stratus и как сверять цену с тарифом поставщика."
+logical_id = "ee24928d-fb16-4e2f-8db5-5f23a6ada592"
+content_hash = "sha256:36d27ed5722574636626bdb4dedba88e0080c9fe29aae5175de81cb1d84d88d4"
+size = 7566
+mtime_ms = 1792289213045
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:e18d44cc-288f-49d6-bf72-ce289ca27c67/ee24928d-fb16-4e2f-8db5-5f23a6ada592/7c757020-8dcd-4895-ad07-8a9f7f1326ea"
+storage_version_token = "1792289245230411"
+content_type = "text/markdown"

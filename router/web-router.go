@@ -63,7 +63,7 @@ func useStratusFrontend(path string) bool {
 		return true
 	}
 	switch path {
-case "/", "/dashboard", "/dashboard/", "/settings", "/settings/", "/docs", "/docs/", "/wallet", "/wallet/", "/console/topup", "/console/topup/", "/console/log", "/console/log/", "/usage-logs", "/usage-logs/":
+	case "/", "/dashboard", "/dashboard/", "/settings", "/settings/", "/docs", "/docs/", "/wallet", "/wallet/", "/playground", "/playground/", "/console/topup", "/console/topup/", "/console/log", "/console/log/", "/usage-logs", "/usage-logs/":
 		return true
 	case "/settings/profile", "/settings/profile/",
 		"/settings/security", "/settings/security/",
@@ -71,7 +71,7 @@ case "/", "/dashboard", "/dashboard/", "/settings", "/settings/", "/docs", "/doc
 		"/settings/gateway", "/settings/gateway/":
 return true
 	default:
-		return strings.HasPrefix(path, "/docs/")
+		return strings.HasPrefix(path, "/docs/") || strings.HasPrefix(path, "/playground/")
 	}
 }
 

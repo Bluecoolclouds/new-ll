@@ -16,7 +16,7 @@ func TestStratusFrontendRoutes(t *testing.T) {
 				t.Errorf("%s must allow preview route %s", theme, path)
 			}
 		}
-		for _, path := range []string{"/", "/dashboard", "/settings", "/settings/profile", "/settings/profile/", "/settings/security", "/settings/security/", "/settings/history", "/settings/history/", "/settings/gateway", "/settings/gateway/", "/docs", "/docs/quickstart", "/wallet", "/wallet/", "/console/topup", "/console/log", "/usage-logs", "/usage-logs/"} {
+		for _, path := range []string{"/", "/dashboard", "/settings", "/settings/profile", "/settings/profile/", "/settings/security", "/settings/security/", "/settings/history", "/settings/history/", "/settings/gateway", "/settings/gateway/", "/docs", "/docs/quickstart", "/wallet", "/wallet/", "/playground", "/playground/", "/playground/chat", "/playground/images", "/console/topup", "/console/log", "/usage-logs", "/usage-logs/"} {
 			if got := useStratusFrontend(path); got != (theme == "stratus") {
 				t.Errorf("theme=%s path=%s selected Stratus=%v", theme, path, got)
 			}

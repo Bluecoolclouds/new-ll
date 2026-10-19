@@ -90,7 +90,9 @@ async function responseBody(path: string, init: RequestInit, redirectOnUnauthori
       throw new Error('Сессия не активна. Войдите в аккаунт.');
     }
     const message = body && typeof body === 'object' && 'message' in body ? String(body.message ?? '') : '';
-    throw new Error(message || `Ошибка сервера (${response.status})`);
+    const error = body && typeof body === 'object' && 'error' in body ? body.error : null;
+    const errorMessage = error && typeof error === 'object' && 'message' in error ? String(error.message ?? '') : '';
+    throw new Error(message || errorMessage || `Ошибка сервера (${response.status})`);
   }
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throw new Error('Некорректный ответ сервера: ожидался JSON-объект.');

@@ -14,6 +14,7 @@ const Docs = lazy(() => import('./components/Docs').then((module) => ({ default:
 const Workspace = lazy(() => import('./components/Workspace').then((module) => ({ default: module.Workspace })));
 const SettingsHub = lazy(() => import('./components/SettingsHub').then((module) => ({ default: module.SettingsHub })));
 const Wallet = lazy(() => import('./components/Wallet').then((module) => ({ default: module.Wallet })));
+const Playground = lazy(() => import('./components/Playground').then((module) => ({ default: module.Playground })));
 
 const SignInPage = lazy(() => import('./components/auth/AuthPages').then((module) => ({ default: module.SignInPage })));
 const SignUpPage = lazy(() => import('./components/auth/AuthPages').then((module) => ({ default: module.SignUpPage })));
@@ -101,6 +102,7 @@ function App() {
             <Route path="/refund"><LegalPage page="refund"/></Route>
             <Route path="/contacts"><LegalPage page="contacts"/></Route>
             <Route path="/dashboard"><Guard><Workspace/></Guard></Route>
+            <Route path="/playground"><Guard><Playground/></Guard></Route>
             <Route path="/wallet"><Guard><Wallet/></Guard></Route>
             <Route path="/console/topup"><Guard><Wallet/></Guard></Route>
             <Route path="/console/log"><Guard><PaymentReturn/></Guard></Route>

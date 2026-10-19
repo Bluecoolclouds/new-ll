@@ -148,6 +148,25 @@ func GetAllUserTokens(userId int, startIdx int, num int) ([]*Token, error) {
 	return tokens, err
 }
 
+func GetActiveDefaultUserToken(userId int) (*Token, error) {
+	var token Token
+	err := DB.Where(
+		"user_id = ? AND name LIKE ? AND status = ? AND unlimited_quota = ? AND (expired_time <= 0 OR expired_time > ?)",
+		userId,
+		"%的初始令牌",
+		common.TokenStatusEnabled,
+		true,
+		common.GetTimestamp(),
+	).Order("id desc").First(&token).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
+
 // sanitizeLikePattern 校验并清洗用户输入的 LIKE 搜索模式。
 // 规则：
 //  1. 转义 ! 和 _（使用 ! 作为 ESCAPE 字符，兼容 MySQL/PostgreSQL/SQLite）

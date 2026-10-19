@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, ArrowUp, Bot, Check, CircleDot, Image as ImageIcon, LoaderCircle, MessageSquareText, RotateCcw, Trash2, UserRound } from 'lucide-react';
 import { AccountHeader } from './AccountHeader';
 import { PlaygroundImages } from './PlaygroundImages';
-import { request } from '../lib/api';
+import { loadDefaultPlaygroundApiKey, loadPlaygroundModels, MissingDefaultPlaygroundApiKeyError, requestWithApiKey } from '../lib/playground-api';
 import { WorkspaceLocaleProvider, useWorkspaceLocale } from '../lib/workspace-locale';
 import { workspaceLocale } from '../lib/workspace-copy';
+import './workspace.css';
 import './playground.css';
 
 type ChatRole = 'user' | 'assistant' | 'system';
@@ -33,9 +34,17 @@ function responseText(response: ChatResponse): string {
 function PlaygroundContent() {
   const { language, copy: c, setLanguage } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
+  const apiKey = useQuery({
+    queryKey: ['stratus', 'playground', 'default-api-key'],
+    queryFn: loadDefaultPlaygroundApiKey,
+    staleTime: 60_000,
+    gcTime: 0,
+    retry: false,
+  });
   const models = useQuery({
-    queryKey: ['stratus', 'playground', 'models'],
-    queryFn: () => request<string[]>('/api/user/models'),
+    queryKey: ['stratus', 'playground', 'models', apiKey.data?.tokenId],
+    queryFn: () => loadPlaygroundModels(apiKey.data!.key),
+    enabled: Boolean(apiKey.data),
     staleTime: 60_000,
     retry: false,
   });
@@ -48,6 +57,16 @@ function PlaygroundContent() {
   const sequence = useRef(0);
   const availableModels = models.data ?? [];
   const selectedModel = availableModels.includes(model) ? model : (availableModels[0] ?? '');
+  const modelsLoading = apiKey.isLoading || models.isLoading;
+  const modelsError = apiKey.isError || models.isError;
+  const modelsFetching = apiKey.isFetching || models.isFetching;
+  const modelsErrorText = apiKey.error instanceof MissingDefaultPlaygroundApiKeyError
+    ? c.playgroundApiKeyMissing
+    : c.playgroundModelsError;
+  const refreshModels = () => {
+    if (!apiKey.data) void apiKey.refetch();
+    else void models.refetch();
+  };
   const totalTokens = turns.reduce((sum, turn) => sum + (turn.totalTokens ?? 0), 0);
   const hasReportedUsage = turns.some((turn) => typeof turn.totalTokens === 'number');
 
@@ -55,7 +74,8 @@ function PlaygroundContent() {
     setSending(true);
     setRequestError(false);
     try {
-      const response = await request<ChatResponse>('/pg/chat/completions', {
+      if (!apiKey.data) throw new Error(c.playgroundApiKeyMissing);
+      const response = await requestWithApiKey<ChatResponse>('/v1/chat/completions', apiKey.data.key, {
         method: 'POST',
         body: JSON.stringify({
           model: selectedModel,
@@ -132,14 +152,14 @@ function PlaygroundContent() {
           <div className="playground-toolbar">
             <label className="playground-model-field" htmlFor="playground-model">
               <span>{c.playgroundModel}</span>
-              <select id="playground-model" value={selectedModel} disabled={models.isLoading || availableModels.length === 0 || sending} onChange={(event) => setModel(event.target.value)} data-testid="select-playground-model">
+              <select id="playground-model" value={selectedModel} disabled={modelsLoading || availableModels.length === 0 || sending} onChange={(event) => setModel(event.target.value)} data-testid="select-playground-model">
                 {availableModels.length === 0 && <option value="">{c.playgroundChooseModel}</option>}
                 {availableModels.map((modelId) => <option key={modelId} value={modelId}>{modelId}</option>)}
               </select>
             </label>
             <div className="playground-model-status">
-              <span className={models.isError ? 'is-error' : ''}><CircleDot size={12}/>{models.isError ? c.playgroundModelsError : models.isLoading ? c.playgroundModelsLoading : availableModels.length ? `${new Intl.NumberFormat(locale).format(availableModels.length)} ${c.playgroundModelCount}` : c.playgroundNoModels}</span>
-              {!models.isError && availableModels.length === 0 && !models.isLoading && <button type="button" onClick={() => void models.refetch()} disabled={models.isFetching} data-testid="button-refresh-models">{models.isFetching ? c.loading : c.playgroundRefreshModels}</button>}
+              <span className={modelsError ? 'is-error' : ''}><CircleDot size={12}/>{modelsError ? modelsErrorText : modelsLoading ? c.playgroundModelsLoading : availableModels.length ? `${new Intl.NumberFormat(locale).format(availableModels.length)} ${c.playgroundModelCount}` : c.playgroundNoModels}</span>
+              {!modelsError && availableModels.length === 0 && !modelsLoading && <button type="button" onClick={refreshModels} disabled={modelsFetching} data-testid="button-refresh-models">{modelsFetching ? c.loading : c.playgroundRefreshModels}</button>}
             </div>
           </div>
 
@@ -148,12 +168,12 @@ function PlaygroundContent() {
             <p>{c.playgroundBillingNotice}</p>
           </div>
 
-          {models.isLoading && <div className="playground-model-skeleton" role="status" aria-label={c.playgroundModelsLoading}><i/><i/><i/></div>}
-          {models.isError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{c.playgroundModelsError}</span><button type="button" onClick={() => void models.refetch()} disabled={models.isFetching}>{models.isFetching ? c.loading : c.retry}</button></div>}
-          {!models.isLoading && !models.isError && availableModels.length === 0 && <div className="playground-no-models" role="status"><Bot size={22}/><strong>{c.playgroundNoModels}</strong></div>}
+          {modelsLoading && <div className="playground-model-skeleton" role="status" aria-label={c.playgroundModelsLoading}><i/><i/><i/></div>}
+          {modelsError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{modelsErrorText}</span><button type="button" onClick={refreshModels} disabled={modelsFetching}>{modelsFetching ? c.loading : c.retry}</button></div>}
+          {!modelsLoading && !modelsError && availableModels.length === 0 && <div className="playground-no-models" role="status"><Bot size={22}/><strong>{c.playgroundNoModels}</strong></div>}
 
           <div className="playground-thread" aria-live="polite" aria-relevant="additions text">
-            {turns.length === 0 && !models.isLoading && availableModels.length > 0 && <div className="playground-empty">
+            {turns.length === 0 && !modelsLoading && availableModels.length > 0 && <div className="playground-empty">
               <div className="playground-empty-glyph"><Bot size={24}/></div>
               <span className="playground-empty-index">01 / {c.playgroundReady}</span>
               <h2>{c.playgroundEmptyTitle}</h2>
@@ -175,13 +195,22 @@ function PlaygroundContent() {
           <form className="playground-composer" onSubmit={submit}>
             <label htmlFor="playground-prompt">{c.playgroundPrompt}</label>
             <div className="playground-composer-box">
-              <textarea id="playground-prompt" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleComposerKeyDown} placeholder={c.playgroundPromptPlaceholder} rows={2} disabled={!selectedModel || sending} data-testid="input-playground-prompt"/>
-              <button type="submit" aria-label={c.playgroundSend} disabled={!draft.trim() || !selectedModel || sending} data-testid="button-send-prompt"><ArrowUp size={18}/><span>{c.playgroundSend}</span></button>
+              <textarea id="playground-prompt" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleComposerKeyDown} placeholder={c.playgroundPromptPlaceholder} rows={2} disabled={!apiKey.data || !selectedModel || sending} data-testid="input-playground-prompt"/>
+              <button type="submit" aria-label={c.playgroundSend} disabled={!draft.trim() || !apiKey.data || !selectedModel || sending} data-testid="button-send-prompt"><ArrowUp size={18}/><span>{c.playgroundSend}</span></button>
             </div>
             <div className="playground-composer-foot"><span>{c.playgroundKeyboardHint}</span>{hasReportedUsage && <span className="playground-total-usage">{c.playgroundTokens}<strong>{new Intl.NumberFormat(locale).format(totalTokens)}</strong></span>}</div>
           </form>
           </div>
-          <PlaygroundImages hidden={mode !== 'images'}/>
+          <PlaygroundImages
+            hidden={mode !== 'images'}
+            apiKey={apiKey.data?.key}
+            availableModels={availableModels}
+            modelsLoading={modelsLoading}
+            modelsError={modelsError}
+            modelsFetching={modelsFetching}
+            modelsErrorText={modelsErrorText}
+            onRefreshModels={refreshModels}
+          />
         </section>
         <aside className="playground-side-note">
           <span className="playground-side-number">01</span>

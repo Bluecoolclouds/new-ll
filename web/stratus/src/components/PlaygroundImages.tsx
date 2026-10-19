@@ -1,7 +1,8 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, Check, CircleDot, Download, Image as ImageIcon, LoaderCircle, Sparkles } from 'lucide-react';
-import { request, requestPricing, type PricingModel } from '../lib/api';
+import { requestWithApiKey } from '../lib/playground-api';
+import { requestPricing, type PricingModel } from '../lib/api';
 import { useWorkspaceLocale } from '../lib/workspace-locale';
 import { workspaceLocale } from '../lib/workspace-copy';
 
@@ -41,15 +42,29 @@ function getImageSource(item: NonNullable<ImageGenerationResponse['data']>[numbe
   return null;
 }
 
-export function PlaygroundImages({ hidden }: { hidden: boolean }) {
+type PlaygroundImagesProps = {
+  hidden: boolean;
+  apiKey?: string;
+  availableModels: string[];
+  modelsLoading: boolean;
+  modelsError: boolean;
+  modelsFetching: boolean;
+  modelsErrorText: string;
+  onRefreshModels: () => void;
+};
+
+export function PlaygroundImages({
+  hidden,
+  apiKey,
+  availableModels,
+  modelsLoading,
+  modelsError,
+  modelsFetching,
+  modelsErrorText,
+  onRefreshModels,
+}: PlaygroundImagesProps) {
   const { language, copy: c } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
-  const availableModels = useQuery({
-    queryKey: ['stratus', 'playground', 'models'],
-    queryFn: () => request<string[]>('/api/user/models'),
-    staleTime: 60_000,
-    retry: false,
-  });
   const pricing = useQuery({
     queryKey: ['stratus', 'playground', 'pricing'],
     queryFn: () => requestPricing('/api/pricing'),
@@ -65,7 +80,7 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const sequence = useRef(0);
 
-  const userModels = new Set(availableModels.data ?? []);
+  const userModels = new Set(availableModels);
   const imageModels = [...new Set((pricing.data?.data ?? [])
     .filter(supportsImageGeneration)
     .map((model) => model.model_name)
@@ -74,14 +89,14 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
   const selectedModel = imageModels.includes(chosenModel)
     ? chosenModel
     : imageModels.find(isGptImageModel) ?? imageModels[0] ?? '';
-  const isLoading = availableModels.isLoading || pricing.isLoading;
-  const hasError = availableModels.isError || pricing.isError;
-  const isBusy = generating || isLoading || hasError || !selectedModel;
+  const isLoading = modelsLoading || pricing.isLoading;
+  const hasError = modelsError || pricing.isError;
+  const isBusy = generating || isLoading || hasError || !apiKey || !selectedModel;
 
   const generate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = prompt.trim();
-    if (!value || !selectedModel || generating) return;
+      if (!value || !selectedModel || !apiKey || generating) return;
 
     setGenerating(true);
     setError('');
@@ -91,7 +106,7 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
         payload.quality = quality;
         payload.size = size;
       }
-      const response = await request<ImageGenerationResponse>('/pg/images/generations', {
+      const response = await requestWithApiKey<ImageGenerationResponse>('/v1/images/generations', apiKey, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
@@ -115,7 +130,7 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
   };
 
   const refreshModels = () => {
-    void availableModels.refetch();
+    onRefreshModels();
     void pricing.refetch();
   };
 
@@ -149,7 +164,7 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
         </label>
       </div>}
       <div className="playground-model-status">
-        <span className={hasError ? 'is-error' : ''}><CircleDot size={12}/>{hasError ? c.playgroundImageModelsError : isLoading ? c.playgroundImageLoading : `${new Intl.NumberFormat(locale).format(imageModels.length)} ${c.playgroundModelCount}`}</span>
+        <span className={hasError ? 'is-error' : ''}><CircleDot size={12}/>{modelsError ? modelsErrorText : hasError ? c.playgroundImageModelsError : isLoading ? c.playgroundImageLoading : `${new Intl.NumberFormat(locale).format(imageModels.length)} ${c.playgroundModelCount}`}</span>
       </div>
     </div>
 
@@ -158,7 +173,7 @@ export function PlaygroundImages({ hidden }: { hidden: boolean }) {
       <p>{c.playgroundBillingNotice} {c.playgroundImageBilling}</p>
     </div>
 
-    {hasError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{c.playgroundImageModelsError}</span><button type="button" onClick={refreshModels} disabled={availableModels.isFetching || pricing.isFetching}>{c.playgroundRefreshModels}</button></div>}
+    {hasError && <div className="playground-model-error" role="alert"><AlertCircle size={17}/><span>{modelsError ? modelsErrorText : c.playgroundImageModelsError}</span><button type="button" onClick={refreshModels} disabled={modelsFetching || pricing.isFetching}>{c.playgroundRefreshModels}</button></div>}
     {!isLoading && !hasError && imageModels.length === 0 && <div className="playground-no-models" role="status"><ImageIcon size={22}/><strong>{c.playgroundImageNoModels}</strong></div>}
 
     <div className="playground-image-results" aria-live="polite" aria-label={c.playgroundImageResult}>

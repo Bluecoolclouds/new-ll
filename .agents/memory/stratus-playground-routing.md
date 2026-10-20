@@ -20,3 +20,9 @@ The chat should accept photos plus TXT, MD, CSV, JSON, and PDF attachments. Extr
 **Why:** The user asked for automatic image generation inside chat and chose these attachment formats; routing without an extra model call avoids an additional paid request.
 
 **How to apply:** Use `/v1/chat/completions` for text/vision and `/v1/images/generations` or `/v1/images/edits` for image prompts, always with the account's default key. Surface unsupported reference/edit capabilities as server errors instead of silently dropping the photo.
+
+Prefer `gpt-5.5` (then the legacy alias `gpt-5-5`) as the default chat model only when it is returned for the account's key. Build the image picker from that same key-visible `/v1/models` list, using endpoint capabilities from `/v1/models` and `/api/pricing` plus conservative image-family name detection; never invent or expose models the key cannot access.
+
+**Why:** The user asked for GPT-5.5 as the sandbox's base model and all available image models, including GPT Image 2 variants. The project's built-in provider catalog may lag behind custom or newly enabled channel models.
+
+**How to apply:** Keep the preferred default conditional on the live key-visible list. Include GPT Image 2 variants and other image families when present, but only claim they are available after `/v1/models` returns them.

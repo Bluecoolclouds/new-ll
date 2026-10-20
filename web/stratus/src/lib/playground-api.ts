@@ -5,6 +5,16 @@ export type PlaygroundApiKey = {
   key: string;
 };
 
+export type PlaygroundModel = {
+  id: string;
+  supported_endpoint_types: string[];
+};
+
+export type PlaygroundModelPricing = {
+  model_name: string;
+  supported_endpoint_types?: string[] | null;
+};
+
 export class MissingDefaultPlaygroundApiKeyError extends Error {
   constructor() {
     super('No active unlimited default API key was found.');
@@ -43,6 +53,59 @@ export type PlaygroundImageResponse = {
 
 export function isGptImageModel(model: string) {
   return /(?:^|\/)gpt[-_]?image(?:[-_]|$)/i.test(model);
+}
+
+function isNamedImageModel(model: string) {
+  return isGptImageModel(model)
+    || /(?:^|[\/_.-])(?:chatgpt[-_]?image|dall[-_]?e|image|imagen|flux|wanx|seedream|seededit|ideogram|recraft|stable[-_]?diffusion|sdxl|kolors|qwen[-_]?image|nano[-_]?banana)(?:[-_.]|$)/i.test(model);
+}
+
+function isGptImage2Model(model: string) {
+  return /(?:^|\/)gpt[-_]?image[-_]?2(?:[-_.]|$)/i.test(model);
+}
+
+export function classifyPlaygroundModels(
+  models: PlaygroundModel[],
+  pricingModels: PlaygroundModelPricing[],
+) {
+  const pricingByName = new Map(pricingModels.map((model) => [model.model_name, model.supported_endpoint_types ?? []]));
+  const endpointTypes = (model: PlaygroundModel) => [...new Set([
+    ...model.supported_endpoint_types,
+    ...(pricingByName.get(model.id) ?? []),
+  ].map((endpoint) => endpoint.toLowerCase()))];
+  const imageModels = models
+    .filter((model) => endpointTypes(model).includes('image-generation') || isNamedImageModel(model.id))
+    .map((model) => model.id);
+  const imageModelSet = new Set(imageModels);
+  const chatModels = models
+    .filter((model) => {
+      const endpoints = endpointTypes(model);
+      if (isNamedImageModel(model.id)) return false;
+      if (endpoints.length === 0) return !imageModelSet.has(model.id);
+      return endpoints.some((endpoint) =>
+        endpoint === 'openai' || endpoint === 'openai-response' || endpoint === 'openai-response-compact'
+        || endpoint === 'anthropic' || endpoint === 'gemini'
+        || /(?:chat|completion|response)/i.test(endpoint));
+    })
+    .map((model) => model.id);
+  return { chatModels, imageModels };
+}
+
+export function chooseDefaultChatModel(models: string[], selected: string) {
+  if (models.includes(selected)) return selected;
+  for (const preferred of ['gpt-5.5', 'gpt-5-5']) {
+    const match = models.find((model) => model.split('/').at(-1) === preferred);
+    if (match) return match;
+  }
+  return models[0] ?? '';
+}
+
+export function chooseDefaultImageModel(models: string[], selected: string) {
+  if (models.includes(selected)) return selected;
+  return models.find((model) => {
+    const id = model.split('/').at(-1) ?? model;
+    return id.toLowerCase() === 'gpt-image-2';
+  }) ?? models.find(isGptImage2Model) ?? models.find(isGptImageModel) ?? models[0] ?? '';
 }
 
 export async function loadDefaultPlaygroundApiKey(): Promise<PlaygroundApiKey> {
@@ -109,12 +172,18 @@ export async function requestWithApiKey<T>(
   return body as T;
 }
 
-export async function loadPlaygroundModels(apiKey: string): Promise<string[]> {
-  const result = await requestWithApiKey<{ data?: Array<{ id?: unknown }> }>('/v1/models', apiKey);
+export async function loadPlaygroundModels(apiKey: string): Promise<PlaygroundModel[]> {
+  const result = await requestWithApiKey<{ data?: Array<{ id?: unknown; supported_endpoint_types?: unknown }> }>('/v1/models', apiKey);
   if (!Array.isArray(result.data)) throw new Error('The API returned an invalid model list.');
   return result.data
-    .map((model) => model.id)
-    .filter((id): id is string => typeof id === 'string' && id.trim().length > 0);
+    .flatMap((model) => {
+      const id = typeof model.id === 'string' ? model.id.trim() : '';
+      if (!id) return [];
+      const endpoints = Array.isArray(model.supported_endpoint_types)
+        ? model.supported_endpoint_types.filter((endpoint): endpoint is string => typeof endpoint === 'string')
+        : [];
+      return [{ id, supported_endpoint_types: endpoints }];
+    });
 }
 
 export async function streamPlaygroundChat(

@@ -6,6 +6,9 @@ import { PlaygroundImages } from './PlaygroundImages';
 import { PlaygroundLibrary } from './PlaygroundLibrary';
 import {
   generatePlaygroundImage,
+  chooseDefaultChatModel,
+  chooseDefaultImageModel,
+  classifyPlaygroundModels,
   isGptImageModel,
   loadDefaultPlaygroundApiKey,
   loadPlaygroundModels,
@@ -205,21 +208,12 @@ function PlaygroundContent() {
   const abortController = useRef<AbortController | null>(null);
   const availableModels = models.data ?? [];
   const pricingModels = pricing.data?.data ?? [];
-  const imageModelSet = new Set(pricingModels
-    .filter((entry) => (entry.supported_endpoint_types ?? []).some((endpoint) => endpoint.toLowerCase() === 'image-generation'))
-    .map((entry) => entry.model_name)
-    .filter((name) => availableModels.includes(name)));
-  const imageModels = [...imageModelSet]
-    .sort((left, right) => Number(!isGptImageModel(left)) - Number(!isGptImageModel(right)) || left.localeCompare(right));
-  const chatModels = availableModels.filter((name) => {
-    const endpoints = pricingModels.find((entry) => entry.model_name === name)?.supported_endpoint_types ?? [];
-    if (endpoints.length > 0) return endpoints.some((endpoint) => /chat|completion|response|openai/i.test(endpoint));
-    return !imageModelSet.has(name) && !/(?:^|\/)(?:gpt[-_]?image|dall[-_]?e)(?:[-_]|$)/i.test(name);
-  });
-  const selectedModel = chatModels.includes(model) ? model : (chatModels[0] ?? '');
-  const selectedImageModel = imageModels.includes(imageModel)
-    ? imageModel
-    : imageModels.find(isGptImageModel) ?? imageModels[0] ?? '';
+  const classifiedModels = classifyPlaygroundModels(availableModels, pricingModels);
+  const imageModels = [...classifiedModels.imageModels]
+    .sort((left, right) => Number(!isGptImageModel(left)) - Number(!isGptImageModel(right)) || left.localeCompare(right, undefined, { numeric: true, sensitivity: 'base' }));
+  const chatModels = classifiedModels.chatModels;
+  const selectedModel = chooseDefaultChatModel(chatModels, model);
+  const selectedImageModel = chooseDefaultImageModel(imageModels, imageModel);
   const modelsLoading = apiKey.isLoading || models.isLoading;
   const modelsError = apiKey.isError || models.isError;
   const modelsFetching = apiKey.isFetching || models.isFetching;
@@ -231,7 +225,7 @@ function PlaygroundContent() {
         ? models.error.message
         : c.playgroundModelsError;
   const imageModelsLoading = modelsLoading || pricing.isLoading;
-  const imageModelsError = modelsError || pricing.isError;
+  const imageModelsError = modelsError;
   const imageModelsErrorText = modelsError
     ? modelsErrorText
     : c.playgroundImageModelsError;

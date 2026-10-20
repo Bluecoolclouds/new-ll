@@ -30,3 +30,4 @@
 - [Safer patching for large JSX](patch-context-jsx.md) — use small isolated hunks when a component edit must match exact source context.
 - [Stratus API documentation scope](stratus-api-docs-scope.md) — document only routes registered in this Stratus build, in Russian and English; state model/channel availability limits.
 - [Stratus playground routing](stratus-playground-routing.md) — use the default key through `/v1`; image requests route in-chat, and supported attachments stay in page memory.
+- [Playground media storage](playground-media-storage.md) — local file storage keeps chat media out of SQL but is single-instance; move to App Storage before scaling or using ephemeral deployments.

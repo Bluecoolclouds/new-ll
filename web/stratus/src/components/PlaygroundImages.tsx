@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Check, CircleDot, Download, Image as ImageIcon, LoaderCircle, Paperclip, Sparkles, X } from 'lucide-react';
 import { generatePlaygroundImage, isGptImageModel, type PlaygroundImageSettings } from '../lib/playground-api';
+import { imageUrlToBlob, savePlaygroundMedia } from '../lib/playground-library';
 import { isSupportedPlaygroundImage } from '../lib/playground-files';
 import { useWorkspaceLocale } from '../lib/workspace-locale';
 import { workspaceLocale } from '../lib/workspace-copy';
@@ -69,6 +71,7 @@ export function PlaygroundImages({
 }: PlaygroundImagesProps) {
   const { language, copy: c } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
+  const queryClient = useQueryClient();
   const [prompt, setPrompt] = useState('');
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
@@ -118,17 +121,23 @@ export function PlaygroundImages({
         format: isGptImageModel(selectedModel) ? format : 'png',
       };
       const response = await generatePlaygroundImage(apiKey, selectedModel, value, settings, references);
-      const result = (response.data ?? [])
+      const generated = (response.data ?? [])
         .map((item) => ({ item, src: getImageSource(item, settings.format) }))
-        .filter((entry): entry is { item: NonNullable<typeof response.data>[number]; src: string } => Boolean(entry.src))
-        .map(({ item, src }) => ({
-          id: ++sequence.current,
-          src,
-          model: response.model?.trim() || selectedModel,
-          prompt: item.revised_prompt?.trim() || value,
-        }));
+        .filter((entry): entry is { item: NonNullable<typeof response.data>[number]; src: string } => Boolean(entry.src));
+      const usedModel = response.model?.trim() || selectedModel;
+      const result = await Promise.all(generated.map(async ({ item, src }) => {
+        const promptText = item.revised_prompt?.trim() || value;
+        const saved = await savePlaygroundMedia(
+          await imageUrlToBlob(src),
+          `stratus-image.${settings.format}`,
+          usedModel,
+          promptText,
+        );
+        return { id: saved.id || ++sequence.current, src: saved.content_url, model: usedModel, prompt: promptText };
+      }));
       if (result.length === 0) throw new Error(c.playgroundImageNoOutput);
       setImages((current) => [...result, ...current]);
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'library'] });
       setPrompt('');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : c.playgroundImageError);

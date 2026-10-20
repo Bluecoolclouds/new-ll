@@ -1665,11 +1665,14 @@ func GeminiImageHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
         // each image has fixed 258 tokens
         const imageTokens = 258
         generatedImages := len(openAIResponse.Data)
+        imageOutputTokens := imageTokens * generatedImages
 
         usage := &dto.Usage{
-                PromptTokens:     imageTokens * generatedImages, // each generated image has fixed 258 tokens
-                CompletionTokens: 0,                             // image generation does not calculate completion tokens
-                TotalTokens:      imageTokens * generatedImages,
+                CompletionTokens: imageOutputTokens,
+                TotalTokens:      imageOutputTokens,
+                CompletionTokenDetails: dto.OutputTokenDetails{
+                        ImageTokens: imageOutputTokens,
+                },
         }
 
         return usage, nil

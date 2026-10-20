@@ -331,3 +331,35 @@ func TestGeminiTextGenerationHandlerUsesEstimatedPromptTokensWhenUsagePromptMiss
 	require.Equal(t, 100, usage.CompletionTokens)
 	require.Equal(t, 110, usage.TotalTokens)
 }
+
+func TestGeminiImageHandlerReportsGeneratedImagesAsOutputImageTokens(t *testing.T) {
+	t.Parallel()
+
+	gin.SetMode(gin.TestMode)
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/images/generations", nil)
+
+	payload := dto.GeminiImageResponse{
+		Predictions: []dto.GeminiImagePrediction{
+			{BytesBase64Encoded: "image-one"},
+			{BytesBase64Encoded: "image-two"},
+		},
+	}
+	body, err := common.Marshal(payload)
+	require.NoError(t, err)
+
+	resp := &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       io.NopCloser(bytes.NewReader(body)),
+	}
+
+	usage, apiErr := GeminiImageHandler(c, &relaycommon.RelayInfo{}, resp)
+	require.Nil(t, apiErr)
+	require.NotNil(t, usage)
+	require.Equal(t, 0, usage.PromptTokens)
+	require.Equal(t, 516, usage.CompletionTokens)
+	require.Equal(t, 516, usage.TotalTokens)
+	require.Equal(t, 516, usage.CompletionTokenDetails.ImageTokens)
+	require.Equal(t, 0, usage.PromptTokensDetails.ImageTokens)
+}

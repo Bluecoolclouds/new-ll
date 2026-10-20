@@ -70,7 +70,7 @@ async function responseBody(path: string, init: RequestInit, redirectOnUnauthori
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   headers.set('Cache-Control', 'no-store');
-  if (init.body) headers.set('Content-Type', 'application/json');
+  if (init.body && !(init.body instanceof FormData)) headers.set('Content-Type', 'application/json');
   const uid = userId();
   if (uid) headers.set('New-Api-User', uid);
   const response = await fetch(path, { ...init, headers, credentials: 'include' });
@@ -107,6 +107,15 @@ export async function request<T>(path: string, init: RequestInit = {}, redirectO
     return body.data as T;
   }
   return body as T;
+}
+
+export async function requestFormData<T>(path: string, body: FormData, redirectOnUnauthorized = true): Promise<T> {
+  const response = await responseBody(path, { method: 'POST', body }, redirectOnUnauthorized);
+  if (typeof response.success === 'boolean') {
+    if (!response.success) throw new Error(String(response.message || 'Не удалось загрузить файл.'));
+    return response.data as T;
+  }
+  return response as T;
 }
 
 export async function requestPricing(path: string): Promise<PricingResponse> {

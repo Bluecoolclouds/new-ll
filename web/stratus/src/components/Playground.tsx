@@ -1,20 +1,33 @@
 import { useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Bot, Check, CircleDot, Image as ImageIcon, LoaderCircle, MessageSquareText, Trash2, UserRound } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { AlertCircle, Bot, Check, CircleDot, Image as ImageIcon, LoaderCircle, MessageSquareText, Plus, Trash2, UserRound } from 'lucide-react';
 import { AccountHeader } from './AccountHeader';
 import { PlaygroundImages } from './PlaygroundImages';
+import { PlaygroundLibrary } from './PlaygroundLibrary';
 import {
   generatePlaygroundImage,
   isGptImageModel,
   loadDefaultPlaygroundApiKey,
   loadPlaygroundModels,
   MissingDefaultPlaygroundApiKeyError,
+  PlaygroundApiError,
   streamPlaygroundChat,
+  type PlaygroundApiKey,
   type PlaygroundChatMessage,
   type PlaygroundImageSettings,
 } from '../lib/playground-api';
 import { preparePlaygroundAttachments, type PlaygroundAttachmentIssue, type PreparedPlaygroundAttachment } from '../lib/playground-files';
 import { requestPricing } from '../lib/api';
+import {
+  createPlaygroundChat,
+  deletePlaygroundChat,
+  imageUrlToBlob,
+  listPlaygroundChats,
+  loadPlaygroundChat,
+  loadPlaygroundMediaDataUrl,
+  savePlaygroundChat,
+  savePlaygroundMedia,
+} from '../lib/playground-library';
 import { WorkspaceLocaleProvider, useWorkspaceLocale } from '../lib/workspace-locale';
 import { workspaceLocale } from '../lib/workspace-copy';
 import {
@@ -26,6 +39,8 @@ import {
 import './workspace.css';
 import './playground.css';
 
+const defaultPlaygroundApiKeyQueryKey = ['stratus', 'playground', 'default-api-key'] as const;
+
 type Turn = {
   id: number;
   role: 'user' | 'assistant';
@@ -36,8 +51,40 @@ type Turn = {
   activity?: 'chat' | 'image';
   status?: 'loading' | 'streaming' | 'complete' | 'error';
   imageSrc?: string;
-  attachments?: PreparedPlaygroundAttachment[];
+  attachments?: (PreparedPlaygroundAttachment & { mediaId?: number })[];
 };
+
+function storedTurns(turns: Turn[]) {
+  return turns.map(({ attachments, imageSrc, ...turn }) => ({
+    ...turn,
+    ...(imageSrc && !imageSrc.startsWith('data:image/') ? { imageSrc } : {}),
+    ...(attachments ? {
+      attachments: attachments.map(({ sourceFile: _sourceFile, dataUrl: _dataUrl, ...attachment }) => attachment),
+    } : {}),
+  }));
+}
+
+async function restoreTurns(messages: string | undefined): Promise<Turn[]> {
+  if (!messages) return [];
+  const parsed = JSON.parse(messages) as Turn[];
+  if (!Array.isArray(parsed)) throw new Error('Chat history is invalid.');
+  return Promise.all(parsed.map(async (turn) => ({
+    ...turn,
+    attachments: turn.attachments
+      ? await Promise.all(turn.attachments.map(async (item) => {
+          let dataUrl = item.dataUrl;
+          if (item.mediaId) {
+            try { dataUrl = await loadPlaygroundMediaDataUrl(item.mediaId); } catch { dataUrl = undefined; }
+          }
+          return {
+            ...item,
+            ...(dataUrl ? { dataUrl } : {}),
+            sourceFile: new File([], item.name, { type: item.mimeType }),
+          };
+        }))
+      : undefined,
+  })));
+}
 
 function isImageGenerationRequest(prompt: string) {
   const value = prompt.trim();
@@ -101,8 +148,9 @@ function attachmentIssueText(issue: PlaygroundAttachmentIssue, c: ReturnType<typ
 function PlaygroundContent() {
   const { language, copy: c, setLanguage } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
+  const queryClient = useQueryClient();
   const apiKey = useQuery({
-    queryKey: ['stratus', 'playground', 'default-api-key'],
+    queryKey: defaultPlaygroundApiKeyQueryKey,
     queryFn: loadDefaultPlaygroundApiKey,
     staleTime: 60_000,
     gcTime: 0,
@@ -110,7 +158,17 @@ function PlaygroundContent() {
   });
   const models = useQuery({
     queryKey: ['stratus', 'playground', 'models', apiKey.data?.tokenId],
-    queryFn: () => loadPlaygroundModels(apiKey.data!.key),
+    queryFn: async () => {
+      const currentKey = queryClient.getQueryData<PlaygroundApiKey>(defaultPlaygroundApiKeyQueryKey) ?? apiKey.data!;
+      try {
+        return await loadPlaygroundModels(currentKey.key);
+      } catch (error) {
+        if (!(error instanceof PlaygroundApiError) || error.status !== 401) throw error;
+        const refreshedKey = await loadDefaultPlaygroundApiKey();
+        queryClient.setQueryData(defaultPlaygroundApiKeyQueryKey, refreshedKey);
+        return loadPlaygroundModels(refreshedKey.key);
+      }
+    },
     enabled: Boolean(apiKey.data),
     staleTime: 60_000,
     retry: false,
@@ -119,6 +177,14 @@ function PlaygroundContent() {
     queryKey: ['stratus', 'playground', 'pricing'],
     queryFn: () => requestPricing('/api/pricing'),
     staleTime: 5 * 60_000,
+    retry: false,
+  });
+  const [chatPage, setChatPage] = useState(1);
+  const chats = useQuery({
+    queryKey: ['stratus', 'playground', 'chats', apiKey.data?.tokenId, chatPage],
+    queryFn: () => listPlaygroundChats(chatPage),
+    enabled: Boolean(apiKey.data),
+    staleTime: 15_000,
     retry: false,
   });
   const [model, setModel] = useState('');
@@ -131,7 +197,10 @@ function PlaygroundContent() {
   const [attachmentError, setAttachmentError] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [sending, setSending] = useState(false);
-  const [mode, setMode] = useState<'chat' | 'images'>('chat');
+  const [mode, setMode] = useState<'chat' | 'images' | 'library'>('chat');
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
+  const [chatBusy, setChatBusy] = useState(false);
+  const [chatError, setChatError] = useState('');
   const sequence = useRef(0);
   const abortController = useRef<AbortController | null>(null);
   const availableModels = models.data ?? [];
@@ -156,7 +225,11 @@ function PlaygroundContent() {
   const modelsFetching = apiKey.isFetching || models.isFetching;
   const modelsErrorText = apiKey.error instanceof MissingDefaultPlaygroundApiKeyError
     ? c.playgroundApiKeyMissing
-    : c.playgroundModelsError;
+    : apiKey.error instanceof Error
+      ? apiKey.error.message
+      : models.error instanceof Error
+        ? models.error.message
+        : c.playgroundModelsError;
   const imageModelsLoading = modelsLoading || pricing.isLoading;
   const imageModelsError = modelsError || pricing.isError;
   const imageModelsErrorText = modelsError
@@ -174,6 +247,73 @@ function PlaygroundContent() {
 
   const stopGeneration = () => abortController.current?.abort();
 
+  const persistChat = async (chatId: number, nextTurns: Turn[]) => {
+    const firstPrompt = nextTurns.find((turn) => turn.role === 'user')?.content.trim();
+    const currentTitle = chats.data?.items.find((chat) => chat.id === chatId)?.title;
+    const title = firstPrompt ? firstPrompt.slice(0, 120) : currentTitle || c.playgroundNewChat;
+    try {
+      await savePlaygroundChat(chatId, title, storedTurns(nextTurns));
+      setChatError('');
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'chats'] });
+    } catch {
+      setChatError(c.playgroundChatSaveError);
+    }
+  };
+
+  const startNewChat = async () => {
+    if (chatBusy || sending) return;
+    setChatBusy(true);
+    setChatError('');
+    try {
+      const chat = await createPlaygroundChat(c.playgroundNewChat);
+      setActiveChatId(chat.id);
+      setTurns([]);
+      setMode('chat');
+      setChatPage(1);
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'chats'] });
+    } catch (error) {
+      setChatError(error instanceof Error ? error.message : c.playgroundChatListError);
+    } finally {
+      setChatBusy(false);
+    }
+  };
+
+  const openChat = async (chatId: number) => {
+    if (chatBusy || sending || chatId === activeChatId) return;
+    setChatBusy(true);
+    setChatError('');
+    try {
+      const chat = await loadPlaygroundChat(chatId);
+      const restored = await restoreTurns(chat.messages);
+      setActiveChatId(chat.id);
+      setTurns(restored);
+      setMode('chat');
+    } catch (error) {
+      setChatError(error instanceof Error ? error.message : c.playgroundChatListError);
+    } finally {
+      setChatBusy(false);
+    }
+  };
+
+  const removeChat = async (chatId: number) => {
+    if (chatBusy || sending || !window.confirm(c.playgroundDeleteChatConfirm)) return;
+    setChatBusy(true);
+    setChatError('');
+    try {
+      await deletePlaygroundChat(chatId);
+      if (activeChatId === chatId) {
+        setActiveChatId(null);
+        setTurns([]);
+      }
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'chats'] });
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'library'] });
+    } catch (error) {
+      setChatError(error instanceof Error ? error.message : c.playgroundChatListError);
+    } finally {
+      setChatBusy(false);
+    }
+  };
+
   const submitPrompt = async (draftText: string) => {
     const text = draftText.trim() || (attachments.length > 0 ? c.playgroundAnalyzeAttachments : '');
     if ((!text && attachments.length === 0) || sending || !apiKey.data) return;
@@ -188,7 +328,21 @@ function PlaygroundContent() {
     setAttachmentError('');
     const controller = new AbortController();
     abortController.current = controller;
+    let requestChatId: number | null = activeChatId;
+    let pendingTurnsForSave: Turn[] | null = null;
+    let pendingAssistantId: number | null = null;
+    let streamedContent = '';
     try {
+      let chatId = requestChatId;
+      if (!chatId) {
+        const chat = await createPlaygroundChat(c.playgroundNewChat);
+        chatId = chat.id;
+        requestChatId = chat.id;
+        setActiveChatId(chat.id);
+        setChatPage(1);
+        setMode('chat');
+        await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'chats'] });
+      }
       const prepared = await preparePlaygroundAttachments(attachments);
       if (controller.signal.aborted) return;
       const blockingIssues = prepared.issues.filter((issue) => issue.code !== 'text-truncated');
@@ -202,7 +356,13 @@ function PlaygroundContent() {
 
       const userId = ++sequence.current;
       const assistantId = ++sequence.current;
-      const userTurn: Turn = { id: userId, role: 'user', content: text, attachments: prepared.attachments };
+      const savedAttachments = await Promise.all(prepared.attachments.map(async (item) => {
+        if (item.kind !== 'image' || !item.dataUrl) return item;
+        const blob = await imageUrlToBlob(item.dataUrl);
+        const saved = await savePlaygroundMedia(blob, item.name, requestModel, text, chatId!);
+        return { ...item, mediaId: saved.id };
+      }));
+      const userTurn: Turn = { id: userId, role: 'user', content: text, attachments: savedAttachments };
       const assistantTurn: Turn = {
         id: assistantId,
         role: 'assistant',
@@ -211,9 +371,14 @@ function PlaygroundContent() {
         activity: isImageRequest ? 'image' : 'chat',
         status: 'loading',
       };
-      setTurns((current) => [...current, userTurn, assistantTurn]);
+      const pendingTurns = [...turns, userTurn, assistantTurn];
+      pendingTurnsForSave = pendingTurns;
+      pendingAssistantId = assistantId;
+      setTurns(pendingTurns);
+      await persistChat(chatId, pendingTurns);
       setDraft('');
       setAttachments([]);
+      await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'library'] });
       const references = prepared.attachments.filter((item) => item.kind === 'image').map((item) => item.sourceFile);
 
       if (isImageRequest) {
@@ -238,13 +403,28 @@ function PlaygroundContent() {
         const firstImage = response.data?.find((item) => Boolean(item.b64_json || item.url));
         const src = firstImage ? imageSource(firstImage, imageSettings.format) : null;
         if (!src) throw new Error(c.playgroundImageNoOutput);
-        setTurns((current) => current.map((turn) => turn.id === assistantId ? {
+        const usedModel = response.model?.trim() || selectedImageModel;
+        const generatedTurns = pendingTurns.map((turn) => turn.id === assistantId ? {
           ...turn,
           content: c.playgroundImageCreated,
-          model: response.model?.trim() || selectedImageModel,
+          model: usedModel,
           imageSrc: src,
-          status: 'complete',
-        } : turn));
+          status: 'complete' as const,
+        } : turn);
+        pendingTurnsForSave = generatedTurns;
+        setTurns(generatedTurns);
+        const savedMedia = await savePlaygroundMedia(await imageUrlToBlob(src), `stratus-image.${imageSettings.format}`, usedModel, prompt, chatId);
+        const completedTurns = generatedTurns.map((turn) => turn.id === assistantId ? {
+          ...turn,
+          content: c.playgroundImageCreated,
+          model: usedModel,
+          imageSrc: savedMedia.content_url,
+          status: 'complete' as const,
+        } : turn);
+        pendingTurnsForSave = completedTurns;
+        setTurns(completedTurns);
+        await persistChat(chatId, completedTurns);
+        await queryClient.invalidateQueries({ queryKey: ['stratus', 'playground', 'library'] });
         return;
       }
 
@@ -262,29 +442,41 @@ function PlaygroundContent() {
         selectedModel,
         apiMessages,
         controller.signal,
-        (delta) => setTurns((current) => current.map((turn) => turn.id === assistantId ? {
-          ...turn,
-          content: turn.content + delta,
-          status: 'streaming',
-        } : turn)),
+        (delta) => {
+          streamedContent += delta;
+          setTurns((current) => current.map((turn) => turn.id === assistantId ? {
+            ...turn,
+            content: turn.content + delta,
+            status: 'streaming',
+          } : turn));
+        },
       );
-      setTurns((current) => current.map((turn) => turn.id === assistantId ? {
+      const completedTurns = pendingTurns.map((turn) => turn.id === assistantId ? {
         ...turn,
-        content: turn.content.trim() || c.playgroundNoResponse,
+        content: streamedContent.trim() || c.playgroundNoResponse,
         model: result.model,
         ...(typeof result.totalTokens === 'number' ? { totalTokens: result.totalTokens } : {}),
-        status: 'complete',
-      } : turn));
+        status: 'complete' as const,
+      } : turn);
+      pendingTurnsForSave = completedTurns;
+      setTurns(completedTurns);
+      await persistChat(chatId, completedTurns);
     } catch (error) {
+      const message = error instanceof Error ? error.message : c.playgroundRequestError;
       if (error instanceof Error && error.name === 'AbortError') {
-        setTurns((current) => current.map((turn) => turn.status === 'loading' || turn.status === 'streaming'
-          ? { ...turn, content: turn.content || c.playgroundStopped, status: 'complete' }
-          : turn));
+        const stoppedTurns = (pendingTurnsForSave ?? turns).map((turn) => turn.id === pendingAssistantId && (turn.status === 'loading' || turn.status === 'streaming')
+          ? { ...turn, content: streamedContent || c.playgroundStopped, status: 'complete' as const }
+          : turn);
+        setTurns(stoppedTurns);
+        if (requestChatId && pendingTurnsForSave) await persistChat(requestChatId, stoppedTurns);
       } else {
-        const message = error instanceof Error ? error.message : c.playgroundRequestError;
-        setTurns((current) => current.map((turn) => turn.status === 'loading' || turn.status === 'streaming'
-          ? { ...turn, content: message, failed: true, status: 'error' }
-          : turn));
+        const hadPendingAssistant = Boolean(pendingTurnsForSave?.some((turn) => turn.id === pendingAssistantId && (turn.status === 'loading' || turn.status === 'streaming')));
+        const failedTurns = (pendingTurnsForSave ?? turns).map((turn) => turn.id === pendingAssistantId && (turn.status === 'loading' || turn.status === 'streaming')
+          ? { ...turn, content: message, failed: true, status: 'error' as const }
+          : turn);
+        setTurns(failedTurns);
+        if (requestChatId && pendingTurnsForSave) await persistChat(requestChatId, failedTurns);
+        if (!hadPendingAssistant) setChatError(message);
       }
     } finally {
       abortController.current = null;
@@ -301,7 +493,7 @@ function PlaygroundContent() {
           <h1>{c.playgroundTitle}</h1>
           <p>{c.playgroundIntro}</p>
         </div>
-        {mode === 'chat' && turns.length > 0 && <button className="playground-clear" type="button" onClick={() => { if (!sending) setTurns([]); }} disabled={sending} data-testid="button-clear-conversation">
+        {mode === 'chat' && turns.length > 0 && <button className="playground-clear" type="button" onClick={() => { if (!sending) { setTurns([]); if (activeChatId) void persistChat(activeChatId, []); } }} disabled={sending} data-testid="button-clear-conversation">
           <Trash2 size={15}/>{c.playgroundClear}
         </button>}
       </header>
@@ -314,6 +506,9 @@ function PlaygroundContent() {
             </button>
             <button id="playground-images-tab" type="button" aria-pressed={mode === 'images'} aria-controls="playground-image-panel" className={mode === 'images' ? 'is-active' : ''} onClick={() => setMode('images')} data-testid="tab-playground-images">
               <ImageIcon size={15}/>{c.playgroundImagesMode}
+            </button>
+            <button id="playground-library-tab" type="button" aria-pressed={mode === 'library'} aria-controls="playground-library-panel" className={mode === 'library' ? 'is-active' : ''} onClick={() => setMode('library')} data-testid="tab-playground-library">
+              <ImageIcon size={15}/>{c.playgroundLibraryMode}
             </button>
           </div>
           <div id="playground-chat-panel" className="playground-mode-panel" role="region" aria-labelledby="playground-chat-tab" hidden={mode !== 'chat'}>
@@ -435,12 +630,40 @@ function PlaygroundContent() {
             format={imageFormat}
             onFormatChange={setImageFormat}
           />
+          <div id="playground-library-panel" className="playground-mode-panel" role="region" aria-labelledby="playground-library-tab" hidden={mode !== 'library'}>
+            <PlaygroundLibrary hidden={mode !== 'library'} scopeKey={apiKey.data?.tokenId}/>
+          </div>
         </section>
-        <aside className="playground-side-note">
-          <span className="playground-side-number">01</span>
-           <div><strong>{c.playgroundAccessTitle}</strong><p>{c.playgroundAccessDescription}</p></div>
-          <span className="playground-side-rule"/>
-           <span className="playground-side-caption">{c.playgroundPrivacyNote}</span>
+        <aside className="playground-sidebar">
+          <section className="playground-side-note">
+            <span className="playground-side-number">01</span>
+            <div><strong>{c.playgroundAccessTitle}</strong><p>{c.playgroundAccessDescription}</p></div>
+            <span className="playground-side-rule"/>
+            <span className="playground-side-caption">{c.playgroundPrivacyNote}</span>
+          </section>
+          <section className="playground-chat-list" aria-label={c.playgroundChatList}>
+            <header>
+              <strong>{c.playgroundChatList}</strong>
+              <button type="button" onClick={() => void startNewChat()} disabled={chatBusy || sending} aria-label={c.playgroundNewChat} data-testid="button-new-playground-chat"><Plus size={14}/>{c.playgroundNewChat}</button>
+            </header>
+            <p className="playground-chat-cap">{c.playgroundAutoDeleteNote}</p>
+            {chatError && <p className="playground-chat-error" role="alert">{chatError}</p>}
+            {chats.isLoading && <p className="playground-chat-status">{c.playgroundChatListLoading}</p>}
+            {chats.isError && <button className="playground-chat-retry" type="button" onClick={() => void chats.refetch()}>{c.playgroundChatListError}</button>}
+            {chats.data?.items.length === 0 && <p className="playground-chat-status">{c.playgroundNoChats}</p>}
+            {chats.data?.items.map((chat) => <div className={`playground-chat-row${activeChatId === chat.id ? ' is-active' : ''}`} key={chat.id}>
+              <button className="playground-chat-open" type="button" onClick={() => void openChat(chat.id)} disabled={chatBusy || sending} title={chat.title} data-testid={`button-open-playground-chat-${chat.id}`}>
+                <span>{chat.title || c.playgroundNewChat}</span>
+                <time>{new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(chat.updated_at * 1000))}</time>
+              </button>
+              <button className="playground-chat-delete" type="button" onClick={() => void removeChat(chat.id)} disabled={chatBusy || sending} aria-label={`${c.playgroundDeleteChat}: ${chat.title}`} data-testid={`button-delete-playground-chat-${chat.id}`}><Trash2 size={13}/></button>
+            </div>)}
+            {chats.data && chats.data.total > chats.data.page_size && <nav className="playground-chat-pagination" aria-label={c.playgroundChatList}>
+              <button type="button" onClick={() => setChatPage((value) => Math.max(1, value - 1))} disabled={chatPage <= 1 || chatBusy || sending}>{c.previousPage}</button>
+              <span>{chatPage} / {Math.ceil(chats.data.total / chats.data.page_size)}</span>
+              <button type="button" onClick={() => setChatPage((value) => value + 1)} disabled={chatPage * chats.data.page_size >= chats.data.total || chatBusy || sending}>{c.nextPage}</button>
+            </nav>}
+          </section>
         </aside>
       </main>
       <footer className="playground-footer"><span>STRATUS HUB</span><span>{c.playgroundPageMemoryNote}</span></footer>

@@ -12,6 +12,13 @@ export class MissingDefaultPlaygroundApiKeyError extends Error {
   }
 }
 
+export class PlaygroundApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = 'PlaygroundApiError';
+  }
+}
+
 export type PlaygroundApiPath =
   | '/v1/models'
   | '/v1/chat/completions'
@@ -75,12 +82,23 @@ export async function requestWithApiKey<T>(
       const record = body as Record<string, unknown>;
       const error = record.error;
       if (error && typeof error === 'object' && 'message' in error) {
-        throw new Error(String((error as { message?: unknown }).message ?? `Request failed (${response.status}).`));
+        throw new PlaygroundApiError(String((error as { message?: unknown }).message ?? `Request failed (${response.status}).`), response.status);
       }
-      if (typeof error === 'string') throw new Error(error);
-      if (typeof record.message === 'string') throw new Error(record.message);
+      if (typeof error === 'string') throw new PlaygroundApiError(error, response.status);
+      if (typeof record.message === 'string') throw new PlaygroundApiError(record.message, response.status);
     }
-    throw new Error(`Request failed (${response.status}).`);
+    throw new PlaygroundApiError(`Request failed (${response.status}).`, response.status);
+  }
+
+  if (body && typeof body === 'object' && !Array.isArray(body)) {
+    const record = body as Record<string, unknown>;
+    if (record.success === false) {
+      const error = record.error;
+      if (error && typeof error === 'object' && 'message' in error) {
+        throw new PlaygroundApiError(String((error as { message?: unknown }).message ?? 'The API rejected the request.'), response.status);
+      }
+      throw new PlaygroundApiError(typeof record.message === 'string' ? record.message : 'The API rejected the request.', response.status);
+    }
   }
 
   if (!body || typeof body !== 'object' || Array.isArray(body)) {

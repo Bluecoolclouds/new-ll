@@ -33,7 +33,9 @@ export function UsageChart({ userId, quotaPerUnit, enableDataExport, isAdmin = f
     { value: 'day', label: c.day },
     { value: 'week', label: c.week },
   ];
-  const formatCredits = (value: number) => `${number.format(value)} ${c.credits}`;
+  const formatStratusTokens = (value: number | null) => value === null
+    ? c.unavailable
+    : `${number.format(value)} ${c.walletTokensUnit}`;
   const [selection, setSelection] = useState<UsageSelection>({ period: '7d', granularity: 'day' });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export function UsageChart({ userId, quotaPerUnit, enableDataExport, isAdmin = f
   }, [rows, range, quotaPerUnit, useDemoData]);
   const availableModels = useMemo(() => analytics?.models
     .slice()
-    .sort((a, b) => b.summary.quota - a.summary.quota || a.model.localeCompare(b.model, locale))
+    .sort((a, b) => (b.summary.walletTokens ?? -1) - (a.summary.walletTokens ?? -1) || a.model.localeCompare(b.model, locale))
     .map((model) => model.model) ?? [], [analytics, locale]);
   useEffect(() => {
     if (selectedModel && !availableModels.includes(selectedModel)) setSelectedModel(null);
@@ -100,7 +102,7 @@ export function UsageChart({ userId, quotaPerUnit, enableDataExport, isAdmin = f
     <div className="usage-card-head">
       <div>
         <div className="workspace-card-label upper">{c.activityApi}</div>
-        <h2 id="usage-title">{c.spendInCredits}</h2>
+        <h2 id="usage-title">{c.spendInStratusTokens}</h2>
       </div>
       {isAdmin && <button
         className={`usage-demo-toggle${useDemoData ? ' is-active' : ''}`}
@@ -167,16 +169,16 @@ export function UsageChart({ userId, quotaPerUnit, enableDataExport, isAdmin = f
     </div>}
     {dataAvailable && rows.length > 0 && analytics && visibleAnalytics && <>
       <div className="usage-chart-summary">
-        <div><span>{useDemoData ? c.demoSpendPrefix : c.spendPrefix} {activePeriod}</span><strong>{formatCredits(visibleAnalytics.summary.quota)}</strong></div>
+        <div><span>{useDemoData ? c.demoSpendPrefix : c.spendPrefix} {activePeriod}</span><strong>{formatStratusTokens(visibleAnalytics.summary.walletTokens)}</strong></div>
       </div>
       <UsageAnalyticsPlot
         view="spending-bar"
-        metric="quota"
+        metric="wallet"
         points={visibleAnalytics.points}
         models={visibleAnalytics.models}
         selectedIndex={selectedIndex}
         onSelectIndex={setSelectedIndex}
-        quotaUnavailable={false}
+        walletUnavailable={!useDemoData && (!Number.isFinite(quotaPerUnit) || quotaPerUnit <= 0)}
       />
       <UsageModelLegend
         models={availableModels}

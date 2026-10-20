@@ -47,6 +47,7 @@ async function authRequest<T = AuthResult>(
 ): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
+  headers.set('X-Stratus-Language', readAuthLanguage());
   headers.set('Accept-Language', authApiLanguage(readAuthLanguage()));
   headers.set('Cache-Control', 'no-store');
   if (init.body) headers.set('Content-Type', 'application/json');

@@ -21,6 +21,7 @@
 - [Temporary verification fixtures](temporary-verification-fixtures.md) — verify fixture initialization and session continuity before trusting protected-route or browser checks.
 - [Stratus auth boundary](stratus-auth-boundary.md) — provider callback URLs belong to the backend contract, not the frontend preview prefix.
 - [Stratus token economy](stratus-token-economy.md) — wallet balance in tokens; model pricing shown as multipliers, not separate input/output prices.
+- [Stratus supported languages](stratus-supported-languages.md) — user-facing Stratus language choices are Russian and English; never surface fallback Chinese labels.
 - [Stratus refund terms](stratus-refund-terms.md) — user approved the reference policy's 35% usage threshold and 24/48/72-hour request and processing windows.
 - [Custom payment credit agreement](payment-credit-contract.md) — approved whole-USD credit conversion for new and pending custom-gateway orders; no retroactive balance recalculation.
 - [Stratus wallet top-up bonus](stratus-wallet-bonus.md) — progressive RUB bonus reaches 50% at 25,000 ₽, then becomes 70%; manual amounts may exceed the slider.

@@ -1,5 +1,6 @@
 import { authUrl } from './auth-session';
 import { quotaToWalletTokens } from './token-economy';
+import { readWorkspaceLanguage } from './workspace-copy';
 
 export type ApiEnvelope<T> = { success: boolean; message?: string; data: T };
 export type Page<T> = { page: number; page_size: number; total: number; items: T[] };
@@ -69,6 +70,7 @@ function userId(): string | null {
 async function responseBody(path: string, init: RequestInit, redirectOnUnauthorized: boolean): Promise<Record<string, unknown>> {
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
+  headers.set('X-Stratus-Language', readWorkspaceLanguage());
   headers.set('Cache-Control', 'no-store');
   if (init.body && !(init.body instanceof FormData)) headers.set('Content-Type', 'application/json');
   const uid = userId();

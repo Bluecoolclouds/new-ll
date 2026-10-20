@@ -66,7 +66,9 @@ export async function requestWithApiKey<T>(
   const response = await fetch(path, {
     ...init,
     headers,
-    credentials: 'omit',
+    // Keep workspace-preview proxy cookies while authenticating the API with the
+    // account's bearer key. The request remains same-origin.
+    credentials: 'same-origin',
     cache: 'no-store',
   });
 
@@ -129,7 +131,7 @@ export async function streamPlaygroundChat(
       Accept: 'text/event-stream',
       'Content-Type': 'application/json',
     },
-    credentials: 'omit',
+    credentials: 'same-origin',
     cache: 'no-store',
     signal,
     body: JSON.stringify({

@@ -36,7 +36,7 @@ test('model list uses the account API key and reads the OpenAI data envelope', a
   expect(await loadPlaygroundModels('account-api-key')).toEqual(['model-a', 'model-b']);
   expect(requests[0].path).toBe('/v1/models');
   expect(new Headers(requests[0].init?.headers).get('Authorization')).toBe('Bearer account-api-key');
-  expect(requests[0].init?.credentials).toBe('omit');
+  expect(requests[0].init?.credentials).toBe('same-origin');
 });
 
 test('model list reports application errors returned with HTTP 200', async () => {

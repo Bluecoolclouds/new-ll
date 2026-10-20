@@ -108,7 +108,7 @@ test('two independent personal API requests, including admin sessions; partial f
   await expect(requestUsageComparison(range)).rejects.toThrow();
 });
 
-test('chart shows period, granularity, model selection, and credit-spend graph', () => {
+test('chart shows period, granularity, model selection, and Stratus-token spending', () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   // Ask the actual hook for its key so this test exercises the chart's real cache.
   let key: readonly unknown[] = [];
@@ -132,8 +132,9 @@ test('chart shows period, granularity, model selection, and credit-spend graph',
   expect(html).toContain('button-usage-model-0');
   expect(html).not.toContain('usage-legend-only');
   expect(html).not.toContain('<input');
-  expect(html).toContain('Списано кредитов за 7 дней');
-  expect(html).toContain('кредитов');
+  expect(html).toContain('Списано токенов Stratus за 7 дней');
+  expect(html).toContain('токенов Stratus');
+  expect(html).not.toContain('кредитов');
   expect(html).not.toContain('input-usage-start-utc');
   expect(html).not.toContain('tab-usage-');
   expect(html).not.toContain('usage-period-comparison');

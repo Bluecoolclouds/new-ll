@@ -67,3 +67,9 @@ bottom treatment without its Priority item.
 
 **How to apply:** Render one cache footer below the model list, without Priority.
 This is display-only and does not change server cache ratios or billing.
+
+Cabinet usage and charge history must present charges only in Stratus wallet tokens. Upstream model-token counts and internal quota units are not the user's spend currency.
+
+**Why:** The user clarified “у нас у стратуса только токены стратуса тратятся” after seeing model-token and internal-credit figures beside wallet-token charges.
+
+**How to apply:** Show historical charges converted from the recorded quota into Stratus wallet tokens. Keep raw provider usage and quota internally where needed for conversion or auditing, but do not label them as user charges in the cabinet.

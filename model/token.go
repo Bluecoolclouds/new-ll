@@ -43,6 +43,27 @@ type Token struct {
 	DeletedAt               gorm.DeletedAt `gorm:"index"`
 }
 
+const legacyDefaultTokenSuffix = "的初始令牌"
+
+func DefaultUserTokenName(username, language string) string {
+	language = strings.ToLower(strings.TrimSpace(strings.SplitN(language, ",", 2)[0]))
+	if language == "ru" || strings.HasPrefix(language, "ru-") {
+		return fmt.Sprintf("%s — начальный API-ключ", username)
+	}
+	return fmt.Sprintf("%s — initial API key", username)
+}
+
+func LocalizeLegacyDefaultTokenName(name, language string) string {
+	if !strings.HasSuffix(name, legacyDefaultTokenSuffix) {
+		return name
+	}
+	username := strings.TrimSuffix(name, legacyDefaultTokenSuffix)
+	if username == "" {
+		return name
+	}
+	return DefaultUserTokenName(username, language)
+}
+
 func (token *Token) AfterFind(_ *gorm.DB) error {
 	now := time.Now().UTC()
 	if token.GatewayDay != gatewayDay(now) {
@@ -151,9 +172,11 @@ func GetAllUserTokens(userId int, startIdx int, num int) ([]*Token, error) {
 func GetActiveDefaultUserToken(userId int) (*Token, error) {
 	var token Token
 	err := DB.Where(
-		"user_id = ? AND name LIKE ? AND status = ? AND unlimited_quota = ? AND (expired_time <= 0 OR expired_time > ?)",
+		"user_id = ? AND (name LIKE ? OR name LIKE ? OR name LIKE ?) AND status = ? AND unlimited_quota = ? AND (expired_time <= 0 OR expired_time > ?)",
 		userId,
-		"%的初始令牌",
+		"%"+legacyDefaultTokenSuffix,
+		"% — начальный API-ключ",
+		"% — initial API key",
 		common.TokenStatusEnabled,
 		true,
 		common.GetTimestamp(),

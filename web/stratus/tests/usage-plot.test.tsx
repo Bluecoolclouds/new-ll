@@ -15,28 +15,28 @@ const data = buildUsageAnalytics([
   { model_name: 'model-a', created_at: range.start, quota: 400, count: 2, token_used: 40 },
   { model_name: 'model-b', created_at: range.start, quota: 100, count: 5, token_used: 60 },
 ], range, 500000);
-const plot = (view: AnalyticsView, value = data, metric: 'wallet' | 'requests' | 'tokens' | 'quota' = 'quota') => renderToStaticMarkup(
+const plot = (view: AnalyticsView, value = data, metric: 'wallet' | 'requests' = 'wallet') => renderToStaticMarkup(
   <UsageAnalyticsPlot view={view} metric={metric} points={value.points} models={value.models}
-    selectedIndex={0} onSelectIndex={() => {}} quotaUnavailable={false} />,
+    selectedIndex={0} onSelectIndex={() => {}} walletUnavailable={false} />,
 );
 
 describe('model chart rendering edge cases', () => {
   test('distribution columns are the dashboard default, with stacked bar and area presentations available', () => {
     expect(DEFAULT_USAGE_CHART_VIEW).toBe('spending-bar');
     for (const view of ['spending-bar', 'spending-area'] as const) {
-      expect(plot(view)).toContain('Распределение расхода в кредитах по моделям');
-      expect(plot(view)).toContain('кредитов');
+      expect(plot(view)).toContain('Расход токенов Stratus по моделям');
+      expect(plot(view)).toContain('токенов Stratus');
     }
     expect(plot('spending-bar')).toContain('<rect');
     expect(plot('spending-area')).toContain('fill-opacity=".55"');
   });
 
-  test('quota bars expose each model and its historical credits in the hover label', () => {
+  test('spending bars expose each model and historical Stratus-wallet-token costs', () => {
     const html = plot('spending-bar');
-    expect(html).toContain('Всего: 500 кредитов');
-    expect(html).toContain('model-a: 400 кредитов');
-    expect(html).toContain('model-b: 100 кредитов');
-    expect(html).not.toContain('токенов кошелька');
+    expect(html).toContain('model-a · 6');
+    expect(html).toContain('model-b · 1');
+    expect(html).toContain('токенов Stratus');
+    expect(html).not.toContain('кредитов');
   });
 
   test('stacked spending bars put the highest-spend model at the bottom', () => {
@@ -121,8 +121,8 @@ describe('model chart rendering edge cases', () => {
     })), range, 500000);
     const legend = renderToStaticMarkup(<UsageModelLegend models={many.models.map((item) => item.model)}
       selectedModel={null} onSelect={() => {}} />);
-    const graph = renderToStaticMarkup(<UsageAnalyticsPlot view="spending-bar" metric="quota"
-      points={many.points} models={many.models} selectedIndex={0} onSelectIndex={() => {}} quotaUnavailable={false} />);
+    const graph = renderToStaticMarkup(<UsageAnalyticsPlot view="spending-bar" metric="wallet"
+      points={many.points} models={many.models} selectedIndex={0} onSelectIndex={() => {}} walletUnavailable={false} />);
     expect((legend.match(/class="usage-model-chip/g) ?? []).length).toBe(23);
     expect(legend).not.toContain('<input');
     expect(legend).not.toContain('Только');
@@ -130,6 +130,7 @@ describe('model chart rendering edge cases', () => {
     expect(many.summary.requests).toBe(23);
     expect(graph.match(/<rect[^>]*fill="hsl\(/g)?.length).toBe(23);
     expect(graph).toContain('Всего:');
-    expect(graph).toContain('кредитов');
+    expect(graph).toContain('токенов Stratus');
+    expect(graph).not.toContain('кредитов');
   });
 });

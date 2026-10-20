@@ -54,7 +54,7 @@ func GetPlaygroundDefaultToken(c *gin.Context) {
 
 		token = &model.Token{
 			UserId:             userId,
-			Name:               fmt.Sprintf("%s的初始令牌", userCache.Username),
+			Name:               model.DefaultUserTokenName(userCache.Username, c.GetHeader("X-Stratus-Language")),
 			Key:                key,
 			Status:             common.TokenStatusEnabled,
 			CreatedTime:        common.GetTimestamp(),

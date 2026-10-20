@@ -6,7 +6,7 @@ import { workspaceLocale, type WorkspaceCopy } from '../lib/workspace-copy';
 import { usageModelColor as colorFor, usageModelLabel as modelLabel } from '../lib/usage-presentation';
 
 export type AnalyticsView = 'overview' | 'spending-bar' | 'spending-area' | 'requests-trend' | 'ranking';
-type Metric = 'wallet' | 'requests' | 'tokens' | 'quota';
+type Metric = 'wallet' | 'requests';
 type AnalyticsModel = ReturnType<typeof buildUsageAnalytics>['models'][number];
 type Props = {
   view: AnalyticsView;
@@ -15,27 +15,23 @@ type Props = {
   models: AnalyticsModel[];
   selectedIndex: number;
   onSelectIndex: (index: number) => void;
-  quotaUnavailable: boolean;
+  walletUnavailable: boolean;
 };
 
-const modelValue = (point: UsagePoint, metric: Metric) => metric === 'quota' ? point.quota
-  : metric === 'wallet' ? point.walletTokens ?? 0
-    : metric === 'requests' ? point.requests : point.usageTokens;
+const modelValue = (point: UsagePoint, metric: Metric) => metric === 'wallet'
+  ? point.walletTokens ?? 0
+  : point.requests;
 const modelTotal = (models: AnalyticsModel[], index: number, metric: Metric) =>
   models.reduce((sum, model) => sum + (model.points[index] ? modelValue(model.points[index], metric) : 0), 0);
-const metricNamesForPlot = (metric: Metric, copy: WorkspaceCopy) => metric === 'quota' ? copy.quotaMetric
-  : metric === 'wallet' ? copy.walletMetric
-    : metric === 'requests' ? copy.requestsMetric : copy.modelTokensMetric;
-const measureUnit = (metric: Metric, copy: WorkspaceCopy) => metric === 'quota' ? copy.credits
-  : metric === 'wallet' ? copy.walletTokensUnit
-    : metric === 'requests' ? copy.requestsUnit : copy.modelTokensUnit;
+const metricNamesForPlot = (metric: Metric, copy: WorkspaceCopy) => metric === 'wallet' ? copy.walletMetric : copy.requestsMetric;
+const measureUnit = (metric: Metric, copy: WorkspaceCopy) => metric === 'wallet' ? copy.walletTokensUnit : copy.requestsUnit;
 const shortTime = (seconds: number, locale: string) => new Date(seconds * 1000).toLocaleString(locale, {
   timeZone: 'UTC', ...(seconds % 86400 === 0 ? { day: '2-digit', month: 'short' } : { day: '2-digit', month: 'short', hour: '2-digit' }),
 });
 const fullTime = (seconds: number, locale: string) => new Date(seconds * 1000).toLocaleString(locale, {
   timeZone: 'UTC', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
 }) + ' UTC';
-export function UsageAnalyticsPlot({ view, metric, points, models, selectedIndex, onSelectIndex, quotaUnavailable }: Props) {
+export function UsageAnalyticsPlot({ view, metric, points, models, selectedIndex, onSelectIndex, walletUnavailable }: Props) {
   const { language, copy: c } = useWorkspaceLocale();
   const locale = workspaceLocale(language);
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
@@ -49,8 +45,8 @@ export function UsageAnalyticsPlot({ view, metric, points, models, selectedIndex
   const isSpending = view === 'spending-bar' || view === 'spending-area';
   const isTrend = view === 'requests-trend';
   const isRanking = view === 'ranking';
-  const orderedModels = useMemo(() => view === 'spending-bar' && metric === 'quota'
-    ? [...models].sort((a, b) => b.summary.quota - a.summary.quota || a.model.localeCompare(b.model, locale))
+  const orderedModels = useMemo(() => view === 'spending-bar' && metric === 'wallet'
+    ? [...models].sort((a, b) => (b.summary.walletTokens ?? -1) - (a.summary.walletTokens ?? -1) || a.model.localeCompare(b.model, locale))
     : models, [models, view, metric, locale]);
   const perModel = useMemo(() => orderedModels.map((model) => ({
     ...model,
@@ -58,7 +54,7 @@ export function UsageAnalyticsPlot({ view, metric, points, models, selectedIndex
     values: model.points.map((point) => isSpending ? modelValue(point, metric) : point.requests),
   })), [orderedModels, isSpending, metric]);
 
-  if (((isSpending && metric === 'wallet') || (view === 'overview' && metric === 'wallet')) && quotaUnavailable) {
+  if (((isSpending && metric === 'wallet') || (view === 'overview' && metric === 'wallet')) && walletUnavailable) {
     return <div className="usage-state usage-unavailable"><strong>{c.chartWalletUnavailable}</strong><span>{c.chartWalletUnavailableHelp}</span></div>;
   }
   if (models.length === 0) {
@@ -183,28 +179,28 @@ export function UsageAnalyticsPlot({ view, metric, points, models, selectedIndex
   } else stackVisual = lineSeries;
 
   return <div className="usage-plot-wrap" onMouseLeave={() => setHoveredIndex(null)}>
-    <svg className="usage-plot" viewBox={`0 0 ${width} ${height}`} role="group" aria-label={`${isTrend ? c.requestTrendChartLabel : view === 'overview' && metric === 'wallet' ? c.walletTrendChartLabel : view === 'overview' ? c.overviewChartLabel : metric === 'quota' ? c.quotaChartLabel : c.modelSpendChartLabel}; ${c.utcIntervals}`}>
+    <svg className="usage-plot" viewBox={`0 0 ${width} ${height}`} role="group" aria-label={`${isTrend ? c.requestTrendChartLabel : view === 'overview' && metric === 'wallet' ? c.walletTrendChartLabel : view === 'overview' ? c.overviewChartLabel : c.modelSpendChartLabel}; ${c.utcIntervals}`}>
       {grid}{stackVisual}{overlay}
       {points[selectedIndex] && <line x1={xAt(selectedIndex)} x2={xAt(selectedIndex)} y1={top} y2={bottom} className="usage-selected-line"/>}
       {points[selectedIndex] && isSpending && <title>{`${fullTime(points[selectedIndex].timestamp, locale)} · ${c.total}: ${number.format(modelTotal(models, selectedIndex, metric))} ${measureUnit(metric, c)}`}</title>}
       {xLabels}
     </svg>
-    {view === 'spending-bar' && metric === 'quota' && hoveredIndex !== null && points[hoveredIndex] && <div className="usage-hover-breakdown" role="tooltip" aria-live="polite" data-testid="usage-hover-breakdown">
+    {view === 'spending-bar' && metric === 'wallet' && hoveredIndex !== null && points[hoveredIndex] && <div className="usage-hover-breakdown" role="tooltip" aria-live="polite" data-testid="usage-hover-breakdown">
       <div className="usage-hover-breakdown-head">
         <span>{fullTime(points[hoveredIndex].timestamp, locale)}</span>
-        <strong>{number.format(hoveredTotal)} {c.credits}</strong>
+        <strong>{number.format(hoveredTotal)} {measureUnit(metric, c)}</strong>
       </div>
       {hoveredModels.length > 0
         ? <ul>{hoveredModels.map((model) => <li key={model.model}>
           <span className="usage-hover-dot" style={{ backgroundColor: model.color }} aria-hidden="true"/>
           <span className="usage-hover-model">{modelLabel(model.model)}</span>
-          <strong>{number.format(model.hoveredValue)} {c.credits}</strong>
+          <strong>{number.format(model.hoveredValue)} {measureUnit(metric, c)}</strong>
         </li>)}</ul>
         : <p>{c.noSpendInInterval}</p>}
     </div>}
     <div className="usage-screenreader-table"><table>
-      <caption>{metric === 'quota' ? c.chartSpendByUtc : c.chartValuesByUtc}</caption>
-      <thead><tr><th>{c.interval}</th><th>{metric === 'quota' ? c.creditsColumn : c.metric}</th></tr></thead>
+      <caption>{metric === 'wallet' ? c.chartWalletSpendByUtc : c.chartValuesByUtc}</caption>
+      <thead><tr><th>{c.interval}</th><th>{metricNamesForPlot(metric, c)}</th></tr></thead>
       <tbody>{points.map((point, index) => <tr key={point.timestamp}>
         <td>{fullTime(point.timestamp, locale)}</td>
         <td>{number.format(view === 'overview' ? modelValue(point, metric) : isSpending ? perModel.reduce((sum, model) => sum + (model.values[index] ?? 0), 0) : point.requests)}</td>

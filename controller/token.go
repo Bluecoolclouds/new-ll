@@ -15,19 +15,20 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-func buildMaskedTokenResponse(token *model.Token) *model.Token {
+func buildMaskedTokenResponse(token *model.Token, language string) *model.Token {
 	if token == nil {
 		return nil
 	}
 	maskedToken := *token
+	maskedToken.Name = model.LocalizeLegacyDefaultTokenName(token.Name, language)
 	maskedToken.Key = token.GetMaskedKey()
 	return &maskedToken
 }
 
-func buildMaskedTokenResponses(tokens []*model.Token) []*model.Token {
+func buildMaskedTokenResponses(tokens []*model.Token, language string) []*model.Token {
 	maskedTokens := make([]*model.Token, 0, len(tokens))
 	for _, token := range tokens {
-		maskedTokens = append(maskedTokens, buildMaskedTokenResponse(token))
+		maskedTokens = append(maskedTokens, buildMaskedTokenResponse(token, language))
 	}
 	return maskedTokens
 }
@@ -42,7 +43,7 @@ func GetAllTokens(c *gin.Context) {
 	}
 	total, _ := model.CountUserTokens(userId)
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(buildMaskedTokenResponses(tokens))
+	pageInfo.SetItems(buildMaskedTokenResponses(tokens, c.GetHeader("X-Stratus-Language")))
 	common.ApiSuccess(c, pageInfo)
 }
 
@@ -59,7 +60,7 @@ func SearchTokens(c *gin.Context) {
 		return
 	}
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(buildMaskedTokenResponses(tokens))
+	pageInfo.SetItems(buildMaskedTokenResponses(tokens, c.GetHeader("X-Stratus-Language")))
 	common.ApiSuccess(c, pageInfo)
 }
 
@@ -75,7 +76,7 @@ func GetToken(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, buildMaskedTokenResponse(token))
+	common.ApiSuccess(c, buildMaskedTokenResponse(token, c.GetHeader("X-Stratus-Language")))
 }
 
 func GetTokenKey(c *gin.Context) {
@@ -354,7 +355,7 @@ func UpdateToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
-		"data":    buildMaskedTokenResponse(cleanToken),
+		"data":    buildMaskedTokenResponse(cleanToken, c.GetHeader("X-Stratus-Language")),
 	})
 }
 

@@ -31,7 +31,7 @@ export type ApiToken = {
 export type UsageLog = {
   id: number; created_at: number; type: number; content: string; token_name: string;
   model_name: string; quota: number; prompt_tokens: number; completion_tokens: number;
-  use_time: number; is_stream: boolean; group: string; request_id?: string;
+  use_time: number; is_stream: boolean; group: string; request_id?: string; other?: string;
 };
 export type PricingModel = {
   model_name: string; description?: string; owner_by: string; quota_type: number;

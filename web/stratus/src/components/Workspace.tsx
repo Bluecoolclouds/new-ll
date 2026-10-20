@@ -20,8 +20,18 @@ const weeklySelection = { period: '7d', granularity: 'day' } as const;
 const API = {
   user: () => request<SelfUser>('/api/user/self'),
   status: () => request<SystemStatus>('/api/status'),
-  logs: (page: number) => request<Page<UsageLog>>(`/api/log/self?type=2&p=${page}&page_size=20`),
+  logs: (page: number) => request<Page<UsageLog>>(`/api/log/self?request_only=1&p=${page}&page_size=20`),
 };
+
+function cachedUsageTokens(other?: string) {
+  if (!other) return 0;
+  try {
+    const value = (JSON.parse(other) as Record<string, unknown>).cache_tokens;
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
 
 function WorkspaceContent() {
   const { language, copy: c, setLanguage } = useWorkspaceLocale();
@@ -39,9 +49,14 @@ function WorkspaceContent() {
     const tokens = quotaToWalletTokens(quota, quotaUnit);
     return tokens === null ? c.unavailable : `${walletTokenFormat.format(tokens)} ${c.tokens}`;
   };
-  const formatLogTimestamp = (seconds: number) => seconds > 0
-    ? new Date(seconds * 1000).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' })
-    : '—';
+  const formatLogTimestamp = (seconds: number) => {
+    if (!Number.isFinite(seconds) || seconds <= 0) return null;
+    const date = new Date(seconds * 1000);
+    return {
+      time: date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      date: date.toLocaleDateString(locale),
+    };
+  };
   const weeklyUsage = useAccountUsage(weeklySelection, user.data?.id ?? 0);
   const weeklySummary = useMemo(() => {
     if (!weeklyUsage.data) return null;
@@ -137,7 +152,30 @@ function WorkspaceContent() {
           {logs.isError && <div className="workspace-empty workspace-log-error" role="alert"><span>{c.logsError}</span><button className="workspace-action" onClick={() => void logs.refetch()} disabled={logs.isFetching}>{logs.isFetching ? c.loading : c.retry}</button></div>}
           {logs.data && (logs.data.items ?? []).length === 0 && <div className="workspace-empty workspace-log-empty"><span className="workspace-empty-mark"><Activity size={20}/></span><strong>{c.noRequests}</strong><span>{c.noRequestsHelp}</span></div>}
           {logs.data && (logs.data.items ?? []).length > 0 && visible.length === 0 && <div className="workspace-empty">{c.noMatches}</div>}
-          {visible.length > 0 && <div className="workspace-table-wrap"><table><thead><tr><th>{c.dateTime}</th><th>{c.apiKey}</th><th>{c.model}</th><th>{c.group}</th><th>{c.walletSpent}</th><th>{c.status}</th></tr></thead><tbody>{visible.map((row) => <tr key={`${row.id}-${row.created_at}`}><td>{formatLogTimestamp(row.created_at)}</td><td>{row.token_name || '—'}</td><td>{row.model_name || '—'}</td><td>{row.group || '—'}</td><td>{formatWalletTokens(row.quota)}</td><td><span className={`workspace-log-status ${row.type === 5 ? 'is-error' : ''}`}>{row.type === 5 ? c.requestError : row.type === 2 ? c.deduction : row.content || '—'}</span></td></tr>)}</tbody></table></div>}
+          {visible.length > 0 && <div className="workspace-table-wrap"><table className="workspace-log-table" aria-label={c.latestRequests}>
+            <thead><tr><th>{c.dateTime}</th><th>{c.keyName}</th><th>{c.model}</th><th>{c.transport}</th><th>{c.status}</th><th className="workspace-log-spent-heading">{c.walletSpent}</th><th>{c.requestError}</th></tr></thead>
+            <tbody>{visible.map((row) => {
+              const timestamp = formatLogTimestamp(row.created_at);
+              const failed = row.type === 5;
+              const modelTokens = Math.max(0, row.prompt_tokens) + Math.max(0, row.completion_tokens);
+              const cacheTokens = cachedUsageTokens(row.other);
+              return <tr key={`${row.id}-${row.created_at}`}>
+                <td className="workspace-log-timestamp">{timestamp ? <><strong>{timestamp.time}</strong><small>{timestamp.date}</small></> : '—'}</td>
+                <td className="workspace-log-key-name">{row.token_name || '—'}</td>
+                <td className="workspace-log-model-name">{row.model_name || '—'}</td>
+                <td><span className={`workspace-log-transport${row.is_stream ? ' is-stream' : ''}`}>{row.is_stream ? 'SSE' : 'HTTP'}</span></td>
+                <td><span className={`workspace-log-status ${failed ? 'is-error' : 'is-ok'}`}>{failed ? c.requestStatusError : c.requestStatusOk}</span></td>
+                <td className="workspace-log-spent">
+                  {failed ? <strong>—</strong> : <strong>{formatWalletTokens(row.quota)}</strong>}
+                  {!failed && modelTokens > 0 && <small title={c.modelUsageTitle}>{c.modelTokensTotal} {countFormat.format(modelTokens)}</small>}
+                  {!failed && cacheTokens > 0 && <small title={c.modelUsageTitle}>{c.cachedTokens} {countFormat.format(cacheTokens)}</small>}
+                </td>
+                <td className={`workspace-log-error-text${failed ? ' is-error' : ''}`} title={failed ? row.content : undefined}>
+                  {failed ? row.content || c.requestStatusError : '—'}
+                </td>
+              </tr>;
+            })}</tbody>
+          </table></div>}
           {logs.data && logs.data.total > logs.data.page_size && <div className="workspace-pager"><span>{c.page} <strong>{page}</strong> {c.of} {totalPages} <i/> {logs.data.total.toLocaleString(locale)} {c.entries}</span><div><button aria-label={c.previousPage} disabled={page <= 1 || logs.isFetching} onClick={() => setPage((n) => n - 1)}><ChevronLeft size={17}/></button><button aria-label={c.nextPage} disabled={page >= totalPages || logs.isFetching} onClick={() => setPage((n) => n + 1)}><ChevronRight size={17}/></button></div></div>}
         </section>
       </main>

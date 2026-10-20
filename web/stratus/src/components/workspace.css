@@ -90,6 +90,32 @@
 .workspace td:first-child { color: #6f8b95; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .workspace-log-status { display: inline-flex; padding: 4px 8px; border-radius: 99px; background: #e9f4f3; color: #567e7a; font-size: 10px; white-space: nowrap; }
 .workspace-log-status.is-error { background: #f7eae6; color: #9b6259; }
+.workspace-log-status.is-ok { background: #dff2ec; color: #438675; }
+.workspace-log-table { min-width: 900px; table-layout: fixed; }
+.workspace-log-table th:nth-child(1) { width: 100px; }
+.workspace-log-table th:nth-child(2) { width: 136px; }
+.workspace-log-table th:nth-child(3) { width: 166px; }
+.workspace-log-table th:nth-child(4) { width: 78px; }
+.workspace-log-table th:nth-child(5) { width: 78px; }
+.workspace-log-table th:nth-child(6) { width: 150px; }
+.workspace-log-table th:nth-child(7) { width: 180px; }
+.workspace-log-table .workspace-log-timestamp strong,
+.workspace-log-table .workspace-log-timestamp small { display: block; }
+.workspace-log-table .workspace-log-timestamp strong,
+.workspace-log-table .workspace-log-key-name,
+.workspace-log-table .workspace-log-model-name { color: #304f5a; font-weight: 650; }
+.workspace-log-table .workspace-log-timestamp small { margin-top: 3px; color: #91a4aa; font-size: 10px; }
+.workspace-log-transport { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 99px; background: #edf0f1; color: #657a80; font-size: 10px; font-weight: 700; letter-spacing: .02em; }
+.workspace-log-transport.is-stream { background: #dff2ec; color: #438675; }
+.workspace-log-spent-heading,
+.workspace-log-spent { text-align: right !important; font-variant-numeric: tabular-nums; }
+.workspace-log-spent { white-space: nowrap; }
+.workspace-log-spent strong,
+.workspace-log-spent small { display: block; }
+.workspace-log-spent strong { color: #304f5a; font-weight: 700; }
+.workspace-log-spent small { margin-top: 3px; color: #91a4aa; font-size: 9px; }
+.workspace-log-error-text { overflow: hidden; color: #9aabb0 !important; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-log-error-text.is-error { color: #9b6259 !important; }
 .workspace-empty { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 82px; color: #79939b; font-size: 12px; text-align: center; }
 .workspace-inline-skeleton { width: 26px; height: 8px; border-radius: 8px; background: #dcebed; animation: workspace-pulse 1.2s ease-in-out infinite alternate; }
 .workspace-log-error { flex-wrap: wrap; color: #8a625c; }
